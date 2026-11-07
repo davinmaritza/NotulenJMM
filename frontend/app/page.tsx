@@ -2,6 +2,7 @@
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React, { useState } from 'react';
 import { Navbar } from '../components/Navbar';
+import { CraftStudioView } from '../components/CraftStudioView';
 import { AudioRecorderStudio } from '../components/AudioRecorderStudio';
 import { SpeakerDiarizationView } from '../components/SpeakerDiarizationView';
 import { NotulenEditor } from '../components/NotulenEditor';
@@ -23,7 +24,7 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>('craft');
   const [meetings, setMeetings] = useState<Meeting[]>(INITIAL_MEETINGS);
   const [activeMeetingId, setActiveMeetingId] = useState<string>(INITIAL_MEETINGS[0].id);
   const [isRecording] = useState<boolean>(false);
@@ -103,6 +104,56 @@ export default function Home() {
     setActiveTab('record');
   };
 
+  const handleStartCraftSession = (session: {
+    cardTitle: string;
+    cardDescription: string;
+    prompt: string;
+    engine: string;
+    destinationFolder: string;
+    activeTab: string;
+  }) => {
+    const newMeet: Meeting = {
+      id: `meet-craft-${Date.now()}`,
+      title: `${session.cardTitle}: ${session.prompt.slice(0, 45) || 'Sesi Rapat MPK'}`,
+      date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + ' WIB',
+      location: 'Ruang Multimedia / OSIS SMK Negeri 13 Bandung',
+      organizer: 'MPK SMK Negeri 13 Bandung',
+      status: 'DRAFT',
+      durationSeconds: 0,
+      attendees: [
+        { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
+        { id: 'att-2', name: 'Notulis MPK', role: 'Note Taker', present: true },
+        { id: 'att-3', name: 'Peserta Majelis', role: 'Member', present: true },
+      ],
+      transcript: [
+        {
+          id: `seg-${Date.now()}`,
+          speaker: 'Speaker 1 (Davin Maritza)',
+          startTime: '00:00',
+          endTime: '00:20',
+          text: `Pembukaan ${session.cardTitle}. Pokok bahasan rapat: ${session.prompt}.`,
+        },
+      ],
+      agendas: [
+        {
+          title: session.cardTitle,
+          discussionPoints: [
+            session.prompt || session.cardDescription,
+            `Format agenda: ${session.cardTitle}`,
+            `AI Engine: ${session.engine}`,
+            `Folder Simpan: ${session.destinationFolder}`,
+          ],
+        },
+      ],
+      decisions: [],
+      actionItems: [],
+    };
+
+    setMeetings([newMeet, ...meetings]);
+    setActiveMeetingId(newMeet.id);
+    setActiveTab('notulen');
+  };
+
   // Metrics
   const totalDecisions = meetings.reduce((acc, m) => acc + m.decisions.length, 0);
   const totalActionItems = meetings.reduce((acc, m) => acc + m.actionItems.length, 0);
@@ -116,6 +167,11 @@ export default function Home() {
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} isRecording={isRecording} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* TAB 0: CRAFT STUDIO */}
+        {activeTab === 'craft' && (
+          <CraftStudioView onStartSession={handleStartCraftSession} />
+        )}
+
         {/* TAB 1: DASHBOARD */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8">

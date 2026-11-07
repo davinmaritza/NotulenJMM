@@ -1,7 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React from 'react';
-import { Mic, FileText, CheckSquare, Activity, Smartphone, Sparkles } from 'lucide-react';
+import { Mic, FileText, CheckSquare, Activity, Smartphone, Sparkles, Layers } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;
@@ -34,6 +34,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, isRecor
 
           {/* Navigation Tabs (Desktop) */}
           <nav className="hidden md:flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800/80">
+            <button
+              onClick={() => setActiveTab('craft')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                activeTab === 'craft'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5 text-blue-400" />
+              Craft Studio
+            </button>
+
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
