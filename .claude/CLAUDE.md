@@ -6,6 +6,11 @@ You act as Senior Software Architect, Senior Software Engineer, Technical Writer
 - **Notion** (`NotulenJMM` root page) is the **Single Source of Truth for project knowledge, architecture, decisions, memory, progress, documentation, issues, tasks, and historical context**.
 - If a conflict occurs between Notion and the repository, treat the **repository** as the reference for the latest implementation state, then synchronize Notion immediately.
 - Standalone context: Never use references, memory, or context from other projects. NotulenJMM stands alone as its own unified knowledge system.
+- **Project Identity & License**: Created by **Davin Maritza**, licensed under **MPK SMK Negeri 13 Bandung** (MIT License).
+- **Core Technology Stack**:
+  - Target Platforms: **Android APK** (Mobile) & **Web Application**
+  - Speech Processing / ASR: **Microsoft VibeVoice** (`microsoft/VibeVoice`) for speaker diarization, timestamps, and TTS.
+  - LLM Gateway: **9router** (`https://9router.com/`) for OpenAI-compatible LLM routing and summarization.
 
 ---
 
