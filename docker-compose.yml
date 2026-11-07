@@ -1,0 +1,42 @@
+# Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: notulenjmm-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - LLM_BASE_URL=http://localhost:20128/v1
+      - LLM_API_KEY=9router-default-key
+      - LLM_MODEL=router-default
+      - VIBEVOICE_ENDPOINT=http://localhost:8001/asr
+      - UPLOAD_DIR=/tmp/notulenjmm_audio
+    volumes:
+      - audio_cache:/tmp/notulenjmm_audio
+    networks:
+      - notulenjmm-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: notulenjmm-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    networks:
+      - notulenjmm-net
+
+volumes:
+  audio_cache:
+
+networks:
+  notulenjmm-net:
+    driver: bridge

@@ -51,11 +51,68 @@ NotulenJMM adalah sistem cerdas untuk pencatatan notulen, transkripsi suara rapa
 Read Context → Inspect Repository → Understand Task → Plan → Implement → Validate → Update Knowledge → Sync Notion → Update Context
 ```
 
-## Structure
+## Quick Start & Commands
+
+### 1. Backend (FastAPI)
+```bash
+# Setup virtual environment and dependencies
+cd backend
+pip install -r requirements.txt
+
+# Run backend API server
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Run test suite
+pytest tests/ -v
+```
+
+### 2. Frontend (Next.js Web & Mobile)
+```bash
+cd frontend
+bun install
+
+# Development server
+bun run dev
+
+# Production build
+bun run build
+
+# Compile Native Android Debug APK
+bun run build:apk:binary
+# Output: frontend/android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+### 3. Docker Compose Stack
+```bash
+# Start full containerized stack (Frontend + Backend)
+docker compose up -d --build
+```
+
+## Repository Structure
 ```
 NotulenJMM/
 ├── .claude/
-│   └── CLAUDE.md
-├── LICENSE
-└── README.md
+│   └── CLAUDE.md                   # Knowledge synchronization & agent workflow rules
+├── backend/
+│   ├── app/
+│   │   ├── api/v1/                 # Endpoints: health, audio, notulen
+│   │   ├── models/                 # Pydantic schemas
+│   │   ├── services/               # VibeVoice bridge & 9Router LLM client
+│   │   ├── config.py               # Pydantic-Settings environment loader
+│   │   └── main.py                 # FastAPI application entrypoint
+│   ├── tests/                      # Pytest unit & integration tests
+│   ├── Dockerfile                  # Backend container image
+│   └── requirements.txt            # Python dependencies
+├── frontend/
+│   ├── android/                    # Capacitor native Android container (Gradle)
+│   ├── app/                        # Next.js 15 App Router pages & layout
+│   ├── components/                 # Audio studio, diarization timeline, notulen editor
+│   ├── lib/                        # API client, types, mock data
+│   ├── Dockerfile                  # Frontend container image
+│   ├── capacitor.config.ts         # Capacitor Android package configuration
+│   └── package.json                # Bun/npm scripts & dependencies
+├── .env.example                    # Environment variable template
+├── docker-compose.yml              # Multi-container orchestration stack
+├── LICENSE                         # MIT License (MPK SMK Negeri 13 Bandung, Davin Maritza)
+└── README.md                       # Main project documentation
 ```
