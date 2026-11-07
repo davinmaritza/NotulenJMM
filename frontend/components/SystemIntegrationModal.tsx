@@ -1,22 +1,43 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Cpu,
   Layers,
   Smartphone,
   ShieldCheck,
   Terminal,
+  Activity,
 } from 'lucide-react';
+import { checkBackendHealth, HealthCheckResult } from '@/lib/api';
 
 export const SystemIntegrationModal: React.FC = () => {
+  const [health, setHealth] = useState<HealthCheckResult | null>(null);
+
+  useEffect(() => {
+    checkBackendHealth().then(setHealth);
+  }, []);
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
       <div className="border-b border-slate-800 pb-4">
-        <h2 className="text-xl font-bold text-white tracking-tight">Status Integrasi & Arsitektur Sistem</h2>
-        <p className="text-xs text-slate-400 mt-1">
-          Spesifikasi konektivitas mesin AI, kontainer mobile Android APK, dan atribusi lisensi resmi
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-bold text-white tracking-tight">Status Integrasi & Arsitektur Sistem</h2>
+            <p className="text-xs text-slate-400 mt-1">
+              Spesifikasi konektivitas mesin AI, kontainer mobile Android APK, dan atribusi lisensi resmi
+            </p>
+          </div>
+          {health && (
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
+              health.online 
+                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
+                : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+            }`}>
+              <Activity className={`w-3.5 h-3.5 ${health.online ? 'text-emerald-400 animate-pulse' : 'text-indigo-400'}`} />
+              <span>{health.online ? 'Backend API v0.2.0: Connected' : 'Client Mode: Standalone Ready'}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

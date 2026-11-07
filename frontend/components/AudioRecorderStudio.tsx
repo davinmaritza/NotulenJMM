@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, Square, Play, Pause, RefreshCw, Upload, AlertCircle, Sparkles, Volume2 } from 'lucide-react';
 import { AudioSegment } from '../lib/types';
+import { transcribeAudioApi } from '@/lib/api';
 
 interface AudioRecorderStudioProps {
   onDiarizationComplete: (segments: AudioSegment[], duration: number) => void;
@@ -13,6 +14,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({ onDiar
   const [isPaused, setIsPaused] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -107,6 +109,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({ onDiar
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
+        setRecordedBlob(audioBlob);
 
         // Stop all tracks
         stream.getTracks().forEach((track) => track.stop());
@@ -156,53 +159,29 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({ onDiar
 
   const processWithVibeVoice = async () => {
     setIsProcessing(true);
-    setProcessingStep('Mengirim buffer audio ke Microsoft VibeVoice Service...');
-    
-    // Simulate real VibeVoice ASR & Diarization stages
-    setTimeout(() => {
+    setProcessingStep('Mengirim buffer audio ke Microsoft VibeVoice pipeline...');
+
+    try {
+      // Create minimal synthetic audio container if none was recorded
+      const blobToProcess =
+        recordedBlob ||
+        new Blob([new Uint8Array([82, 73, 70, 70, 36, 0, 0, 0, 87, 65, 86, 69])], {
+          type: 'audio/webm',
+        });
+
       setProcessingStep('VibeVoice Tokenization (7.5 Hz ultra-low frame rate)...');
-    }, 1200);
+      const result = await transcribeAudioApi(blobToProcess);
 
-    setTimeout(() => {
       setProcessingStep('Menjalankan Joint Speaker Diarization & Timestamping...');
-    }, 2400);
-
-    setTimeout(() => {
-      // Mocked high quality segments extracted from VibeVoice
-      const generatedSegments: AudioSegment[] = [
-        {
-          id: 'vibe-1',
-          speaker: 'Speaker 1 (Davin Maritza)',
-          startTime: '00:00:05',
-          endTime: '00:00:45',
-          text: 'Rapat koordinasi MPK SMK Negeri 13 Bandung dibuka. Rekan-rekan sekalian, agenda kita hari ini berfokus pada evaluasi keterlaksanaan program kerja komisi dan pembagian penugasan LDKS.'
-        },
-        {
-          id: 'vibe-2',
-          speaker: 'Speaker 2 (Sekretaris)',
-          startTime: '00:00:50',
-          endTime: '00:01:30',
-          text: 'Laporan notulen rapat sebelumnya telah disahkan dan diarsipkan di NotulenJMM. Semua berkas kehadiran telah diverifikasi kuorum.'
-        },
-        {
-          id: 'vibe-3',
-          speaker: 'Speaker 3 (Koordinator Lapangan)',
-          startTime: '00:01:35',
-          endTime: '00:02:15',
-          text: 'Untuk persiapan logistik dan perlengkapan aula, izin tempat sudah disetujui pihak sarana prasarana sekolah.'
-        },
-        {
-          id: 'vibe-4',
-          speaker: 'Speaker 1 (Davin Maritza)',
-          startTime: '00:02:20',
-          endTime: '00:02:50',
-          text: 'Bagus. Kita putuskan gladi bersih akan diadakan H-2 pelaksanaan. Sekretariat harap menyiapkan lembar konfirmasi narasumber.'
-        }
-      ];
-
+      setTimeout(() => {
+        setIsProcessing(false);
+        onDiarizationComplete(result.segments, seconds || result.durationSeconds);
+      }, 500);
+    } catch (err: unknown) {
+      console.error('VibeVoice processing error:', err);
       setIsProcessing(false);
-      onDiarizationComplete(generatedSegments, seconds || 170);
-    }, 3600);
+      setErrorMessage('Terjadi kendala saat memproses audio. Silakan coba kembali.');
+    }
   };
 
   return (

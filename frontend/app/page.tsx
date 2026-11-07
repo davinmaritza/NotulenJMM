@@ -8,6 +8,7 @@ import { NotulenEditor } from '../components/NotulenEditor';
 import { SystemIntegrationModal } from '../components/SystemIntegrationModal';
 import { INITIAL_MEETINGS } from '../lib/mockData';
 import { Meeting, AudioSegment } from '../lib/types';
+import { synthesizeNotulenApi } from '../lib/api';
 import {
   FileText,
   Mic,
@@ -46,59 +47,31 @@ export default function Home() {
     setActiveTab('notulen');
   };
 
-  const handleSynthesizeNotulen = () => {
+  const handleSynthesizeNotulen = async () => {
     setIsSynthesizing(true);
 
-    // Simulate 9router LLM processing
-    setTimeout(() => {
+    try {
+      const result = await synthesizeNotulenApi(
+        activeMeeting.title,
+        activeMeeting.transcript,
+        activeMeeting.organizer
+      );
+
       const updatedMeeting: Meeting = {
         ...activeMeeting,
         status: 'FINALIZED',
-        executiveSummary:
-          'Rapat koordinasi dan evaluasi MPK SMK Negeri 13 Bandung menetapkan kesiapan pelaksanaan program kerja tengah semester dan LDKS 2026. Alokasi anggaran disetujui, pembagian penugasan koordinator disahkan, dan gladi bersih dijadwalkan H-2.',
-        agendas: [
-          {
-            title: 'Evaluasi Program Kerja Tengah Semester',
-            discussionPoints: [
-              'Seluruh komisi melaporkan capaian target kerja telah mencapai 90%.',
-              'Sistem NotulenJMM telah resmi digunakan untuk standardisasi seluruh arsip rapat.',
-            ],
-          },
-          {
-            title: 'Penetapan Teknis LDKS 2026 & Simulasi Sidang',
-            discussionPoints: [
-              'Izin ruang aula dan sarana telah dikonfirmasi disetujui.',
-              'Modul simulasi persidangan siswa parlemen masuk ke dalam kurikulum wajib.',
-            ],
-          },
-        ],
-        decisions: [
-          ...activeMeeting.decisions,
-          {
-            id: `dec-${Date.now()}`,
-            number: `KEP/003/MPK-13/XI/2026`,
-            decisionText: 'Jadwal Gladi Bersih LDKS 2026 disepakati pada H-2 tanggal 26 November 2026.',
-            rationale: 'Memastikan seluruh perangkat audio dan narasumber telah siap.',
-            category: 'Program Kerja',
-            status: 'DISAHKAN',
-            date: '2026-11-07',
-          },
-        ],
-        actionItems: [
-          ...activeMeeting.actionItems,
-          {
-            id: `act-${Date.now()}`,
-            description: 'Kirim surat konfirmasi narasumber eksternal LDKS 2026',
-            assignee: 'Siti Rahmawati (Sekretaris)',
-            dueDate: '2026-11-12',
-            status: 'PENDING',
-          },
-        ],
+        executiveSummary: result.executiveSummary,
+        agendas: result.agendas.length > 0 ? result.agendas : activeMeeting.agendas,
+        decisions: [...activeMeeting.decisions, ...result.decisions],
+        actionItems: [...activeMeeting.actionItems, ...result.actionItems],
       };
 
       handleUpdateActiveMeeting(updatedMeeting);
+    } catch (err: unknown) {
+      console.error('Synthesis error:', err);
+    } finally {
       setIsSynthesizing(false);
-    }, 2000);
+    }
   };
 
   const handleCreateNewMeeting = () => {
