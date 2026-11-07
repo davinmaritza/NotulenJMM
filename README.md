@@ -5,9 +5,27 @@ Knowledge-driven meeting minutes, decision tracking, and intelligent transcripti
 ## Overview
 NotulenJMM adalah sistem cerdas untuk pencatatan notulen, transkripsi suara rapat, pelacakan keputusan formal, dan penugasan tindak lanjut (*action items*). Aplikasi ini didesain multi-platform (**Android APK & Web Application**) untuk mempermudah notulis serta pimpinan rapat merekam jalannya pertemuan secara akurat dan terstruktur.
 
-## Platform Target
-- **Mobile**: Android APK
-- **Web**: Progressive Web Application / Web Responsive Portal
+## Platform Target & Technology Stack
+- **Frontend & Mobile Client**:
+  - **Framework**: Next.js 15 (React 19, App Router) + Tailwind CSS + Lucide Icons
+  - **Mobile Container**: Capacitor (`@capacitor/core`, `@capacitor/android`) for direct Android APK build
+  - **Web**: Responsive Web Dashboard & PWA
+- **Backend & Voice Bridge**:
+  - **Framework**: Python FastAPI
+  - **Speech Engine**: [Microsoft VibeVoice](https://github.com/microsoft/VibeVoice) (ASR, Diarization, Timestamps)
+- **AI Gateway**:
+  - **Router**: [9router](https://9router.com/) (OpenAI-compatible multi-provider routing)
+
+## 3-Tier Architecture
+```
+[Android APK / Web Client (Next.js + Capacitor)]
+                     │
+                     ▼ (REST API / WebSocket)
+[Backend Service (FastAPI + VibeVoice Bridge)]
+                     │
+                     ▼ (OpenAI-compatible)
+[9Router Local / Remote AI Gateway]
+```
 
 ## Core AI & Technical Integrations
 - **Speech Engine & Diarization**: [Microsoft VibeVoice](https://github.com/microsoft/VibeVoice)
