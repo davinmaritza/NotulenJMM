@@ -1,7 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React from 'react';
-import { Mic, FileText, CheckSquare, ShieldCheck, Activity, Smartphone, Sparkles } from 'lucide-react';
+import { Mic, FileText, CheckSquare, Activity, Smartphone, Sparkles } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;

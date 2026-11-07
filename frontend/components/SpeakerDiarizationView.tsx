@@ -1,7 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React, { useState } from 'react';
-import { UserCheck, Clock, Edit2, Sparkles, RefreshCw, CheckCircle, MessageSquare } from 'lucide-react';
+import { UserCheck, Clock, Edit2, Sparkles, RefreshCw, MessageSquare } from 'lucide-react';
 import { AudioSegment } from '../lib/types';
 
 interface SpeakerDiarizationViewProps {

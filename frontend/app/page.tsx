@@ -19,14 +19,13 @@ import {
   User,
   ArrowRight,
   Sparkles,
-  Smartphone,
 } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [meetings, setMeetings] = useState<Meeting[]>(INITIAL_MEETINGS);
   const [activeMeetingId, setActiveMeetingId] = useState<string>(INITIAL_MEETINGS[0].id);
-  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [isRecording] = useState<boolean>(false);
   const [isSynthesizing, setIsSynthesizing] = useState<boolean>(false);
 
   const activeMeeting = meetings.find((m) => m.id === activeMeetingId) || meetings[0];

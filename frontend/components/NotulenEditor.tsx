@@ -4,13 +4,11 @@ import React, { useState } from 'react';
 import {
   FileText,
   CheckCircle2,
-  AlertCircle,
   Copy,
   Printer,
   Calendar,
   User,
   PlusCircle,
-  Tag,
   Scale,
   Sparkles,
 } from 'lucide-react';

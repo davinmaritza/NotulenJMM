@@ -6,10 +6,7 @@ import {
   Layers,
   Smartphone,
   ShieldCheck,
-  CheckCircle,
-  ExternalLink,
   Terminal,
-  BookOpen,
 } from 'lucide-react';
 
 export const SystemIntegrationModal: React.FC = () => {

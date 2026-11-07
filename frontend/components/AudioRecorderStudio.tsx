@@ -1,7 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, Square, Play, Pause, RefreshCw, Upload, CheckCircle2, AlertCircle, Sparkles, Volume2 } from 'lucide-react';
+import { Mic, Square, Play, Pause, RefreshCw, Upload, AlertCircle, Sparkles, Volume2 } from 'lucide-react';
 import { AudioSegment } from '../lib/types';
 
 interface AudioRecorderStudioProps {
