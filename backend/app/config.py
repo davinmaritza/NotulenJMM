@@ -3,15 +3,20 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(case_sensitive=True)
+    model_config = SettingsConfigDict(
+        env_file=(".env", "../.env", "backend/.env"),
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+    )
     PROJECT_NAME: str = "NotulenJMM Backend API"
     VERSION: str = "0.2.0"
     API_V1_STR: str = "/api/v1"
     
     # 9Router AI Gateway Configuration
-    LLM_BASE_URL: str = os.getenv("LLM_BASE_URL", "http://localhost:20128/v1")
-    LLM_API_KEY: str = os.getenv("LLM_API_KEY", "9router-default-key")
-    LLM_MODEL: str = os.getenv("LLM_MODEL", "router-default")
+    LLM_BASE_URL: str = "https://routernines.bytenodes.icu/v1"
+    LLM_API_KEY: str = "9router-default-key"
+    LLM_MODEL: str = "ag/gemini-3.8-flash"
     
     # Microsoft VibeVoice Service Configuration
     VIBEVOICE_ENDPOINT: str = os.getenv("VIBEVOICE_ENDPOINT", "http://localhost:8001/asr")

@@ -1,6 +1,7 @@
 # Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import json
 import uuid
+import re
 import httpx
 from typing import List
 from app.config import settings
@@ -87,11 +88,11 @@ class RouterService:
                 {"role": "user", "content": user_prompt},
             ],
             "temperature": 0.2,
-            "response_format": {"type": "json_object"},
+            "stream": False,
         }
 
         try:
-            async with httpx.AsyncClient(timeout=45.0) as client:
+            async with httpx.AsyncClient(timeout=60.0) as client:
                 resp = await client.post(
                     f"{self.base_url}/chat/completions",
                     headers={
@@ -102,7 +103,19 @@ class RouterService:
                 )
                 if resp.status_code == 200:
                     data = resp.json()
-                    content_str = data["choices"][0]["message"]["content"]
+                    content_str = data["choices"][0]["message"]["content"].strip()
+                    
+                    # Clean potential markdown wrappers (```json ... ```)
+                    if content_str.startswith("```"):
+                        content_str = re.sub(r"^```(?:json)?\s*", "", content_str)
+                        content_str = re.sub(r"\s*```$", "", content_str)
+                    
+                    # Locate JSON boundaries if extra prose was included
+                    start_idx = content_str.find("{")
+                    end_idx = content_str.rfind("}")
+                    if start_idx != -1 and end_idx != -1:
+                        content_str = content_str[start_idx : end_idx + 1]
+
                     parsed = json.loads(content_str)
                     
                     return SynthesizeResponse(
