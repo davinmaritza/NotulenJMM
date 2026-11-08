@@ -691,6 +691,22 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                           <span>{editingCardIndex === idx ? 'Tutup' : 'Custom'}</span>
                         </button>
 
+                        {/* Direct Delete Button for Custom Cards */}
+                        {(card.isCustom || card.id.includes('kustom') || card.id.includes('custom') || config.cards.length > 4) && config.cards.length > 2 && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteCard(idx);
+                            }}
+                            title="Hapus kartu ini"
+                            aria-label={`Hapus kartu ${card.title || 'agenda'}`}
+                            className="p-1 rounded-lg border-2 border-black bg-rose-100 hover:bg-rose-200 text-rose-700 hover:text-black transition-all shadow-[1px_1px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shrink-0"
+                          >
+                            <Trash2 className="w-3 h-3 stroke-[2.5]" />
+                          </button>
+                        )}
+
                         {isSelected && (
                           <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-black text-white flex items-center justify-center border-2 border-black shadow-[1px_1px_0px_0px_#000] sm:shadow-[1.5px_1.5px_0px_0px_#000] shrink-0">
                             <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3]" />
