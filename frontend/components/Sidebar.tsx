@@ -10,7 +10,6 @@ import {
   CheckSquare,
   X,
   Clock,
-  HelpCircle,
 } from 'lucide-react';
 import { Meeting } from '../lib/types';
 
@@ -22,7 +21,6 @@ interface SidebarProps {
   activeMeeting?: Meeting | null;
   isOpenMobile: boolean;
   setIsOpenMobile: (open: boolean) => void;
-  onOpenGuide?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -33,7 +31,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeMeeting,
   isOpenMobile,
   setIsOpenMobile,
-  onOpenGuide,
 }) => {
   const pathname = usePathname();
   const router = useRouter();
@@ -241,27 +238,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
         </div>
-
-        {/* Quick Guide Button */}
-        {onOpenGuide && (
-          <div className="px-4 pb-3">
-            <button
-              onClick={() => {
-                onOpenGuide();
-                setIsOpenMobile(false);
-              }}
-              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#C4B5FD] hover:bg-[#B4A0FA] border-2 border-black shadow-[3px_3px_0px_0px_#000] text-black text-xs font-bold transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-black stroke-[2.5]" />
-                <span>Buku Saku Notulis</span>
-              </div>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-white border border-black rounded font-black">
-                Panduan
-              </span>
-            </button>
-          </div>
-        )}
 
         {/* Bottom: Profile & Telemetry Badge */}
         <div className="p-4 border-t-2 border-black bg-white space-y-3">

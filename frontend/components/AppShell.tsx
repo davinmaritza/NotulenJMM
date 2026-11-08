@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { UserFriendlyWorkflowBar } from './UserFriendlyWorkflowBar';
-import { SecretaryGuideModal } from './SecretaryGuideModal';
 import { useMeetings } from '../context/MeetingContext';
 import { Menu } from 'lucide-react';
 
@@ -16,7 +15,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
-  const [isOpenGuide, setIsOpenGuide] = useState<boolean>(false);
 
   const {
     meetings,
@@ -45,16 +43,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-[#FFFDF5] text-black flex flex-col lg:flex-row antialiased selection:bg-[#FFE600] selection:text-black">
-      {/* Secretary Interactive Guide Modal */}
-      <SecretaryGuideModal
-        isOpen={isOpenGuide}
-        onClose={() => setIsOpenGuide(false)}
-        onNavigateTab={(tab) => {
-          handleNavigateFromWorkflow(tab);
-          setIsOpenGuide(false);
-        }}
-      />
-
       {/* Institutional Left Sidebar */}
       <Sidebar
         activeTab={currentTab}
@@ -63,7 +51,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         activeMeeting={activeMeeting}
         isOpenMobile={isOpenMobile}
         setIsOpenMobile={setIsOpenMobile}
-        onOpenGuide={() => setIsOpenGuide(true)}
       />
 
       {/* Main Content Workspace to the Right of Sidebar */}
@@ -84,18 +71,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setIsOpenGuide(true)}
-              className="px-2.5 py-1.5 rounded-xl bg-[#FF6B6B] text-white border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-bold cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
-              title="Buku Saku Notulis"
-            >
-              Buku Saku
-            </button>
-            <button
               onClick={() => setIsOpenMobile(true)}
               className="p-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
               title="Buka Menu Navigasi"
+              aria-label="Buka Menu Navigasi"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-5 h-5 stroke-[2.5]" />
             </button>
           </div>
         </header>
@@ -106,7 +87,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           <UserFriendlyWorkflowBar
             activeTab={currentTab}
             onSelectTab={handleNavigateFromWorkflow}
-            onOpenGuide={() => setIsOpenGuide(true)}
             hasActiveMeeting={!!activeMeeting}
             totalMeetingsCount={meetings.length}
           />
@@ -114,13 +94,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           {children}
         </main>
 
-        {/* Institutional Footer */}
-        <footer className="mt-auto border-t border-white/[0.06] bg-[#07080a] py-6 text-center text-xs text-zinc-500">
-          <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono">
+        {/* Neo-Brutalist Institutional Footer (Fixed from dark mode) */}
+        <footer className="mt-auto border-t-2 border-black bg-[#FFFDF5] py-4 text-center text-xs text-black">
+          <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono font-bold text-black">
             <p>
-              NotulenJMM • Hak Cipta &copy; 2026 <strong>MPK SMK Negeri 13 Bandung</strong>. Karya <strong>Davin Maritza</strong>.
+              NotulenJMM • Hak Cipta &copy; 2026 <strong className="font-black text-black">MPK SMK Negeri 13 Bandung</strong>. Karya <strong className="font-black text-black">Davin Maritza</strong>.
             </p>
-            <div className="flex items-center gap-3 text-zinc-500">
+            <div className="flex items-center gap-3 font-black text-black">
               <span>Tata Naskah Dinas Digital</span>
               <span>•</span>
               <span>Web &amp; Android APK</span>

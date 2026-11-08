@@ -5,7 +5,6 @@ import {
   Compass,
   Mic,
   BookOpen,
-  HelpCircle,
   ChevronDown,
   ChevronUp,
   CheckCircle2,
@@ -14,7 +13,6 @@ import {
 interface UserFriendlyWorkflowBarProps {
   activeTab: string;
   onSelectTab: (tab: string) => void;
-  onOpenGuide: () => void;
   hasActiveMeeting?: boolean;
   totalMeetingsCount: number;
 }
@@ -30,7 +28,6 @@ const getGreetingText = (): string => {
 export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = ({
   activeTab,
   onSelectTab,
-  onOpenGuide,
   totalMeetingsCount,
 }) => {
   const [greeting] = useState<string>(getGreetingText);
@@ -55,14 +52,6 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
         </div>
 
         <div className="flex items-center gap-2.5 self-start sm:self-center shrink-0">
-          <button
-            onClick={onOpenGuide}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
-            title="Buka Buku Saku & Panduan Notulis"
-          >
-            <HelpCircle className="w-4 h-4 text-black stroke-[2.5]" />
-            <span>Buku Saku Notulis</span>
-          </button>
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
