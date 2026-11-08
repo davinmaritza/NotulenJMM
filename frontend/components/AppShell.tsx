@@ -98,7 +98,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       {/* Main Content Workspace to the Right of Sidebar */}
       <div className="flex-1 flex flex-col lg:pl-64 sm:lg:pl-72 min-w-0 min-h-screen">
         {/* Top Mobile Bar (visible only on mobile/tablet) */}
-        <header className="lg:hidden sticky top-0 z-30 bg-[#FFFDF5] border-b-2 border-black px-4 py-3 flex items-center justify-between shadow-[0_3px_0_0_#000]">
+        <header className="lg:hidden sticky top-0 z-30 bg-[#FFFDF5] border-b-2 border-black px-4 pt-[max(0.85rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between shadow-[0_3px_0_0_#000]">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-white border-2 border-black flex items-center justify-center p-0.5 shadow-[2px_2px_0px_0px_#000] select-none overflow-hidden shrink-0">
               <Image
@@ -127,8 +127,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           </div>
         </header>
 
-        {/* Content Body */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 md:px-8 py-3.5 sm:py-8 space-y-3.5 sm:space-y-6">
+        {/* Content Body with phone-optimized top breathing room */}
+        <main className="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-6 md:px-8 pt-5 sm:pt-8 pb-8 sm:pb-12 space-y-4 sm:space-y-6">
           {/* Friendly 3-Step Workflow & Secretary Greeting Hub */}
           <UserFriendlyWorkflowBar
             activeTab={currentTab}

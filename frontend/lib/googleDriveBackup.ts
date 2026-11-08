@@ -6,13 +6,16 @@ export const STORAGE_KEY_GOOGLE_ACCOUNT = 'notulenjmm_google_account_v1';
 export const STORAGE_KEY_HISTORY_LOGS = 'notulenjmm_history_logs_v1';
 export const STORAGE_KEY_GOOGLE_CLIENT_ID = 'notulenjmm_google_client_id_v1';
 
+export const DEFAULT_GOOGLE_CLIENT_ID =
+  '1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com';
+
 // Default public Google Drive client ID placeholder or user-configured client ID
 export function getGoogleClientId(): string {
-  if (typeof window === 'undefined') return '';
+  if (typeof window === 'undefined') return DEFAULT_GOOGLE_CLIENT_ID;
   return (
     localStorage.getItem(STORAGE_KEY_GOOGLE_CLIENT_ID) ||
     process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
-    ''
+    DEFAULT_GOOGLE_CLIENT_ID
   );
 }
 

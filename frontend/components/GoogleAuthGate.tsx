@@ -11,6 +11,7 @@ import {
   Settings,
   AlertCircle,
   RefreshCw,
+  Sparkles,
 } from 'lucide-react';
 import { useMeetings } from '../context/MeetingContext';
 import { getGoogleClientId, setGoogleClientId } from '../lib/googleDriveBackup';
@@ -19,36 +20,65 @@ interface GoogleAuthGateProps {
   onGuestContinue: () => void;
 }
 
+const DETECTED_ACCOUNTS = [
+  {
+    email: 'alfarrezald@gmail.com',
+    label: 'Akun Google Utama (Google Drive / Cloud)',
+    isPrimary: true,
+  },
+  {
+    email: 'workwithdap@gmail.com',
+    label: 'Akun Google Developer Android',
+    isPrimary: false,
+  },
+];
+
 export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue }) => {
   const { handleLoginGoogle, handleLoginWithEmail } = useMeetings();
-  const [emailInput, setEmailInput] = useState<string>('');
+  const [emailInput, setEmailInput] = useState<string>('alfarrezald@gmail.com');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [clientIdInput, setClientIdInput] = useState<string>(() => getGoogleClientId());
 
-  const onSignInClick = async () => {
+  const onSignInClick = async (emailOverride?: string) => {
     setIsLoading(true);
     setErrorMsg(null);
+    const targetEmail = (emailOverride || emailInput).trim();
     try {
       const activeClientId = clientIdInput.trim() || getGoogleClientId();
       if (activeClientId) {
         setGoogleClientId(activeClientId);
-        await handleLoginGoogle();
-        return;
       }
 
-      const cleanEmail = emailInput.trim();
-      if (!cleanEmail) {
+      // Try Google GIS OAuth popup if initialized and available in browser
+      const hasGis =
+        typeof window !== 'undefined' &&
+        !!(window as unknown as { google?: { accounts?: { oauth2?: unknown } } }).google?.accounts?.oauth2;
+      if (hasGis && activeClientId) {
+        try {
+          await handleLoginGoogle();
+          return;
+        } catch (oauthErr) {
+          console.warn('Google Identity Services popup dismissed, falling back to direct email session:', oauthErr);
+          if (targetEmail) {
+            handleLoginWithEmail(targetEmail);
+            return;
+          }
+          throw oauthErr;
+        }
+      }
+
+      if (!targetEmail) {
         throw new Error(
-          'Silakan ketikkan alamat email Google Anda pada kolom di atas, atau klik "Lanjutkan Mode Tamu / Offline".'
+          'Silakan pilih salah satu Akun Google terdeteksi atau ketikkan alamat email Google Anda.'
         );
       }
-      if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
-        throw new Error('Format email tidak valid. Masukkan format email lengkap (misal: sekretaris.mpk13@gmail.com).');
+      if (!targetEmail.includes('@') || !targetEmail.includes('.')) {
+        throw new Error('Format email tidak valid. Masukkan format email lengkap (misal: alfarrezald@gmail.com).');
       }
 
-      handleLoginWithEmail(cleanEmail);
+      handleLoginWithEmail(targetEmail);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : String(err));
     } finally {
@@ -64,9 +94,9 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF5] text-black flex flex-col items-center justify-center p-4 sm:p-6 antialiased selection:bg-[#FFE600] selection:text-black">
+    <div className="min-h-screen bg-[#FFFDF5] text-black flex flex-col items-center justify-center px-4 py-8 sm:p-6 pt-[max(2.5rem,env(safe-area-inset-top)+2rem)] antialiased selection:bg-[#FFE600] selection:text-black">
       {/* Background Decorative Graphic Elements */}
-      <div className="w-full max-w-xl mx-auto space-y-6">
+      <div className="w-full max-w-xl mx-auto space-y-6 pt-2 sm:pt-0">
         {/* Main Neo-Brutalism Card */}
         <div className="bg-white border-[3px] border-black rounded-3xl p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] space-y-6">
           {/* Header Branding */}
@@ -149,11 +179,45 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
             </div>
           )}
 
+          {/* Quick-Pick Detected Accounts from PC */}
+          <div className="space-y-2 pt-1 border-t-2 border-black/10">
+            <label className="text-[11px] font-black text-black flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
+                <span>Akun Google Terdeteksi di PC / Browser:</span>
+              </span>
+              <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#A7F3D0] border border-black text-black">
+                1-Klik Masuk
+              </span>
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {DETECTED_ACCOUNTS.map((acc) => (
+                <button
+                  key={acc.email}
+                  type="button"
+                  onClick={() => {
+                    setEmailInput(acc.email);
+                    onSignInClick(acc.email);
+                  }}
+                  className={`p-2.5 sm:p-3 rounded-xl border-2 border-black text-left transition-all shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-between group cursor-pointer ${
+                    acc.isPrimary ? 'bg-[#FEF9C3] hover:bg-[#FFE600]' : 'bg-[#FFFDF5] hover:bg-yellow-100'
+                  }`}
+                >
+                  <div className="min-w-0 pr-2">
+                    <span className="text-xs font-black text-black truncate block">{acc.email}</span>
+                    <p className="text-[10px] text-zinc-700 font-medium truncate mt-0.5">{acc.label}</p>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-black opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Primary CTA: Google Sign-in Button & Email Input */}
           <div className="space-y-3 pt-2">
             <div className="space-y-1.5">
               <label className="text-xs font-black text-black flex items-center justify-between">
-                <span>Alamat Email Google / Akun Notulis:</span>
+                <span>Alamat Email Google / Akun Notulis Lainnya:</span>
                 <span className="text-[10px] font-mono text-zinc-600 font-bold">Sesi Tersimpan</span>
               </label>
               <input
@@ -178,7 +242,7 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
             </div>
 
             <button
-              onClick={onSignInClick}
+              onClick={() => onSignInClick()}
               disabled={isLoading}
               className="w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-2xl bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black text-sm sm:text-base border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer disabled:opacity-50"
             >
