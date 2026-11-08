@@ -100,7 +100,7 @@ export async function transcribeAudioApi(
   const fallbackSegments: AudioSegment[] = [
     {
       id: `vibe-${Date.now()}-1`,
-      speaker: 'Speaker 1 (Davin Maritza)',
+      speaker: 'Speaker 1 (Pimpinan Sidang)',
       startTime: '00:00:05',
       endTime: '00:00:45',
       text: 'Rapat koordinasi MPK SMK Negeri 13 Bandung dibuka. Rekan-rekan sekalian, agenda kita hari ini berfokus pada evaluasi keterlaksanaan program kerja komisi dan pembagian penugasan LDKS.',
@@ -121,7 +121,7 @@ export async function transcribeAudioApi(
     },
     {
       id: `vibe-${Date.now()}-4`,
-      speaker: 'Speaker 1 (Davin Maritza)',
+      speaker: 'Speaker 1 (Pimpinan Sidang)',
       startTime: '00:02:20',
       endTime: '00:02:50',
       text: 'Bagus. Kita putuskan gladi bersih akan diadakan H-2 pelaksanaan. Sekretariat harap menyiapkan lembar konfirmasi narasumber.',

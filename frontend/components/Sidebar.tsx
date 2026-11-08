@@ -10,16 +10,13 @@ import {
   BookOpen,
   CheckSquare,
   X,
-  Clock,
 } from 'lucide-react';
-import { Meeting } from '../lib/types';
 
 interface SidebarProps {
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
   isRecording?: boolean;
   totalMeetingsCount: number;
-  activeMeeting?: Meeting | null;
   isOpenMobile: boolean;
   setIsOpenMobile: (open: boolean) => void;
 }
@@ -29,7 +26,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   isRecording = false,
   totalMeetingsCount,
-  activeMeeting,
   isOpenMobile,
   setIsOpenMobile,
 }) => {
@@ -212,58 +208,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* Active Session Context Card in Sidebar */}
-          {activeMeeting && (
-            <div className="pt-2">
-              <div
-                onClick={() => handleSelectTab('notulen', '/notulen')}
-                className="p-3.5 bg-white border-2 border-black rounded-xl shadow-[3px_3px_0px_0px_#000] space-y-1.5 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0px_0px_#000] cursor-pointer group"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-700 font-bold">
-                    Sesi Terpilih
-                  </span>
-                  <span
-                    className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border border-black shadow-[1px_1px_0px_0px_#000] ${
-                      activeMeeting.status === 'FINALIZED'
-                        ? 'bg-[#4ECDC4] text-black'
-                        : activeMeeting.status === 'DRAFT'
-                        ? 'bg-[#FFD93D] text-black'
-                        : 'bg-[#C4B5FD] text-black'
-                    }`}
-                  >
-                    {activeMeeting.status === 'DRAFT' ? 'DRAF' : activeMeeting.status}
-                  </span>
-                </div>
-                <p className="text-xs font-bold text-black truncate group-hover:text-amber-800 transition-colors">
-                  {activeMeeting.title}
-                </p>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-mono font-medium">
-                  <Clock className="w-3 h-3 text-black" />
-                  <span>{Math.floor(activeMeeting.durationSeconds / 60)} Menit Audio</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Bottom: Profile & Telemetry Badge */}
-        <div className="p-4 border-t-2 border-black bg-white space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[#FFD93D] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center text-black text-xs font-black font-mono">
-                DM
-              </div>
-              <div className="space-y-0.5">
-                <p className="text-xs font-black text-black leading-none">Davin Maritza</p>
-                <p className="text-[10px] text-zinc-700 font-sans font-medium leading-none">Sekretariat MPK 13</p>
-              </div>
+        {/* Institutional System Status Footer */}
+        <div className="p-3.5 border-t-2 border-black bg-white">
+          <div className="flex items-center justify-between text-black">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 border border-black animate-pulse" />
+              <span className="text-[10px] font-mono font-bold tracking-tight text-zinc-800">
+                Sistem Notulen Siap
+              </span>
             </div>
-
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[#4ECDC4] border border-black text-[10px] font-mono font-bold text-black shadow-[1.5px_1.5px_0px_0px_#000]">
-              <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
-              <span>Aktif</span>
-            </div>
+            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#FFFDF5] border border-black shadow-[1px_1px_0px_0px_#000]">
+              MPK 13
+            </span>
           </div>
         </div>
       </aside>

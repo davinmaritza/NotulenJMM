@@ -83,7 +83,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       setEditLocation(meeting.location || '');
       setEditOrganizer(meeting.organizer || 'MPK SMK Negeri 13 Bandung');
       setEditLeaderName(meeting.leaderName || 'Presidium Sidang MPK 13');
-      setEditNoteTakerName(meeting.noteTakerName || 'Davin Maritza • Notulis Sidang');
+      setEditNoteTakerName(meeting.noteTakerName || 'Notulis Sidang');
       setEditFormatStandard(meeting.formatStandard || 'TATA_NASKAH_DINAS');
       setEditSecretaryNotes(meeting.secretaryNotes || '');
       setEditExecutiveSummary(meeting.executiveSummary || '');
@@ -200,7 +200,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     md += `**Tempat Sidang:** ${meeting.location}\n`;
     md += `**Penyelenggara:** ${meeting.organizer}\n`;
     md += `**Pimpinan Sidang:** ${meeting.leaderName || 'Presidium Sidang MPK 13'}\n`;
-    md += `**Notulis Sidang:** ${meeting.noteTakerName || 'Davin Maritza • MPK SMK Negeri 13 Bandung'}\n\n`;
+    md += `**Notulis Sidang:** ${meeting.noteTakerName || 'Notulis Sidang'}\n\n`;
 
     if (meeting.secretaryNotes) {
       md += `**Arahan Notulis:**\n> ${meeting.secretaryNotes}\n\n`;
@@ -360,7 +360,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           <tr><td class="lbl">Tempat Sidang</td><td>: ${escapeHtml(meeting.location)}</td></tr>
           <tr><td class="lbl">Penyelenggara</td><td>: ${escapeHtml(meeting.organizer)}</td></tr>
           <tr><td class="lbl">Pimpinan Sidang</td><td>: ${escapeHtml(meeting.leaderName || 'Presidium Sidang MPK 13')}</td></tr>
-          <tr><td class="lbl">Notulis Sidang</td><td>: ${escapeHtml(meeting.noteTakerName || 'Davin Maritza • Notulis Sidang')}</td></tr>
+          <tr><td class="lbl">Notulis Sidang</td><td>: ${escapeHtml(meeting.noteTakerName || 'Notulis Sidang')}</td></tr>
           ${
             meeting.secretaryNotes
               ? `<tr><td class="lbl">Catatan Pengarah</td><td>: <em>${escapeHtml(meeting.secretaryNotes)}</em></td></tr>`
@@ -395,7 +395,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               Bandung, ${dateFormatted}<br>
               <strong>Notulis / Sekretaris Sidang</strong>
               <br><br><br><br>
-              <u><strong>${escapeHtml(meeting.noteTakerName || 'Davin Maritza')}</strong></u><br>
+              <u><strong>${escapeHtml(meeting.noteTakerName || 'Notulis Sidang')}</strong></u><br>
               Notulis Pleno Majelis
             </td>
           </tr>
@@ -448,7 +448,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           <tr><td class="meta-label">Tempat Sidang</td><td colspan="4">${escapeHtml(meeting.location)}</td></tr>
           <tr><td class="meta-label">Penyelenggara</td><td colspan="4">${escapeHtml(meeting.organizer)}</td></tr>
           <tr><td class="meta-label">Pimpinan Sidang</td><td colspan="4">${escapeHtml(meeting.leaderName || 'Presidium Sidang MPK 13')}</td></tr>
-          <tr><td class="meta-label">Notulis Sidang</td><td colspan="4">${escapeHtml(meeting.noteTakerName || 'Davin Maritza • Notulis Sidang')}</td></tr>
+          <tr><td class="meta-label">Notulis Sidang</td><td colspan="4">${escapeHtml(meeting.noteTakerName || 'Notulis Sidang')}</td></tr>
           <tr><td class="meta-label">Standar Format</td><td colspan="4">${escapeHtml(meeting.formatStandard || 'TATA_NASKAH_DINAS')}</td></tr>
           <tr><td colspan="5" style="border: none; height: 12px;"></td></tr>
 
@@ -562,7 +562,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     txt += `Tempat Sidang : ${meeting.location}\n`;
     txt += `Penyelenggara : ${meeting.organizer}\n`;
     txt += `Pimpinan      : ${meeting.leaderName || 'Presidium Sidang MPK 13'}\n`;
-    txt += `Notulis Sidang: ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}\n`;
+    txt += `Notulis Sidang: ${meeting.noteTakerName || 'Notulis Sidang'}\n`;
     txt += `Durasi Rekam  : ${Math.floor(meeting.durationSeconds / 60)} Menit Audio\n`;
     if (meeting.secretaryNotes) {
       txt += `Arahan Notulis: ${meeting.secretaryNotes}\n`;
@@ -638,7 +638,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     wa += `*Tempat:* ${meeting.location}\n`;
     wa += `*Penyelenggara:* ${meeting.organizer}\n`;
     wa += `*Pimpinan Sidang:* ${meeting.leaderName || 'Presidium Sidang MPK 13'}\n`;
-    wa += `*Notulis Sidang:* ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}\n`;
+    wa += `*Notulis Sidang:* ${meeting.noteTakerName || 'Notulis Sidang'}\n`;
     if (meeting.secretaryNotes) {
       wa += `*Catatan Pengarah:* _${meeting.secretaryNotes}_\n`;
     }
@@ -678,7 +678,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     }
 
     wa += `──────────────────────────────────────\n`;
-    wa += `Diverifikasi resmi oleh ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}\n`;
+    wa += `Diverifikasi resmi oleh ${meeting.noteTakerName || 'Notulis Sidang'}\n`;
     wa += `Majelis Perwakilan Kelas SMK Negeri 13 Bandung`;
 
     return wa;
@@ -878,7 +878,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             </tr>
             <tr>
               <td className="font-bold py-1 text-zinc-800">Notulis / Sekretaris</td>
-              <td className="py-1">: {meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}</td>
+              <td className="py-1">: {meeting.noteTakerName || 'Notulis Sidang'}</td>
             </tr>
           </tbody>
         </table>
@@ -975,7 +975,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <p>Bandung, {new Date().toISOString().split('T')[0]}</p>
               <p className="font-bold">Notulis / Sekretaris Sidang</p>
               <div className="h-16"></div>
-              <p className="underline font-bold">{meeting.noteTakerName || 'Davin Maritza'}</p>
+              <p className="underline font-bold">{meeting.noteTakerName || 'Notulis Sidang'}</p>
               <p className="text-[10px] text-zinc-600">Notulis Pleno Majelis</p>
             </div>
           </div>
@@ -1581,7 +1581,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     type="text"
                     value={editNoteTakerName}
                     onChange={(e) => setEditNoteTakerName(e.target.value)}
-                    placeholder="Davin Maritza"
+                    placeholder="Nama Notulis / Sekretaris Sidang"
                     aria-label="Notulis atau Sekretaris Sidang"
                     className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
                   />

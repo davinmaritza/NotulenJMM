@@ -40,10 +40,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
         <div className="space-y-0.5 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm sm:text-base font-black text-black tracking-tight">
-              {greeting}, Davin Maritza
-            </span>
-            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-[#A7F3D0] text-black border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
-              Notulis Siap
+              {greeting}, Notulis Sidang
             </span>
           </div>
           <p className="hidden sm:block text-xs text-zinc-700 font-medium leading-relaxed">

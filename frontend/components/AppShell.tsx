@@ -49,7 +49,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         activeTab={currentTab}
         isRecording={isRecording}
         totalMeetingsCount={meetings.length}
-        activeMeeting={activeMeeting}
         isOpenMobile={isOpenMobile}
         setIsOpenMobile={setIsOpenMobile}
       />
