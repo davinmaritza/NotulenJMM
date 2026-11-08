@@ -8,7 +8,9 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle2,
+  GraduationCap,
 } from 'lucide-react';
+import { useMeetings } from '../context/MeetingContext';
 
 interface UserFriendlyWorkflowBarProps {
   activeTab: string;
@@ -30,6 +32,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
   onSelectTab,
   totalMeetingsCount,
 }) => {
+  const { openBeginnerGuide } = useMeetings();
   const [greeting] = useState<string>(getGreetingText);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
@@ -42,6 +45,14 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
             <span className="text-sm sm:text-base font-black text-black tracking-tight">
               {greeting}, Notulis Sidang
             </span>
+            <button
+              onClick={openBeginnerGuide}
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FFE600] hover:bg-[#ffd93d] text-black border border-black shadow-[1px_1px_0px_0px_#000] text-[10px] font-black cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
+              title="Buka Panduan Cepat Pemula"
+            >
+              <GraduationCap className="w-3 h-3 stroke-[2.5]" />
+              <span>Panduan Pemula</span>
+            </button>
           </div>
           <p className="hidden sm:block text-xs text-zinc-700 font-medium leading-relaxed">
             Alur kerja pencatatan sidang MPK SMK Negeri 13 Bandung: Rekam suara, rumuskan keputusan resmi, dan bagikan dalam hitungan detik.

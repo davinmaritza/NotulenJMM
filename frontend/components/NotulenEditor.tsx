@@ -29,6 +29,7 @@ import {
   Loader2,
   Edit2,
   Zap,
+  GraduationCap,
 } from 'lucide-react';
 import { Meeting, Decision, ActionItem, MeetingAgenda, MeetingFormatStandard } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
@@ -73,7 +74,7 @@ const getTodayIsoString = (): string => {
 };
 
 export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateMeeting }) => {
-  const { googleAccount, isAutoSyncing, handleExportGoogleDoc } = useMeetings();
+  const { googleAccount, isAutoSyncing, handleExportGoogleDoc, openBeginnerGuide } = useMeetings();
   const [isExportingGoogleDocs, setIsExportingGoogleDocs] = useState<boolean>(false);
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedWa, setCopiedWa] = useState(false);
@@ -1247,6 +1248,16 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFFDF5] border-2 border-black p-3 rounded-2xl shadow-[3px_3px_0px_0px_#000]">
             {/* Group 1: Draf & Format */}
             <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={openBeginnerGuide}
+                title="Buka panduan cepat untuk notulis pemula"
+                className="flex items-center gap-1.5 px-3 py-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black rounded-xl text-xs border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+              >
+                <GraduationCap className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span className="hidden sm:inline">Panduan Pemula</span>
+              </button>
+
               <button
                 onClick={openModificationModal}
                 title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"

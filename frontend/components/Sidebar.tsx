@@ -12,6 +12,7 @@ import {
   X,
   Cloud,
   LogOut,
+  GraduationCap,
 } from 'lucide-react';
 import { useMeetings } from '../context/MeetingContext';
 
@@ -34,7 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { googleAccount, handleLogoutGoogle, handleLoginGoogle } = useMeetings();
+  const { googleAccount, handleLogoutGoogle, handleLoginGoogle, openBeginnerGuide } = useMeetings();
 
   const currentTab =
     activeTab ||
@@ -206,6 +207,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span>Ketetapan &amp; Tugas</span>
               </div>
               <span className="text-[10px] font-mono font-bold text-zinc-700">PIC</span>
+            </button>
+          </div>
+
+          {/* Group 4: Panduan Pemula */}
+          <div className="space-y-2 pt-1 border-t-2 border-black/10">
+            <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
+              Bantuan
+            </span>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpenMobile(false);
+                openBeginnerGuide();
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5">
+                <GraduationCap className="w-4 h-4 text-black stroke-[2.5]" />
+                <span>Panduan Pemula</span>
+              </div>
+              <span className="text-[9px] font-mono font-black px-1.5 py-0.5 rounded bg-black text-[#FFE600]">
+                3 Menit
+              </span>
             </button>
           </div>
 

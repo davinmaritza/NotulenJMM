@@ -6,8 +6,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { UserFriendlyWorkflowBar } from './UserFriendlyWorkflowBar';
 import { GoogleAuthGate } from './GoogleAuthGate';
+import { BeginnerGuideModal } from './BeginnerGuideModal';
 import { useMeetings } from '../context/MeetingContext';
-import { Menu } from 'lucide-react';
+import { Menu, GraduationCap } from 'lucide-react';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -28,6 +29,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     isRecording,
     googleAccount,
     isHydrated,
+    isBeginnerGuideOpen,
+    openBeginnerGuide,
+    closeBeginnerGuide,
   } = useMeetings();
 
   const currentTab =
@@ -117,6 +121,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => openBeginnerGuide()}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-black cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
+              title="Buka Panduan Pemula"
+            >
+              <GraduationCap className="w-4 h-4 stroke-[2.5]" />
+              <span className="hidden xs:inline">Panduan</span>
+            </button>
+
+            <button
               onClick={() => setIsOpenMobile(true)}
               className="p-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
               title="Buka Menu Navigasi"
@@ -154,6 +167,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           </div>
         </footer>
       </div>
+
+      {/* Global Interactive Beginner Guide Modal */}
+      <BeginnerGuideModal isOpen={isBeginnerGuideOpen} onClose={closeBeginnerGuide} />
     </div>
   );
 };

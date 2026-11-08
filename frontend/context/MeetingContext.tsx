@@ -70,6 +70,12 @@ interface MeetingContextType {
   handleLoginWithEmail: (email: string, name?: string) => void;
   handleLogoutGoogle: () => void;
   handleExportGoogleDoc: (targetMeeting: Meeting) => Promise<{ docId: string; docUrl: string; title: string }>;
+  isBeginnerGuideOpen: boolean;
+  setIsBeginnerGuideOpen: (open: boolean) => void;
+  openBeginnerGuide: () => void;
+  closeBeginnerGuide: () => void;
+  isBeginnerMode: boolean;
+  setIsBeginnerMode: (enabled: boolean) => void;
 }
 
 const MeetingContext = createContext<MeetingContextType | undefined>(undefined);
@@ -86,6 +92,18 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [googleAccount, setGoogleAccountState] = useState<GoogleDriveAccount>({ connected: false });
   const [isAutoSyncing, setIsAutoSyncing] = useState<boolean>(false);
   const [lastAutoSyncStatus, setLastAutoSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
+
+  const [isBeginnerGuideOpen, setIsBeginnerGuideOpen] = useState<boolean>(false);
+  const [isBeginnerMode, setIsBeginnerModeState] = useState<boolean>(true);
+
+  const openBeginnerGuide = () => setIsBeginnerGuideOpen(true);
+  const closeBeginnerGuide = () => setIsBeginnerGuideOpen(false);
+  const setIsBeginnerMode = (enabled: boolean) => {
+    setIsBeginnerModeState(enabled);
+    try {
+      localStorage.setItem('notulenjmm_beginner_mode', String(enabled));
+    } catch {}
+  };
 
   const autoSyncTimerRef = useRef<NodeJS.Timeout | null>(null);
   const meetingsRef = useRef<Meeting[]>(meetings);
@@ -179,6 +197,10 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
         setGoogleAccountState(getStoredGoogleAccount());
         setHistoryLogs(getStoredHistoryLogs());
+        const savedBeginnerMode = localStorage.getItem('notulenjmm_beginner_mode');
+        if (savedBeginnerMode !== null) {
+          setIsBeginnerModeState(savedBeginnerMode === 'true');
+        }
       } catch (e) {
         console.warn('Failed to parse stored meetings:', e);
       }
@@ -762,6 +784,12 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         handleLoginWithEmail,
         handleLogoutGoogle,
         handleExportGoogleDoc,
+        isBeginnerGuideOpen,
+        setIsBeginnerGuideOpen,
+        openBeginnerGuide,
+        closeBeginnerGuide,
+        isBeginnerMode,
+        setIsBeginnerMode,
       }}
     >
       {children}

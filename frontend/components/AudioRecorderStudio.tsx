@@ -17,9 +17,11 @@ import {
   CheckCircle2,
   RotateCcw,
   HelpCircle,
+  GraduationCap,
 } from 'lucide-react';
 import { AudioSegment } from '../lib/types';
 import { transcribeAudioApi } from '@/lib/api';
+import { useMeetings } from '../context/MeetingContext';
 
 interface AudioRecorderStudioProps {
   onDiarizationComplete: (
@@ -42,6 +44,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
   onDiarizationComplete,
   onSaveDraft,
 }) => {
+  const { openBeginnerGuide } = useMeetings();
   const [studioMode, setStudioMode] = useState<'upload' | 'record'>('record');
 
   // Shared Meeting Metadata
@@ -383,19 +386,31 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             </p>
           </div>
         </div>
-        <button
-          onClick={() => {
-            const todayStr = new Date().toLocaleDateString('id-ID', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            });
-            setMeetingTitle(`Sidang Koordinasi MPK 13 — ${todayStr}`);
-          }}
-          className="shrink-0 px-3.5 py-1.5 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-        >
-          Isi Judul Otomatis Hari Ini
-        </button>
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <button
+            type="button"
+            onClick={openBeginnerGuide}
+            className="px-3 py-1.5 bg-[#FFE600] hover:bg-amber-300 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center gap-1.5"
+            title="Buka Panduan Pemula"
+          >
+            <GraduationCap className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Panduan Pemula</span>
+          </button>
+
+          <button
+            onClick={() => {
+              const todayStr = new Date().toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              });
+              setMeetingTitle(`Sidang Koordinasi MPK 13 — ${todayStr}`);
+            }}
+            className="px-3.5 py-1.5 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+          >
+            Isi Judul Otomatis Hari Ini
+          </button>
+        </div>
       </div>
 
       {errorMessage && (

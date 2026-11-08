@@ -21,7 +21,11 @@ import {
   Sliders,
   Shield,
   Trophy,
+  GraduationCap,
+  HelpCircle,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMeetings } from '../context/MeetingContext';
 
 export interface CardConfig {
   id: string;
@@ -205,10 +209,17 @@ interface CraftStudioViewProps {
 }
 
 export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession }) => {
+  const router = useRouter();
+  const { openBeginnerGuide, isBeginnerMode, handleCreateMplsMeeting } = useMeetings();
   const [config, setConfig] = useState<CraftStudioConfig>(PRESET_MPK);
   const [activePreset, setActivePreset] = useState<'mpk' | 'mpls' | 'organisasi' | 'custom'>('mpk');
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [saveStatus, setSaveStatus] = useState<string>('');
+
+  const handleTryInstantExample = () => {
+    handleCreateMplsMeeting();
+    router.push('/notulen');
+  };
 
   // Interactive selection states
   const [activeTabMode, setActiveTabMode] = useState<'tab1' | 'tab2'>('tab1');
@@ -408,7 +419,82 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6">
+    <div className="w-full max-w-5xl mx-auto space-y-5 sm:space-y-6">
+      {/* Beginner Welcome & Quick Start Banner */}
+      {isBeginnerMode && (
+        <div className="bg-[#FFFDF5] border-[2.5px] border-black rounded-3xl p-4 sm:p-5 shadow-[5px_5px_0px_0px_#000] relative overflow-hidden space-y-3.5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#FFE600] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_0px_#000] shrink-0">
+                <GraduationCap className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-sm sm:text-base font-black text-black tracking-tight">
+                    Baru Pertama Kali Membuat Notulen?
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full bg-[#38BDF8] text-black border border-black text-[10px] font-mono font-black uppercase">
+                    Mode Pemula
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-700 font-medium leading-relaxed">
+                  Ikuti 3 langkah mudah di bawah atau langsung coba contoh notulen yang sudah lengkap dengan 1 klik!
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={handleTryInstantExample}
+                className="flex-1 sm:flex-none px-4 py-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-xl text-xs font-black shadow-[2.5px_2.5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>1-Klik Coba Contoh MPLS</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={openBeginnerGuide}
+                className="px-3.5 py-2 bg-white hover:bg-zinc-100 text-black border-2 border-black rounded-xl text-xs font-bold shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-1"
+                title="Buka Panduan Lengkap Notulis"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-zinc-800" />
+                <span>Panduan</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 3 Guided Steps Indicator */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t-2 border-black/10">
+            <div className="p-2.5 rounded-xl bg-white border border-black shadow-[1.5px_1.5px_0px_0px_#000] flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-[#38BDF8] text-black font-black text-[10px] border border-black flex items-center justify-center shrink-0">
+                1
+              </span>
+              <p className="text-[11px] font-bold text-black leading-tight">
+                Langkah 1: Pilih jenis rapat (Sidang/MPLS)
+              </p>
+            </div>
+            <div className="p-2.5 rounded-xl bg-white border border-black shadow-[1.5px_1.5px_0px_0px_#000] flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-[#FF6B6B] text-black font-black text-[10px] border border-black flex items-center justify-center shrink-0">
+                2
+              </span>
+              <p className="text-[11px] font-bold text-black leading-tight">
+                Langkah 2: Tentukan materi atau klik ide cepat
+              </p>
+            </div>
+            <div className="p-2.5 rounded-xl bg-white border border-black shadow-[1.5px_1.5px_0px_0px_#000] flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-[#4ECDC4] text-black font-black text-[10px] border border-black flex items-center justify-center shrink-0">
+                3
+              </span>
+              <p className="text-[11px] font-bold text-black leading-tight">
+                Langkah 3: Klik tombol kuning &quot;Mulai Sesi Rapat&quot;
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top Bar: Pill Switcher, Presets & Mode Toggle */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-white border-[2.5px] border-black rounded-2xl p-3 sm:px-4 shadow-[4px_4px_0px_0px_#000]">
         {/* Hardware-style Pill Tabs */}
@@ -606,9 +692,16 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   className="text-sm sm:text-base font-black text-black bg-white border-2 border-black rounded-lg px-2.5 py-1 focus:outline-none shadow-[1.5px_1.5px_0px_0px_#000]"
                 />
               ) : (
-                <h2 className="text-sm sm:text-base font-black text-black tracking-tight">
-                  {config.step1Title}
-                </h2>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-sm sm:text-base font-black text-black tracking-tight">
+                    {config.step1Title}
+                  </h2>
+                  {isBeginnerMode && (
+                    <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-sky-200 border border-black text-black shadow-[1px_1px_0px_0px_#000]">
+                      Langkah 1: Klik salah satu jenis rapat
+                    </span>
+                  )}
+                </div>
               )}
             </div>
 
@@ -947,9 +1040,16 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   className="text-sm sm:text-base font-black text-black bg-white border-2 border-black rounded-lg px-2.5 py-1 focus:outline-none shadow-[1.5px_1.5px_0px_0px_#000]"
                 />
               ) : (
-                <h2 className="text-sm sm:text-base font-black text-black tracking-tight">
-                  {config.step2Title}
-                </h2>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-sm sm:text-base font-black text-black tracking-tight">
+                    {config.step2Title}
+                  </h2>
+                  {isBeginnerMode && (
+                    <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-rose-200 border border-black text-black shadow-[1px_1px_0px_0px_#000]">
+                      Langkah 2: Tentukan materi rapat
+                    </span>
+                  )}
+                </div>
               )}
             </div>
 
@@ -1144,15 +1244,22 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           </div>
 
           {/* Start Action Button (Neo-Brutalist Hard Shadow & Mechanical Press) */}
-          <button
-            onClick={handleStart}
-            className="group flex items-center justify-center gap-3 px-6 py-3 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black text-xs sm:text-sm rounded-xl border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] sm:hover:-translate-x-0.5 sm:hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all self-stretch md:self-auto cursor-pointer touch-manipulation"
-          >
-            <span>Mulai Sesi Rapat</span>
-            <div className="w-6 h-6 rounded-lg bg-black text-white flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-              <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
-            </div>
-          </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            {isBeginnerMode && (
+              <span className="hidden sm:inline-block text-[10px] font-mono font-black px-2.5 py-1.5 rounded-xl bg-emerald-200 border-2 border-black text-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                Langkah 3: Lanjutkan
+              </span>
+            )}
+            <button
+              onClick={handleStart}
+              className="group flex items-center justify-center gap-3 px-6 py-3 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black text-xs sm:text-sm rounded-xl border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] sm:hover:-translate-x-0.5 sm:hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all self-stretch md:self-auto cursor-pointer touch-manipulation"
+            >
+              <span>Mulai Sesi Rapat</span>
+              <div className="w-6 h-6 rounded-lg bg-black text-white flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
