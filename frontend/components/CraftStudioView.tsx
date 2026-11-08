@@ -19,7 +19,6 @@ import {
   Scale,
   Pencil,
   Eye,
-  Bot,
   Sliders,
 } from 'lucide-react';
 
@@ -43,13 +42,13 @@ export interface CraftStudioConfig {
 }
 
 export const PRESET_MPK: CraftStudioConfig = {
-  tab1Name: 'Buat Notulen Baru',
-  tab2Name: 'Eksplor Arsip Notulen',
-  headerTitle: 'Bawa Gagasan Rapat Menjadi Keputusan Nyata',
-  headerSubtitle: 'Pilih format sidang atau rapat, uraikan pokok bahasan, dan biarkan AI 9Router & VibeVoice menyusun notulensi secara otomatis.',
-  step1Title: 'Pilih format atau jenis rapat',
-  step2Title: 'Uraikan pokok bahasan & sasaran',
-  promptPlaceholder: 'Uraikan apa yang ingin dibahas dalam rapat MPK SMK Negeri 13 Bandung ini, agenda khusus, atau keputusan yang ingin dirumuskan...',
+  tab1Name: 'Format Musyawarah',
+  tab2Name: 'Bank Dokumen',
+  headerTitle: 'Format Musyawarah & Penyusunan Risalah Sidang',
+  headerSubtitle: 'Pilih format persidangan, susun pokok usulan komisi atau dewan pembina, dan rumuskan risalah resmi berstandar Majelis Perwakilan Kelas SMK Negeri 13 Bandung.',
+  step1Title: 'Pilih format persidangan majelis',
+  step2Title: 'Uraikan pokok bahasan & materi usulan',
+  promptPlaceholder: 'Tuliskan pokok agenda sidang MPK SMK Negeri 13 Bandung, draf pasal ketetapan, usulan perwakilan kelas, atau alokasi anggaran yang akan diputuskan...',
   cards: [
     {
       id: 'pleno',
@@ -669,8 +668,8 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   Format terpilih:{' '}
                   <strong className="text-zinc-200 font-sans">{selectedCard ? selectedCard.title : ''}</strong>
                 </span>
-                <span className="hidden sm:inline font-mono text-[10px]">
-                  9Router Gateway • ag/gemini-3.8-flash
+                <span className="hidden sm:inline font-mono text-[10px] text-zinc-400">
+                  Standar Risalah MPK SMK Negeri 13 Bandung
                 </span>
               </div>
             </div>
@@ -768,20 +767,20 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
         {/* BOTTOM BAR: Built by, Saved in, and Start button */}
         <div className="pt-4 border-t border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4 text-xs">
-            {/* Built by Selector */}
+            {/* Standar Naskah Dinas Selector */}
             <div className="flex items-center gap-2">
               <span className="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
-                <Bot className="w-3.5 h-3.5 text-zinc-400" /> Mesin AI:
+                <FileText className="w-3.5 h-3.5 text-zinc-400" /> Standar Naskah:
               </span>
               <select
                 value={selectedEngine}
                 onChange={(e) => setSelectedEngine(e.target.value)}
-                className="bg-[#151720] border border-white/[0.08] text-zinc-200 rounded-xl px-3 py-1.5 text-xs font-mono focus:outline-none focus:border-white/20"
+                className="bg-[#14161f] border border-white/[0.08] text-zinc-200 rounded-xl px-3 py-1.5 text-xs font-mono focus:outline-none focus:border-white/20 cursor-pointer"
               >
-                <option value="9Router (ag/gemini-3.8-flash)">9Router (ag/gemini-3.8-flash) [Aktif]</option>
-                <option value="9Router (openai/gpt-4o-mini)">9Router (openai/gpt-4o-mini)</option>
-                <option value="VibeVoice Speech Engine">Microsoft VibeVoice (Diarization + ASR)</option>
-                <option value="MPK Notulen Generator v2.0">MPK Notulen Generator v2.0</option>
+                <option value="Tata Naskah Dinas MPK 13 (Standar Utama)">Tata Naskah Dinas MPK 13 (Standar Utama)</option>
+                <option value="Risalah Padat & Ketetapan Inti">Risalah Padat &amp; Ketetapan Inti</option>
+                <option value="Fokus Pengesahan Anggaran Kas">Fokus Pengesahan Anggaran Kas</option>
+                <option value="Format Evaluasi & Rekomendasi">Format Evaluasi &amp; Rekomendasi</option>
               </select>
             </div>
 

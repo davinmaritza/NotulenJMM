@@ -19,9 +19,9 @@ import {
   Calendar,
   User,
   ArrowRight,
-  Activity,
   Upload,
   Compass,
+  FileCheck,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'notulenjmm_meetings_v2';
@@ -81,28 +81,28 @@ export default function Home() {
     meetingTitle?: string,
     secretaryNotes?: string
   ) => {
-    const title = meetingTitle?.trim() || 'Sesi Rapat MPK SMK Negeri 13 Bandung';
+    const title = meetingTitle?.trim() || 'Sidang Pleno MPK SMK Negeri 13 Bandung';
     const newMeetId = `meet-${Date.now()}`;
 
     const newMeet: Meeting = {
       id: newMeetId,
       title: title,
       date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + ' WIB',
-      location: 'Ruang Multimedia / OSIS SMK Negeri 13 Bandung',
+      location: 'Ruang Sidang Majelis / Multimedia SMK Negeri 13 Bandung',
       organizer: 'MPK SMK Negeri 13 Bandung',
       status: 'TRANSCRIBING',
       durationSeconds: duration,
       secretaryNotes: secretaryNotes,
       attendees: [
         { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
-        { id: 'att-2', name: 'Notulis MPK', role: 'Note Taker', present: true },
-        { id: 'att-3', name: 'Peserta Majelis', role: 'Member', present: true },
+        { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
+        { id: 'att-3', name: 'Perwakilan Komisi', role: 'Member', present: true },
       ],
       transcript: segments,
       agendas: [
         {
-          title: 'Hasil Transkripsi & Diarisasi Suara',
-          discussionPoints: segments.slice(0, 3).map((s) => `${s.speaker}: ${s.text.slice(0, 80)}...`),
+          title: 'Hasil Transkripsi & Verifikasi Suara Sidang',
+          discussionPoints: segments.slice(0, 3).map((s) => `${s.speaker}: ${s.text.slice(0, 90)}...`),
         },
       ],
       decisions: [],
@@ -114,7 +114,7 @@ export default function Home() {
     setActiveMeetingId(newMeetId);
     setActiveTab('notulen');
 
-    // Automatically trigger 9Router AI synthesis if transcript exists
+    // Automatically trigger AI synthesis if transcript exists
     if (segments.length > 0) {
       setIsSynthesizing(true);
       try {
@@ -177,9 +177,9 @@ export default function Home() {
   const handleCreateNewMeeting = () => {
     const newMeet: Meeting = {
       id: `meet-${Date.now()}`,
-      title: 'Rapat Koordinasi Pengurus MPK SMK Negeri 13 Bandung Baru',
+      title: 'Sidang Koordinasi Pengurus MPK SMK Negeri 13 Bandung',
       date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + ' WIB',
-      location: 'Ruang Multimedia / OSIS SMK Negeri 13 Bandung',
+      location: 'Ruang Sidang Majelis / Multimedia SMK Negeri 13 Bandung',
       organizer: 'MPK SMK Negeri 13 Bandung',
       status: 'DRAFT',
       durationSeconds: 0,
@@ -187,13 +187,13 @@ export default function Home() {
         'Susun kata-kata secara formal dan lugas berstandar MPK SMK Negeri 13 Bandung. Tonjolkan keputusan resmi, alokasi anggaran dana jika ada, serta daftar penugasan PIC dan batas waktu.',
       attendees: [
         { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
-        { id: 'att-2', name: 'Notulis MPK', role: 'Note Taker', present: true },
+        { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
       ],
       transcript: [],
       agendas: [
         {
-          title: 'Pembahasan Agenda Prioritas',
-          discussionPoints: ['Pencatatan poin-poin awal rapat.'],
+          title: 'Pembahasan Agenda Prioritas Majelis',
+          discussionPoints: ['Pencatatan usulan dan pokok bahasan awal sidang.'],
         },
       ],
       decisions: [],
@@ -215,17 +215,17 @@ export default function Home() {
   }) => {
     const newMeet: Meeting = {
       id: `meet-craft-${Date.now()}`,
-      title: `${session.cardTitle}: ${session.prompt.slice(0, 45) || 'Sesi Rapat MPK'}`,
+      title: `${session.cardTitle}: ${session.prompt.slice(0, 45) || 'Sesi Sidang MPK'}`,
       date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + ' WIB',
-      location: 'Ruang Multimedia / OSIS SMK Negeri 13 Bandung',
+      location: 'Ruang Sidang Majelis / Multimedia SMK Negeri 13 Bandung',
       organizer: 'MPK SMK Negeri 13 Bandung',
       status: 'DRAFT',
       durationSeconds: 0,
-      secretaryNotes: session.prompt || 'Susunan formal risalah rapat.',
+      secretaryNotes: session.prompt || 'Susunan formal risalah sidang.',
       attendees: [
         { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
-        { id: 'att-2', name: 'Notulis MPK', role: 'Note Taker', present: true },
-        { id: 'att-3', name: 'Peserta Majelis', role: 'Member', present: true },
+        { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
+        { id: 'att-3', name: 'Peserta Sidang', role: 'Member', present: true },
       ],
       transcript: [
         {
@@ -233,7 +233,7 @@ export default function Home() {
           speaker: 'Speaker 1 (Davin Maritza)',
           startTime: '00:00',
           endTime: '00:20',
-          text: `Pembukaan ${session.cardTitle}. Pokok bahasan rapat: ${session.prompt}.`,
+          text: `Pembukaan ${session.cardTitle}. Pokok bahasan sidang: ${session.prompt}.`,
         },
       ],
       agendas: [
@@ -241,9 +241,8 @@ export default function Home() {
           title: session.cardTitle,
           discussionPoints: [
             session.prompt || session.cardDescription,
-            `Format agenda: ${session.cardTitle}`,
-            `AI Engine: ${session.engine}`,
-            `Folder Simpan: ${session.destinationFolder}`,
+            `Format persidangan: ${session.cardTitle}`,
+            `Penanggung Jawab: Presidium Sidang MPK 13`,
           ],
         },
       ],
@@ -265,105 +264,105 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-[#f4f4f6] flex flex-col antialiased selection:bg-white/10 selection:text-white">
+    <div className="min-h-screen bg-[#07080a] text-[#f4f4f6] flex flex-col antialiased selection:bg-white/10 selection:text-white">
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} isRecording={isRecording} />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
-        {/* TAB 0: CRAFT STUDIO */}
+        {/* TAB 0: STUDIO AGENDA */}
         {activeTab === 'craft' && (
           <CraftStudioView onStartSession={handleStartCraftSession} />
         )}
 
-        {/* TAB 1: DASHBOARD */}
+        {/* TAB 1: ARSIP SIDANG (DASHBOARD) */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
-            {/* Asymmetrical Bento KPI Summary */}
+            {/* Linear-Tier Editorial KPI Summary */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-              <div className="bg-[#111318] border border-white/[0.06] rounded-2xl p-4 sm:p-5 shadow-lg space-y-2">
+              <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 shadow-lg space-y-1.5">
                 <div className="flex items-center justify-between text-zinc-400">
-                  <span className="text-[10px] font-mono uppercase tracking-wider">Total Sesi Rapat</span>
+                  <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">Total Sesi Sidang</span>
                   <FileText className="w-4 h-4 text-zinc-400" />
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight">{meetings.length}</p>
+                <p className="text-2xl sm:text-3xl font-semibold font-mono text-white tracking-tight">{meetings.length}</p>
                 <p className="text-[11px] text-zinc-500 font-mono">Terdokumentasi resmi</p>
               </div>
 
-              <div className="bg-[#111318] border border-white/[0.06] rounded-2xl p-4 sm:p-5 shadow-lg space-y-2">
+              <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 shadow-lg space-y-1.5">
                 <div className="flex items-center justify-between text-zinc-400">
-                  <span className="text-[10px] font-mono uppercase tracking-wider">Ketetapan Hukum</span>
+                  <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">Ketetapan Pleno</span>
                   <Scale className="w-4 h-4 text-emerald-400" />
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight">{totalDecisions}</p>
+                <p className="text-2xl sm:text-3xl font-semibold font-mono text-white tracking-tight">{totalDecisions}</p>
                 <p className="text-[11px] text-emerald-400/90 font-mono">100% Disahkan Forum</p>
               </div>
 
-              <div className="bg-[#111318] border border-white/[0.06] rounded-2xl p-4 sm:p-5 shadow-lg space-y-2">
+              <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 shadow-lg space-y-1.5">
                 <div className="flex items-center justify-between text-zinc-400">
-                  <span className="text-[10px] font-mono uppercase tracking-wider">Tindak Lanjut (Aksi)</span>
+                  <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">Penugasan Komisi</span>
                   <CheckCircle2 className="w-4 h-4 text-amber-400" />
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold font-mono text-white tracking-tight">
+                <p className="text-2xl sm:text-3xl font-semibold font-mono text-white tracking-tight">
                   {completedActionItems} <span className="text-base text-zinc-500 font-normal">/ {totalActionItems}</span>
                 </p>
-                <p className="text-[11px] text-zinc-500 font-mono">Tugas terselesaikan</p>
+                <p className="text-[11px] text-zinc-500 font-mono">Komitmen terealisasi</p>
               </div>
 
-              <div className="bg-[#111318] border border-white/[0.06] rounded-2xl p-4 sm:p-5 shadow-lg space-y-2">
+              <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 shadow-lg space-y-1.5">
                 <div className="flex items-center justify-between text-zinc-400">
-                  <span className="text-[10px] font-mono uppercase tracking-wider">Mesin AI Aktif</span>
-                  <Activity className="w-4 h-4 text-sky-400" />
+                  <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">Format Risalah</span>
+                  <FileCheck className="w-4 h-4 text-sky-400" />
                 </div>
-                <p className="text-base sm:text-lg font-bold font-mono text-white tracking-tight truncate">
-                  9Router Gateway
+                <p className="text-base sm:text-lg font-semibold text-white tracking-tight truncate">
+                  Tata Naskah Dinas
                 </p>
-                <p className="text-[11px] text-zinc-500 font-mono truncate">ag/gemini-3.8-flash</p>
+                <p className="text-[11px] text-zinc-500 font-mono truncate">Berita Acara &amp; Salinan SK</p>
               </div>
             </div>
 
             {/* Meeting List Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
               <div>
-                <h2 className="text-lg font-bold text-white tracking-tight">Daftar Sesi Notula &amp; Majelis</h2>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  Arsip dokumen rapat MPK SMK Negeri 13 Bandung dengan transkripsi terverifikasi
+                <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">Arsip Notulen &amp; Risalah Sidang</h2>
+                <p className="text-xs text-zinc-400 mt-0.5 font-sans">
+                  Dokumen resmi persidangan Majelis Perwakilan Kelas SMK Negeri 13 Bandung
                 </p>
               </div>
 
               <button
                 onClick={handleCreateNewMeeting}
-                className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 rounded-xl text-xs font-semibold shadow-md hover:bg-zinc-200 active:scale-[0.98] transition-all shrink-0 cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 rounded-xl text-xs font-semibold shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all shrink-0 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                Buat Sesi Rapat Baru
+                Buat Sesi Sidang Baru
               </button>
             </div>
 
             {/* Empty State vs Meeting Cards List */}
             {meetings.length === 0 ? (
-              <div className="bg-[#111318] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
-                <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-400">
-                  <FileText className="w-8 h-8 text-zinc-500" />
+              <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
+                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
+                  <FileText className="w-8 h-8" />
                 </div>
                 <div className="space-y-2 max-w-md mx-auto">
-                  <h3 className="text-lg font-bold text-white tracking-tight">Belum Ada Sesi Rapat Tersimpan</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    Sistem bekerja dengan data riil sekretaris (seluruh dummy data telah dibersihkan). Silakan unggah rekaman audio rapat atau mulai sesi di Craft Studio.
+                  <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">Belum Ada Sesi Sidang Tersimpan</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                    Sistem siap mencatat dan merumuskan risalah sidang pleno majelis. Silakan unggah berkas audio sekretaris atau susun format agenda di Studio.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <button
                     onClick={() => setActiveTab('record')}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.98] transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
                   >
                     <Upload className="w-4 h-4" />
-                    <span>Unggah Audio Sekretaris</span>
+                    <span>Unggah Berkas Audio</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('craft')}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-white/10 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-[#14161f] hover:bg-zinc-800 text-zinc-200 border border-white/10 rounded-xl text-xs font-semibold transition-all cursor-pointer"
                   >
                     <Compass className="w-4 h-4 text-sky-400" />
-                    <span>Buka Craft Studio</span>
+                    <span>Buka Studio Agenda</span>
                   </button>
                 </div>
               </div>
@@ -376,17 +375,17 @@ export default function Home() {
                       setActiveMeetingId(meet.id);
                       setActiveTab('notulen');
                     }}
-                    className={`p-5 rounded-2xl border transition-all cursor-pointer bg-[#111318] active:scale-[0.99] ${
+                    className={`p-5 rounded-2xl border transition-all cursor-pointer bg-[#0e0f14] active:scale-[0.99] ${
                       meet.id === activeMeetingId
                         ? 'border-sky-500/80 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.12)] ring-1 ring-sky-500/30'
-                        : 'border-white/[0.06] hover:border-white/15 hover:bg-[#151722]'
+                        : 'border-white/[0.06] hover:border-white/15 hover:bg-[#14161f]'
                     }`}
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-2">
                           <span
-                            className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-md border ${
+                            className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full border ${
                               meet.status === 'FINALIZED'
                                 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                                 : meet.status === 'TRANSCRIBING'
@@ -424,13 +423,13 @@ export default function Home() {
                             setActiveMeetingId(meet.id);
                             setActiveTab('record');
                           }}
-                          className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-white/[0.06] rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                          className="px-3 py-1.5 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 border border-white/[0.06] rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
                         >
                           <Mic className="w-3.5 h-3.5 text-rose-400" />
                           Rekam
                         </button>
                         <button className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border border-white/10 cursor-pointer">
-                          <span>Buka Notulen</span>
+                          <span>Buka Risalah</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -465,23 +464,23 @@ export default function Home() {
                 <NotulenEditor meeting={activeMeeting} onUpdateMeeting={handleUpdateActiveMeeting} />
               </>
             ) : (
-              <div className="bg-[#111318] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
-                <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-400">
-                  <FileText className="w-8 h-8 text-zinc-500" />
+              <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
+                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
+                  <FileText className="w-8 h-8" />
                 </div>
                 <div className="space-y-2 max-w-md mx-auto">
-                  <h3 className="text-lg font-bold text-white tracking-tight">Belum Ada Sesi Rapat Terpilih</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    Silakan unggah rekaman audio sekretaris di tab &quot;Studio Rekam&quot; atau mulai sesi baru untuk melihat notulensi dan transkripsi.
+                  <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">Belum Ada Sesi Sidang Terpilih</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                    Silakan unggah rekaman audio sekretaris di tab &quot;Perekaman Audio&quot; atau mulai sesi baru untuk melihat risalah dan transkripsi.
                   </p>
                 </div>
                 <div className="flex items-center justify-center gap-3 pt-2">
                   <button
                     onClick={() => setActiveTab('record')}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.98] transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
                   >
                     <Upload className="w-4 h-4" />
-                    <span>Unggah Audio Sekretaris</span>
+                    <span>Unggah Berkas Audio</span>
                   </button>
                 </div>
               </div>
@@ -495,20 +494,20 @@ export default function Home() {
             {activeMeeting ? (
               <NotulenEditor meeting={activeMeeting} onUpdateMeeting={handleUpdateActiveMeeting} />
             ) : (
-              <div className="bg-[#111318] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
-                <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center mx-auto text-zinc-400">
+              <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
+                <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
                   <CheckCircle2 className="w-8 h-8 text-amber-400" />
                 </div>
                 <div className="space-y-2 max-w-md mx-auto">
-                  <h3 className="text-lg font-bold text-white tracking-tight">Belum Ada Tindak Lanjut Terbuka</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
-                    Penugasan action items dan ketetapan hukum majelis akan muncul di sini setelah sesi rapat dirumuskan.
+                  <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">Belum Ada Tindak Lanjut Terbuka</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+                    Penugasan komisi dan ketetapan hukum majelis akan muncul di sini setelah sesi sidang dirumuskan.
                   </p>
                 </div>
                 <div className="flex items-center justify-center gap-3 pt-2">
                   <button
                     onClick={() => setActiveTab('record')}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.98] transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
                   >
                     <Upload className="w-4 h-4" />
                     <span>Mulai dengan Unggah Audio</span>
@@ -519,7 +518,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 5: INTEGRASI & SISTEM */}
+        {/* TAB 5: STATUS SISTEM */}
         {activeTab === 'status' && (
           <div className="space-y-6">
             <SystemIntegrationModal />
@@ -527,18 +526,16 @@ export default function Home() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="mt-auto border-t border-white/[0.06] bg-[#090a0f] py-6 text-center text-xs text-zinc-500">
+      {/* Institutional Footer */}
+      <footer className="mt-auto border-t border-white/[0.06] bg-[#07080a] py-6 text-center text-xs text-zinc-500">
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono">
           <p>
             NotulenJMM • Hak Cipta &copy; 2026 <strong>MPK SMK Negeri 13 Bandung</strong>. Karya <strong>Davin Maritza</strong>.
           </p>
           <div className="flex items-center gap-3 text-zinc-500">
-            <span>Microsoft VibeVoice</span>
+            <span>Tata Naskah Dinas Digital</span>
             <span>•</span>
-            <span>9Router Gateway</span>
-            <span>•</span>
-            <span>Capacitor Android</span>
+            <span>Web &amp; Android APK</span>
           </div>
         </div>
       </footer>

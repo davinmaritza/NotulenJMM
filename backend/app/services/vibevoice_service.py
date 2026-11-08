@@ -16,14 +16,24 @@ class VibeVoiceService:
         self.endpoint = settings.VIBEVOICE_ENDPOINT
         os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
+    ALLOWED_EXTENSIONS = {".mp3", ".wav", ".m4a", ".ogg", ".webm", ".flac", ".aac", ".opus"}
+
     async def save_audio_file(self, filename: str, content: bytes) -> str:
-        """Saves incoming audio bytes safely to local temporary cache."""
+        """Saves incoming audio bytes safely to local temporary cache with strict extension validation."""
         file_id = str(uuid.uuid4())
-        ext = os.path.splitext(filename)[1] or ".webm"
-        safe_path = os.path.join(settings.UPLOAD_DIR, f"{file_id}{ext}")
-        with open(safe_path, "wb") as f:
+        raw_ext = os.path.splitext(filename)[1].lower()
+        ext = raw_ext if raw_ext in self.ALLOWED_EXTENSIONS else ".webm"
+        safe_filename = f"{file_id}{ext}"
+        safe_path = os.path.join(settings.UPLOAD_DIR, safe_filename)
+        
+        safe_canonical = os.path.abspath(safe_path)
+        upload_canonical = os.path.abspath(settings.UPLOAD_DIR)
+        if not safe_canonical.startswith(upload_canonical):
+            raise ValueError("Invalid target path resolution detected.")
+
+        with open(safe_canonical, "wb") as f:
             f.write(content)
-        return safe_path
+        return safe_canonical
 
     async def transcribe_and_diarize(
         self, audio_path: str

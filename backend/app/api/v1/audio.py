@@ -27,6 +27,13 @@ async def transcribe_audio(
     if len(content) == 0:
         raise HTTPException(status_code=400, detail="Uploaded audio file is empty.")
 
+    # Max 150MB limit protection
+    if len(content) > 150 * 1024 * 1024:
+        raise HTTPException(
+            status_code=413,
+            detail="File audio terlalu besar (maksimal 150MB). Silakan gunakan rekaman terkompresi."
+        )
+
     m_id = meeting_id or f"meet-{uuid.uuid4().hex[:8]}"
     saved_path = None
 
