@@ -1,161 +1,184 @@
 # NotulenJMM
 
-Tata naskah dinas, risalah sidang, dan transkripsi rapat untuk Majelis Perwakilan Kelas (MPK) SMK Negeri 13 Bandung.
+Aplikasi tata naskah dinas, risalah musyawarah, dan dokumentasi sidang untuk Majelis Perwakilan Kelas (MPK) SMK Negeri 13 Bandung.
 
 [![Release](https://img.shields.io/badge/Release-v0.8.0-yellow?style=flat-square&logo=github)](https://github.com/davinmaritza/NotulenJMM/releases/tag/v0.8.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Build](https://img.shields.io/badge/Build-Turbopack%2010%2F10-emerald?style=flat-square)](https://nextjs.org/)
-[![Security Audit](https://img.shields.io/badge/Security-25%20Invariants%20Pass-green?style=flat-square)](https://owasp.org/)
-[![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20Windows%20%7C%20Linux%20%7C%20Web-purple?style=flat-square)](#unduhan-aplikasi-v080)
+[![Production](https://img.shields.io/badge/Production-jmm.davinn.net-sky?style=flat-square)](https://jmm.davinn.net)
+[![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20Windows%20%7C%20Linux%20%7C%20Web-purple?style=flat-square)](#unduhan-aplikasi-dan-akses-web)
 
-Pencatatan rapat organisasi siswa sering kali memakan waktu: rekaman suara menumpuk tanpa transkrip, format surat dinas harus diketik ulang dari awal, dan tindak lanjut penugasan (PIC) tercecer di obrolan grup.
+Pencatatan rapat organisasi siswa sering menghadapi masalah teknis sederhana: rekaman audio menumpuk tanpa risalah, format surat dinas harus diketik ulang dari awal, dan tindak lanjut penugasan sering hilang di obrolan grup.
 
-NotulenJMM menyatukan alur kerja persidangan ke dalam satu aplikasi: susun agenda, rekam dan pilah suara pembicara, tetapkan keputusan resmi, lalu ekspor hasilnya ke Google Docs atau bagikan ke WhatsApp dalam hitungan detik.
-
----
-
-## Unduhan Aplikasi (v0.8.0)
-
-Semua paket biner di bawah ini siap pakai tanpa instalasi pustaka tambahan:
-
-| Platform | Berkas | Ukuran | Deskripsi | Tautan Unduh |
-| :--- | :--- | :---: | :--- | :---: |
-| **Android** | `.apk` | 5.2 MB | Aplikasi native untuk HP atau tablet Android (Android 8.0 ke atas). | [Download APK](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.8.0/NotulenJMM-v0.8.0-Android.apk) |
-| **Windows** | `.exe` | 6.9 MB | Aplikasi mandiri untuk Windows 10 dan 11 (64-bit). Cukup klik dua kali untuk membuka. | [Download EXE](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.8.0/NotulenJMM-v0.8.0-Windows-x64.exe) |
-| **Linux** | Binary | 6.8 MB | Biner portabel untuk Linux x86_64 (Linux Mint, Ubuntu, Debian, Fedora). | [Download Linux](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.8.0/NotulenJMM-v0.8.0-Linux-x64) |
-| **Web** | Browser | - | Akses lokal melalui peramban di `http://localhost:3000`. | [Buka Web](http://localhost:3000) |
-
-Verifikasi checksum integritas berkas tersedia di [catatan rilis GitHub v0.8.0](https://github.com/davinmaritza/NotulenJMM/releases/tag/v0.8.0).
+NotulenJMM merapikan alur kerja tersebut ke dalam satu antarmuka: susun agenda sidang, rekam suara rapat, catat nomor keputusan resmi, lalu ekspor naskah ke dokumen cetak, Word, Google Docs, atau bagikan langsung ke WhatsApp.
 
 ---
 
-## Kemampuan Utama
+## Unduhan Aplikasi dan Akses Web
 
-### Login Google sekali, sesi tersimpan permanen
-Aplikasi meminta login Google di awal untuk menghubungkan penyimpanan cloud. Data sesi (`email`, token akses) disimpan di LocalStorage peramban, jadi Anda tidak perlu login berulang kali setiap membuka aplikasi. Jika tidak ada koneksi internet, Anda tetap bisa memilih **Mode Tamu** untuk bekerja secara offline.
+| Platform | Format Berkas | Keterangan | Tautan Akses / Unduh |
+| :--- | :--- | :--- | :--- |
+| Web Resmi | Peramban Cloud | Akses langsung tanpa instalasi di domain produksi. | [Buka jmm.davinn.net](https://jmm.davinn.net) |
+| Android | Berkas APK (5.2 MB) | Paket native untuk HP atau tablet Android 8.0 ke atas. | [Unduh APK v0.8.0](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.8.0/NotulenJMM-v0.8.0-Android.apk) |
+| Windows | Eksekusi Standalone (6.9 MB) | Program portabel untuk Windows 10 dan 11 (64-bit). Cukup klik dua kali untuk membuka. | [Unduh EXE v0.8.0](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.8.0/NotulenJMM-v0.8.0-Windows-x64.exe) |
+| Linux | Biner Portabel (6.8 MB) | Biner mandiri untuk Linux x86_64 (Linux Mint, Ubuntu, Debian). | [Unduh Biner Linux v0.8.0](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.8.0/NotulenJMM-v0.8.0-Linux-x64) |
+| Web Lokal | Port 3000 | Server pengujian lokal di laptop pengembang. | `http://localhost:3000` |
 
-### Auto-backup ke Google Drive tanpa tombol manual
-Setiap kali Anda selesai mengetik perubahan naskah, menambah keputusan, atau memperbarui PIC, aplikasi menunggu 4 detik lalu otomatis mencadangkan berkas ke Google Drive di latar belakang. Pengecekan berkala juga berjalan otomatis setiap 5 menit.
+Daftar checksum SHA-256 untuk seluruh berkas biner tercantum pada [halaman rilis GitHub v0.8.0](https://github.com/davinmaritza/NotulenJMM/releases/tag/v0.8.0).
 
-Izin akun dibatasi hanya pada cakupan `https://www.googleapis.com/auth/drive.file`. Artinya, aplikasi hanya dapat membaca dan menulis berkas cadangannya sendiri (`NotulenJMM_Cloud_Backup.json`), tanpa izin mengakses berkas pribadi Anda yang lain di Google Drive.
+---
 
-### Ekspor satu klik ke Google Docs
-Tombol **Google Docs** pada bilah ekspor langsung mengonversi naskah risalah lengkap ke format Google Docs asli. Naskah memuat Kop Surat Resmi MPK SMK Negeri 13 Bandung, rincian pimpinan sidang, ringkasan eksekutif, tabel keputusan beserta pertimbangannya, tabel tugas PIC, dan kolom tanda tangan. Dokumen otomatis terbuka di tab baru peramban untuk ditinjau atau dibagikan ke pihak sekolah.
+## Fitur Utama
 
-### Pilihan format ekspor dokumen
-Selain Google Docs, dokumen dapat diekspor langsung ke berbagai format:
-- **Microsoft Word (.doc)**: Dokumen formal dengan tata letak kop surat dan tabel dinas.
-- **Microsoft Excel (.xls)**: Rekapitulasi keputusan dan matriks tanggung jawab PIC.
-- **Cetak / PDF**: Format cetak naskah dinas rapi.
-- **WhatsApp**: Pesan teks siap kirim yang otomatis terisi ke aplikasi atau WhatsApp Web.
-- **Plain Text (.txt) dan Markdown**: Salinan teks terstruktur untuk pengarsipan cepat.
+### 1. Studio Agenda dan Format Musyawarah
+- Pilihan format rapat standar dinas: Sidang Pleno AD/ART, Koordinasi Pembina, Sidang Komisi, dan Forum Aspirasi Siswa.
+- Dukungan kustomisasi kartu agenda: pengurus dapat menambah agenda baru, menyunting rincian bahasan, atau menghapus kartu yang tidak digunakan.
+- Preset susunan acara siap pakai untuk MPK 13 dan Panitia MPLS.
+- Pilihan standar tata naskah dinas resmi sekolah.
 
-### Berjalan mandiri di sisi klien
-Seluruh fitur penulisan notulen, studio agenda, studio rekam audio, ekspor dokumen, dan pencadangan berjalan penuh di browser pengguna (*client-side*). Backend FastAPI opsional dan hanya diperlukan jika Anda ingin memproses pemisahan pembicara otomatis via Microsoft VibeVoice atau peringkasan transkrip via 9Router AI.
+### 2. Perekaman Suara Sidang
+- Perekam audio berbasis browser dengan visualisasi gelombang suara (*waveform*).
+- Tombol jeda untuk penundaan sementara (*skorsing sidang*) tanpa memutus sesi rekaman.
+- Indikator durasi waktu nyata dan penyimpanan draf audio otomatis.
+
+### 3. Perumusan Risalah dan Keputusan
+- Input terstruktur nomor surat keputusan dinas (contoh: `KEP/001/MPK-13/XI/2026`).
+- Kolom pertimbangan hukum atau rasional penetapan keputusan sidang.
+- Matriks tanggung jawab PIC (*Person in Charge*) lengkap dengan deskripsi tugas dan tenggat waktu pelaksanaan.
+
+### 4. Format Ekspor Berkas
+- Microsoft Word (.doc) dengan kop surat resmi MPK SMK Negeri 13 Bandung dan tata letak tabel dinas.
+- Microsoft Excel (.xls) untuk tabulasi rekapitulasi keputusan sidang dan pemantauan tugas pengurus.
+- Google Docs dengan konversi HTML dinas langsung ke tab peramban baru.
+- Cetak / PDF resmi yang disesuaikan untuk kertas ukuran A4 atau F4.
+- Teks ringkasan siap kirim untuk grup obrolan WhatsApp pengurus dan pembina.
+- Berkas Markdown dan teks polos untuk pengarsipan cepat.
+
+### 5. Otentikasi Fleksibel dan Cadangan Google Drive
+- Mode Sesi Lokal: notulis dapat langsung mengetik atau menggunakan nama dan email di browser tanpa perlu login ke akun Google.
+- Mode Cadangan Google Drive: menghubungkan akun Google menggunakan Google Identity Services (GIS).
+- Cakupan izin dibatasi pada `https://www.googleapis.com/auth/drive.file`. Aplikasi hanya dapat membaca dan menulis berkas cadangan miliknya sendiri (`NotulenJMM_Cloud_Backup.json`), tanpa izin membaca dokumen pribadi lainnya di Google Drive Anda.
+- Pencadangan otomatis berjalan setelah notulis selesai menyunting naskah dan diulang setiap lima menit saat aplikasi terbuka.
+
+---
+
+## Konfigurasi Google Cloud Platform
+
+Jika Anda ingin mengaktifkan sinkronisasi Google Drive pada instalasi mandiri, siapkan kredensial di [Google Cloud Console](https://console.cloud.google.com/):
+
+1. Masuk ke **APIs & Services** > **Credentials**.
+2. Klik **Create Credentials** lalu pilih **OAuth client ID**.
+3. Pilih tipe aplikasi **Web application**.
+4. Daftarkan URL pada bagian **Authorized JavaScript origins**:
+   - `http://localhost:3000` (untuk pengujian lokal)
+   - `https://jmm.davinn.net` (untuk domain produksi)
+5. Kosongkan bagian **Authorized redirect URIs** karena aplikasi menggunakan alur popup client-side token.
+6. Simpan string Client ID ke dalam berkas `frontend/.env.local`:
+   ```env
+   NEXT_PUBLIC_GOOGLE_CLIENT_ID="708925391961-nopuatvlfqda6r1u6vpdu5m17vnn2gra.apps.googleusercontent.com"
+   ```
+7. Tambahkan email penguji di tab **Audience** > **Test users** selama status aplikasi masih dalam tahap pengujian (*Testing*).
 
 ---
 
 ## Arsitektur Sistem
 
 ```
-[Android APK / Windows EXE / Linux Desktop / Web Browser]
+[Android APK / Windows EXE / Linux Desktop / Browser Web]
                            │
        ┌───────────────────┴───────────────────┐
        ▼                                       ▼
-[Penyimpanan Lokal Client]           [Integrasi Cloud Google]
-• LocalStorage (Offline-first)       • Google Drive Auto-Sync (drive.file)
-• Sesi login permanen                • Ekspor dokumen native Google Docs
-• Pemulihan file JSON                • Token refresh hening di latar belakang
+[Penyimpanan Lokal Client]           [Google Identity Services]
+• LocalStorage offline-first         • Google Drive API (drive.file)
+• Sesi notulis mandiri               • Ekspor Google Docs
+• Ekspor Word, PDF, Excel            • Cadangan otomatis background
        │
-       ▼ (Opsional saat butuh AI audio)
+       ▼ (Opsional jika mengaktifkan pemrosesan AI)
 [Backend FastAPI (:8000)]
-• Microsoft VibeVoice (ASR & Speaker Diarization)
-• 9Router LLM Gateway (Sintesis ringkasan dan keputusan)
+• Microsoft VibeVoice (ASR dan pemisahan pembicara)
+• 9Router LLM Gateway (Peringkasan otomatis)
 ```
-
----
-
-## Keamanan dan Kualitas Kode
-
-Kode sumber telah diaudit terhadap 25 pola kerentanan aplikasi web:
-- **XSS**: Semua data teks dinamis yang masuk ke template ekspor (HTML, Word, Excel, Google Docs) melewati fungsi sanitasi entitas sebelum dirender.
-- **Injeksi Perintah**: Tidak menggunakan `eval()`, `exec()`, atau pemanggilan shell tak aman.
-- **Deserialisasi**: Tidak menggunakan `pickle` pada alur input data pengguna. Impor berkas cadangan divalidasi skemanya sebelum diterapkan ke state.
-- **Ukuran Berkas**: Backend membatasi unggahan audio maksimal 150 MB untuk mencegah kehabisan memori.
-- **Pengujian**:
-  - Backend API: 7 tes lulus (`pytest -v`).
-  - Frontend: 0 error dan 0 warning (`bun run lint`).
-  - Build: 10 dari 10 rute statis sukses terkompilasi (`next build`).
 
 ---
 
 ## Menjalankan dari Kode Sumber
 
-### 1. Menjalankan Desktop Launcher (Go)
-```bash
-cd desktop
-go run main.go
+### Kebutuhan Perangkat Lunak
+- Node.js 20+ atau Bun 1.1+
+- Go 1.22+ (untuk desktop launcher)
+- Python 3.11+ (untuk backend opsional)
 
-# Mengompilasi biner executable Windows dan Linux
-GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/NotulenJMM-v0.8.0-Windows-x64.exe
-GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/NotulenJMM-v0.8.0-Linux-x64
-```
-
-### 2. Menjalankan Frontend (Next.js)
+### 1. Antarmuka Web (Frontend)
 ```bash
 cd frontend
+
+# Pasang pustaka dependensi
 bun install
 
-# Jalankan server pengembangan (port 3000)
+# Jalankan server pengembangan di http://localhost:3000
 bun run dev
 
-# Kompilasi produksi web
+# Kompilasi paket produksi web
 bun run build
 
-# Kompilasi paket Android APK
+# Bangun paket biner Android APK (membutuhkan JDK 21 dan Android SDK)
 export JAVA_HOME=/path/to/jdk-21
 bun run build:apk:binary
 ```
 
-### 3. Menjalankan Backend (Python FastAPI)
+### 2. Desktop Launcher (Go)
+```bash
+cd desktop
+
+# Jalankan langsung
+go run main.go
+
+# Kompilasi biner Windows x64
+GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/NotulenJMM-v0.8.0-Windows-x64.exe
+
+# Kompilasi biner Linux x64
+GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/NotulenJMM-v0.8.0-Linux-x64
+```
+
+### 3. Layanan Backend (Python FastAPI)
 ```bash
 cd backend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Jalankan server API (port 8000)
+# Jalankan server API di http://localhost:8000
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-# Jalankan rangkaian tes
+# Jalankan pengujian API
 pytest tests/ -v
 ```
 
-### 4. Menjalankan via Docker Compose
+### 4. Menjalankan dengan Docker Compose
 ```bash
 docker compose up -d --build
 ```
 
 ---
 
-## Struktur Proyek
+## Struktur Direktori
 
 ```
 NotulenJMM/
-├── desktop/               # Desktop launcher Go (embed aset frontend statis)
-│   ├── main.go            # Entry point biner desktop & pembuka peramban otomatis
+├── desktop/               # Desktop launcher Go (menanam aset web statis)
+│   ├── main.go            # Entry point biner launcher & pembuka peramban
 │   └── go.mod             # Definisi modul Go
-├── dist/                  # Berkas biner rilis resmi (APK, EXE, Linux)
+├── dist/                  # Berkas rilis siap pakai (APK, EXE, Linux)
 ├── frontend/              # Next.js 16 (React 19) + Tailwind CSS + Capacitor
-│   ├── android/           # Konfigurasi native Android (Gradle)
-│   ├── app/               # Rute halaman Next.js App Router
-│   ├── components/        # Komponen UI: GoogleAuthGate, Sidebar, NotulenEditor, dll.
-│   ├── context/           # MeetingContext: Auto-sync engine dan pengelola sesi
-│   └── lib/               # Klien backup Google Drive, tipe data, dan helper ekspor
-├── backend/               # Layanan AI FastAPI
-│   ├── app/               # Rute API v1, konfigurasi, dan service bridge
-│   ├── tests/             # Rangkaian pengujian integrasi pytest
-│   └── requirements.txt   # Dependensi Python
+│   ├── android/           # Proyek native Android Studio & Gradle
+│   ├── app/               # Rute halaman Next.js App Router & 404 handler
+│   ├── components/        # Komponen antarmuka (GoogleAuthGate, Sidebar, NotulenEditor)
+│   ├── context/           # MeetingContext (State rapat, sinkronisasi, dan sesi notulis)
+│   └── lib/               # Klien backup Google Drive, parser tanggal, utilitas ekspor
+├── backend/               # Layanan pendukung FastAPI
+│   ├── app/               # Endpoint API v1, konfigurasi CORS, dan adapter audio
+│   ├── tests/             # Rangkaian uji otomatis pytest
+│   └── requirements.txt   # Daftar dependensi Python
 ├── docker-compose.yml     # Konfigurasi orkestrasi kontainer
 ├── LICENSE                # Lisensi MIT
 └── README.md              # Dokumentasi teknis proyek
@@ -163,7 +186,7 @@ NotulenJMM/
 
 ---
 
-## Lisensi dan Pengembang
+## Lisensi dan Hak Cipta
 
 - **Pengembang**: [Davin Maritza](https://github.com/davinmaritza)
 - **Organisasi**: Majelis Perwakilan Kelas (MPK) SMK Negeri 13 Bandung

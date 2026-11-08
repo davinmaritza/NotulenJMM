@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NotulenJMM Frontend
 
-## Getting Started
+Modul antarmuka pengguna untuk NotulenJMM, dibangun menggunakan Next.js 16 (App Router), React 19, Tailwind CSS, dan Capacitor untuk distribusi native Android.
 
-First, run the development server:
+## Fitur Teknis Antarmuka
+
+- **Desain Neo-Brutalism**: Menggunakan palet kuning khas MPK SMK Negeri 13 Bandung, garis batas tegas 2px/3px, dan bayangan blokir fisik.
+- **Client-Side First**: Seluruh perumusan naskah, perhitungan waktu, dan ekspor dokumen berjalan mandiri di peramban tanpa kewajiban server online.
+- **Google Identity Services (GIS)**: Autentikasi OAuth 2.0 popup token client terintegrasi dengan Google Drive API untuk pencadangan berkas JSON.
+- **Dukungan Multi-Platform**: Kode sumber yang sama dikompilasi ke web statis (`out/`), aplikasi desktop (embed via launcher Go), dan APK Android native (`android/`).
+
+## Perintah Pengembangan
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Memasang pustaka
+bun install
+
+# Menjalankan server pengembangan (port 3000)
+bun run dev
+
+# Kompilasi produksi web
+bun run build
+
+# Menjalankan pemeriksaan linter
+bun run lint
+
+# Sinkronisasi aset statis ke proyek Android
+bun run sync:android
+
+# Membangun file APK biner (memerlukan Android SDK dan JDK 21)
+bun run build:apk:binary
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Variabel Lingkungan (.env.local)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Contoh isian tersedia di `.env.example`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# URL API backend (opsional)
+NEXT_PUBLIC_API_URL="http://localhost:8000"
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Client ID OAuth 2.0 dari Google Cloud Console
+NEXT_PUBLIC_GOOGLE_CLIENT_ID="708925391961-nopuatvlfqda6r1u6vpdu5m17vnn2gra.apps.googleusercontent.com"
+```
