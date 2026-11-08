@@ -53,6 +53,11 @@ async def root():
         "api_v1": settings.API_V1_STR,
     }
 
+@app.get("/health", summary="Health Check Alias")
+async def health_alias():
+    from app.api.v1.health import health_check
+    return await health_check()
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
