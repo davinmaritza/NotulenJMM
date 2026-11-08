@@ -1032,94 +1032,102 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           </div>
 
           {/* Primary Action Toolbar */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Action 1: Modifikasi Naskah & Format */}
-            <button
-              onClick={openModificationModal}
-              title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1b1e2a] hover:bg-[#232738] text-white font-semibold rounded-xl text-xs border border-white/15 shadow-sm active:scale-[0.985] transition-all cursor-pointer"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-sky-400" />
-              <span>Modifikasi Format</span>
-            </button>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0a0b10] border border-white/[0.06] p-2.5 rounded-2xl">
+            {/* Group 1: Draf & Format */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={openModificationModal}
+                title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1b1e2a] hover:bg-[#232738] text-white font-semibold rounded-xl text-xs border border-white/15 shadow-sm active:scale-[0.985] transition-all cursor-pointer"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 text-sky-400" />
+                <span>Modifikasi Format</span>
+              </button>
 
-            {/* Action 2: Simpan Draf Online */}
-            <button
-              onClick={handleManualSaveDraft}
-              title="Simpan status draf saat ini secara online ke penyimpanan lokal"
-              className="flex items-center gap-1.5 px-3 py-2 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
-            >
-              <Save className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Simpan Draf</span>
-            </button>
+              <button
+                onClick={handleManualSaveDraft}
+                title="Simpan status draf saat ini secara online ke penyimpanan lokal"
+                className="flex items-center gap-1.5 px-3 py-2 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+              >
+                <Save className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Simpan Draf</span>
+              </button>
+            </div>
 
-            {/* Export 1: Cetak PDF */}
-            <button
-              onClick={() => window.print()}
-              title="Cetak langsung atau simpan dokumen PDF resmi ber-kop sekolah"
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-white text-zinc-950 font-semibold rounded-xl text-xs shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span>PDF</span>
-            </button>
+            {/* Group 2: Ekspor Dokumen & Kirim WA */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="hidden xl:inline text-[10px] font-mono uppercase tracking-wider text-zinc-500 mr-1">
+                Ekspor:
+              </span>
 
-            {/* Export 2: Unduh Word (.doc) */}
-            <button
-              onClick={exportWord}
-              title="Unduh dokumen Microsoft Word (.doc) lengkap dengan kop dan tabel keputusan"
-              className="flex items-center gap-1.5 px-3 py-2 bg-[#161922] hover:bg-[#1e2330] text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
-            >
-              <Download className="w-3.5 h-3.5 text-sky-400" />
-              <span>Word</span>
-            </button>
+              {/* Export 1: Kirim ke WhatsApp Langsung (Super Prominent) */}
+              <button
+                onClick={shareToWhatsAppDirect}
+                title="Kirim naskah risalah langsung ke aplikasi WhatsApp / WhatsApp Web"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md shadow-emerald-950/40 border border-emerald-400/40 active:scale-[0.985] transition-all cursor-pointer"
+              >
+                <Send className="w-3.5 h-3.5 fill-current" />
+                <span>Kirim WA</span>
+              </button>
 
-            {/* Export 3: Unduh Excel (.xls) */}
-            <button
-              onClick={exportExcel}
-              title="Unduh tabel rekapitulasi keputusan dan penugasan sidang dalam format Excel (.xls)"
-              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Excel</span>
-            </button>
+              {/* Export 2: Unduh Word (.doc) */}
+              <button
+                onClick={exportWord}
+                title="Unduh dokumen Microsoft Word (.doc) lengkap dengan kop dan tabel keputusan"
+                className="flex items-center gap-1.5 px-3 py-2 bg-[#161922] hover:bg-[#1e2330] text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-sky-400" />
+                <span>Word</span>
+              </button>
 
-            {/* Export 4: Unduh TXT */}
-            <button
-              onClick={exportTxt}
-              title="Unduh format teks polos terstruktur (.txt)"
-              className="flex items-center gap-1.5 px-2.5 py-2 bg-[#14161d] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
-            >
-              <FileCode className="w-3.5 h-3.5" />
-              <span>TXT</span>
-            </button>
+              {/* Export 3: Cetak PDF */}
+              <button
+                onClick={() => window.print()}
+                title="Cetak langsung atau simpan dokumen PDF resmi ber-kop sekolah"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white text-zinc-950 font-bold rounded-xl text-xs shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>PDF</span>
+              </button>
 
-            {/* Export 5: Kirim ke WhatsApp Langsung */}
-            <button
-              onClick={shareToWhatsAppDirect}
-              title="Kirim naskah risalah langsung ke aplikasi WhatsApp / WhatsApp Web"
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#0d2a1d] hover:bg-[#133d2a] text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
-            >
-              <Send className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Kirim ke WA</span>
-            </button>
+              {/* Export 4: Unduh Excel (.xls) */}
+              <button
+                onClick={exportExcel}
+                title="Unduh tabel rekapitulasi keputusan dan penugasan sidang dalam format Excel (.xls)"
+                className="flex items-center gap-1.5 px-3 py-2 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Excel</span>
+              </button>
 
-            {/* Pratinjau Pesan WA */}
-            <button
-              onClick={() => setShowWaModal(true)}
-              title="Buka pratinjau pesan teks format WhatsApp"
-              className="p-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-white border border-white/[0.08] rounded-xl text-xs transition-all cursor-pointer"
-            >
-              <Share2 className="w-3.5 h-3.5 text-emerald-400" />
-            </button>
+              {/* Export 5: Unduh TXT */}
+              <button
+                onClick={exportTxt}
+                title="Unduh format teks polos terstruktur (.txt)"
+                className="flex items-center gap-1.5 px-2.5 py-2 bg-[#14161d] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+              >
+                <FileCode className="w-3.5 h-3.5" />
+                <span>TXT</span>
+              </button>
 
-            {/* Salin MD */}
-            <button
-              onClick={exportMarkdown}
-              title="Salin naskah Markdown"
-              className="p-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-white/[0.06] rounded-xl text-xs transition-all cursor-pointer"
-            >
-              {copiedMd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-            </button>
+              {/* Pratinjau Pesan WA */}
+              <button
+                onClick={() => setShowWaModal(true)}
+                title="Buka pratinjau pesan teks format WhatsApp"
+                className="p-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-white border border-white/[0.08] rounded-xl text-xs transition-all cursor-pointer"
+              >
+                <Share2 className="w-3.5 h-3.5 text-emerald-400" />
+              </button>
+
+              {/* Salin MD */}
+              <button
+                onClick={exportMarkdown}
+                title="Salin naskah Markdown"
+                className="p-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-white/[0.06] rounded-xl text-xs transition-all cursor-pointer"
+              >
+                {copiedMd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+            </div>
           </div>
         </div>
 

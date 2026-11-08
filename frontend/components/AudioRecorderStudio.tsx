@@ -373,6 +373,32 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         </div>
       </div>
 
+      {/* Friendly Secretary Help Box */}
+      <div className="p-4 rounded-2xl bg-[#12141c] border border-white/[0.07] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-3">
+          <span className="text-base">💡</span>
+          <div className="space-y-0.5">
+            <p className="font-semibold text-white">Petunjuk Mudah untuk Notulis:</p>
+            <p className="text-zinc-400 leading-relaxed text-[11px]">
+              Letakkan ponsel/laptop di tengah meja rapat. Jika forum diskors atau istirahat, klik <strong>Jeda (Pause)</strong>. Kamu bisa klik <strong>Simpan Sebagai Draf Online</strong> kapan saja agar rekaman aman tersimpan di peramban.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            const todayStr = new Date().toLocaleDateString('id-ID', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            });
+            setMeetingTitle(`Sidang Koordinasi MPK 13 — ${todayStr}`);
+          }}
+          className="shrink-0 px-3 py-1.5 bg-[#1b1e2a] hover:bg-zinc-800 text-sky-300 border border-sky-500/25 rounded-xl text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]"
+        >
+          Isi Judul Otomatis Hari Ini
+        </button>
+      </div>
+
       {errorMessage && (
         <div className="p-4 bg-rose-950/40 border border-rose-500/30 text-rose-300 rounded-2xl flex items-center gap-3 text-xs">
           <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />

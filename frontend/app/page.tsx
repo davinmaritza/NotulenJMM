@@ -7,6 +7,8 @@ import { AudioRecorderStudio } from '../components/AudioRecorderStudio';
 import { SpeakerDiarizationView } from '../components/SpeakerDiarizationView';
 import { NotulenEditor } from '../components/NotulenEditor';
 import { SystemIntegrationModal } from '../components/SystemIntegrationModal';
+import { UserFriendlyWorkflowBar } from '../components/UserFriendlyWorkflowBar';
+import { SecretaryGuideModal } from '../components/SecretaryGuideModal';
 import { Meeting, AudioSegment } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
 import {
@@ -24,6 +26,8 @@ import {
   FileCheck,
   Trash2,
   Menu,
+  Search,
+  RotateCcw,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'notulenjmm_meetings_v2';
@@ -31,6 +35,9 @@ const STORAGE_KEY = 'notulenjmm_meetings_v2';
 export default function Home() {
   const [activeTab, setActiveTab] = useState<string>('craft');
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
+  const [isOpenGuide, setIsOpenGuide] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filterStatus, setFilterStatus] = useState<'ALL' | 'DRAFT' | 'FINALIZED'>('ALL');
   const [meetings, setMeetings] = useState<Meeting[]>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -333,9 +340,41 @@ export default function Home() {
     (acc, m) => acc + m.actionItems.filter((a) => a.status === 'COMPLETED').length,
     0
   );
+  // Filtered meetings based on search & filter status
+  const filteredMeetings = meetings.filter((m) => {
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch =
+      !q ||
+      m.title.toLowerCase().includes(q) ||
+      m.date.toLowerCase().includes(q) ||
+      m.location.toLowerCase().includes(q) ||
+      (m.leaderName && m.leaderName.toLowerCase().includes(q)) ||
+      (m.noteTakerName && m.noteTakerName.toLowerCase().includes(q)) ||
+      m.id.toLowerCase().includes(q);
+
+    const matchesFilter =
+      filterStatus === 'ALL' ||
+      (filterStatus === 'DRAFT' && m.status === 'DRAFT') ||
+      (filterStatus === 'FINALIZED' && m.status === 'FINALIZED');
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const draftCount = meetings.filter((m) => m.status === 'DRAFT').length;
+  const finalizedCount = meetings.filter((m) => m.status === 'FINALIZED').length;
 
   return (
     <div className="min-h-screen bg-[#07080a] text-[#f4f4f6] flex flex-col lg:flex-row antialiased selection:bg-white/10 selection:text-white">
+      {/* Secretary Interactive Guide Modal */}
+      <SecretaryGuideModal
+        isOpen={isOpenGuide}
+        onClose={() => setIsOpenGuide(false)}
+        onNavigateTab={(tab) => {
+          setActiveTab(tab);
+          setIsOpenGuide(false);
+        }}
+      />
+
       {/* Institutional Left Sidebar */}
       <Sidebar
         activeTab={activeTab}
@@ -345,6 +384,7 @@ export default function Home() {
         activeMeeting={activeMeeting}
         isOpenMobile={isOpenMobile}
         setIsOpenMobile={setIsOpenMobile}
+        onOpenGuide={() => setIsOpenGuide(true)}
       />
 
       {/* Main Content Workspace to the Right of Sidebar */}
@@ -363,17 +403,35 @@ export default function Home() {
             </div>
           </div>
 
-          <button
-            onClick={() => setIsOpenMobile(true)}
-            className="p-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 cursor-pointer"
-            title="Buka Menu Navigasi"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsOpenGuide(true)}
+              className="p-1.5 rounded-lg bg-sky-950/40 text-sky-400 hover:text-white border border-sky-500/30 text-xs font-semibold cursor-pointer"
+              title="Buku Saku Notulis"
+            >
+              Buku Saku
+            </button>
+            <button
+              onClick={() => setIsOpenMobile(true)}
+              className="p-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 cursor-pointer"
+              title="Buka Menu Navigasi"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
         </header>
 
         {/* Content Body */}
         <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+          {/* Friendly 3-Step Workflow & Secretary Greeting Hub */}
+          <UserFriendlyWorkflowBar
+            activeTab={activeTab}
+            onSelectTab={(tab) => setActiveTab(tab)}
+            onOpenGuide={() => setIsOpenGuide(true)}
+            hasActiveMeeting={!!activeMeeting}
+            totalMeetingsCount={meetings.length}
+          />
+
           {/* TAB 0: STUDIO AGENDA */}
           {activeTab === 'craft' && (
             <CraftStudioView onStartSession={handleStartCraftSession} />
@@ -443,6 +501,68 @@ export default function Home() {
                 </button>
               </div>
 
+              {/* Friendly Search & Filter Bar */}
+              {meetings.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 bg-[#0d0e13] border border-white/[0.06] rounded-2xl">
+                  {/* Search Input */}
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Cari judul rapat, kata kunci, pimpinan, atau notulis..."
+                      className="w-full bg-[#12141c] border border-white/[0.08] rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white p-1"
+                        title="Hapus Pencarian"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Filter Pills */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+                    <button
+                      onClick={() => setFilterStatus('ALL')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer ${
+                        filterStatus === 'ALL'
+                          ? 'bg-zinc-800 text-white border border-white/10 font-semibold'
+                          : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      Semua ({meetings.length})
+                    </button>
+                    <button
+                      onClick={() => setFilterStatus('DRAFT')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                        filterStatus === 'DRAFT'
+                          ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold'
+                          : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                      <span>Draf Aktif ({draftCount})</span>
+                    </button>
+                    <button
+                      onClick={() => setFilterStatus('FINALIZED')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                        filterStatus === 'FINALIZED'
+                          ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold'
+                          : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span>Disahkan ({finalizedCount})</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Empty State vs Meeting Cards List */}
               {meetings.length === 0 ? (
                 <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
@@ -472,9 +592,31 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
+              ) : filteredMeetings.length === 0 ? (
+                <div className="bg-[#0e0f14] border border-white/[0.08] rounded-3xl p-10 text-center space-y-4 shadow-xl">
+                  <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
+                    <Search className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1 max-w-sm mx-auto">
+                    <h3 className="text-sm font-semibold text-white">Tidak Ada Sesi yang Cocok</h3>
+                    <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+                      Tidak ditemukan berkas rapat dengan kata kunci &quot;{searchQuery}&quot; pada filter terpilih.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setFilterStatus('ALL');
+                    }}
+                    className="px-4 py-2 bg-[#141620] hover:bg-zinc-800 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Filter &amp; Pencarian</span>
+                  </button>
+                </div>
               ) : (
                 <div className="space-y-3">
-                  {meetings.map((meet) => (
+                  {filteredMeetings.map((meet) => (
                     <div
                       key={meet.id}
                       onClick={() => {

@@ -10,6 +10,7 @@ import {
   Activity,
   X,
   Clock,
+  HelpCircle,
 } from 'lucide-react';
 import { Meeting } from '../lib/types';
 
@@ -21,6 +22,7 @@ interface SidebarProps {
   activeMeeting?: Meeting | null;
   isOpenMobile: boolean;
   setIsOpenMobile: (open: boolean) => void;
+  onOpenGuide?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -31,6 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activeMeeting,
   isOpenMobile,
   setIsOpenMobile,
+  onOpenGuide,
 }) => {
   const handleSelectTab = (tab: string) => {
     setActiveTab(tab);
@@ -236,6 +239,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
         </div>
+
+        {/* Quick Guide Button */}
+        {onOpenGuide && (
+          <div className="px-4 pb-2">
+            <button
+              onClick={() => {
+                onOpenGuide();
+                setIsOpenMobile(false);
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#141620] hover:bg-[#1a1d2c] border border-sky-500/20 text-sky-300 text-xs font-semibold transition-all active:scale-[0.985] cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-3.5 h-3.5 text-sky-400" />
+                <span>Buku Saku Notulis</span>
+              </div>
+              <span className="text-[10px] font-mono text-sky-400/80">Panduan</span>
+            </button>
+          </div>
+        )}
 
         {/* Bottom: Profile & Telemetry Badge */}
         <div className="p-4 border-t border-white/[0.06] bg-[#07080c] space-y-3">
