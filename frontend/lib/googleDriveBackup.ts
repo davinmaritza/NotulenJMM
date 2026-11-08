@@ -7,16 +7,26 @@ export const STORAGE_KEY_HISTORY_LOGS = 'notulenjmm_history_logs_v1';
 export const STORAGE_KEY_GOOGLE_CLIENT_ID = 'notulenjmm_google_client_id_v1';
 
 export const DEFAULT_GOOGLE_CLIENT_ID =
-  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '708925391961-nopuatvlfqda6r1u6vpdu5m17vnn2gra.apps.googleusercontent.com';
 
 // Default public Google Drive client ID placeholder or user-configured client ID
 export function getGoogleClientId(): string {
-  if (typeof window === 'undefined') return DEFAULT_GOOGLE_CLIENT_ID;
-  return (
-    localStorage.getItem(STORAGE_KEY_GOOGLE_CLIENT_ID) ||
-    process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
-    DEFAULT_GOOGLE_CLIENT_ID
-  );
+  const envId = (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID || '').trim();
+  if (typeof window === 'undefined') return envId;
+
+  // Clean up obsolete stale ID if present in browser's localStorage
+  const stored = localStorage.getItem(STORAGE_KEY_GOOGLE_CLIENT_ID)?.trim();
+  if (stored && (stored.includes('1071006060591') || !stored.includes('.'))) {
+    localStorage.removeItem(STORAGE_KEY_GOOGLE_CLIENT_ID);
+    return envId;
+  }
+
+  // If envId is configured, it is the authoritative client ID
+  if (envId) {
+    return envId;
+  }
+
+  return stored || '';
 }
 
 export function setGoogleClientId(clientId: string) {
