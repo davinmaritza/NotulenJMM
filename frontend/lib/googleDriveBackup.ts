@@ -7,7 +7,7 @@ export const STORAGE_KEY_HISTORY_LOGS = 'notulenjmm_history_logs_v1';
 export const STORAGE_KEY_GOOGLE_CLIENT_ID = 'notulenjmm_google_client_id_v1';
 
 export const DEFAULT_GOOGLE_CLIENT_ID =
-  '1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com';
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
 
 // Default public Google Drive client ID placeholder or user-configured client ID
 export function getGoogleClientId(): string {
@@ -253,7 +253,24 @@ export async function requestGoogleAccessToken(
           }
         },
         error_callback: (err) => {
-          reject(new Error(`Google Identity error: ${JSON.stringify(err)}`));
+          const raw = typeof err === 'object' ? JSON.stringify(err) : String(err);
+          if (
+            raw.includes('invalid_client') ||
+            raw.includes('no registered origin') ||
+            raw.includes('origin')
+          ) {
+            reject(
+              new Error(
+                `Akses Otorisasi Google Ditolak (Error 401: no registered origin). Client ID belum mengizinkan origin '${
+                  typeof window !== 'undefined' ? window.location.origin : 'localhost'
+                }' di Google Cloud Console. Silakan gunakan opsi masuk langsung 1-Klik / Email agar langsung terhubung tanpa popup.`
+              )
+            );
+          } else if (raw.includes('popup_closed')) {
+            reject(new Error('Jendela popup otorisasi Google ditutup oleh pengguna.'));
+          } else {
+            reject(new Error(`Google Identity error: ${raw}`));
+          }
         },
       });
 

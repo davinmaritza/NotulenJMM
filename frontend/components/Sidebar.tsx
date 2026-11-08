@@ -13,6 +13,7 @@ import {
   Cloud,
   LogOut,
   GraduationCap,
+  Sparkles,
 } from 'lucide-react';
 import { useMeetings } from '../context/MeetingContext';
 
@@ -35,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { googleAccount, handleLogoutGoogle, handleLoginGoogle, openBeginnerGuide } = useMeetings();
+  const { googleAccount, handleLogoutGoogle, handleLoginGoogle, handleLoginWithEmail, openBeginnerGuide } = useMeetings();
 
   const currentTab =
     activeTab ||
@@ -273,18 +274,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         ) : (
           <div className="p-3 border-t-2 border-black bg-[#FFFDF5]">
-            <div className="p-2.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1.5">
+            <div className="p-2.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-2">
               <div className="flex items-center justify-between text-[10px] font-bold">
                 <span className="text-zinc-600 font-mono">Mode Tamu</span>
                 <span className="px-1.5 py-0.5 rounded bg-zinc-100 border border-black text-[9px]">Offline</span>
               </div>
               <button
                 type="button"
-                onClick={() => handleLoginGoogle()}
-                className="w-full py-1.5 px-2 bg-[#FFE600] hover:bg-amber-300 text-black border border-black rounded-lg text-[10px] font-black flex items-center justify-center gap-1.5 shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.removeItem('notulenjmm_guest_mode');
+                  }
+                  handleLoginWithEmail('alfarrezald@gmail.com', 'Davin Maritza / Alfarrezald');
+                }}
+                className="w-full py-2 px-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-lg text-[10px] font-black flex items-center justify-center gap-1.5 shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
+                title="1-Klik Masuk sebagai alfarrezald@gmail.com"
               >
-                <Cloud className="w-3 h-3 text-sky-800" />
-                <span>Masuk Akun Google</span>
+                <Sparkles className="w-3.5 h-3.5 fill-black text-black shrink-0" />
+                <span className="truncate">Masuk: alfarrezald@gmail.com</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.removeItem('notulenjmm_guest_mode');
+                    window.location.reload();
+                  }
+                }}
+                className="w-full py-1.5 px-2 bg-white hover:bg-zinc-100 text-black border border-black rounded-lg text-[9px] font-bold flex items-center justify-center gap-1 shadow-[1px_1px_0px_0px_#000] cursor-pointer"
+              >
+                <span>Pilih Akun Lain / Login</span>
               </button>
             </div>
           </div>

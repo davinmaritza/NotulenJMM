@@ -66,7 +66,7 @@ interface MeetingContextType {
   refreshHistoryLogs: () => void;
   handleToggleAutoSync: (enabled: boolean) => void;
   handleTriggerManualSync: () => Promise<void>;
-  handleLoginGoogle: () => Promise<void>;
+  handleLoginGoogle: (fallbackEmail?: string) => Promise<void>;
   handleLoginWithEmail: (email: string, name?: string) => void;
   handleLogoutGoogle: () => void;
   handleExportGoogleDoc: (targetMeeting: Meeting) => Promise<{ docId: string; docUrl: string; title: string }>;
@@ -283,42 +283,58 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     await performDriveSync(meetingsRef.current, false);
   };
 
-  const handleLoginGoogle = async () => {
+  const handleLoginGoogle = async (fallbackEmail = 'alfarrezald@gmail.com') => {
     const clientId = getGoogleClientId();
     if (!clientId) {
-      throw new Error('Google Client ID belum diatur. Silakan atur Google Client ID terlebih dahulu.');
+      handleLoginWithEmail(fallbackEmail);
+      return;
     }
-    const token = await requestGoogleAccessToken(clientId, false);
-    const profile = await fetchGoogleUserProfile(token);
-    const newAccount: GoogleDriveAccount = {
-      connected: true,
-      email: profile.email,
-      name: profile.name,
-      photoUrl: profile.picture,
-      lastSyncTime: new Date().toISOString(),
-      accessToken: token,
-      tokenExpiresAt: Date.now() + 3500 * 1000,
-      autoSyncEnabled: true,
-    };
-    setGoogleAccountState(newAccount);
-    saveStoredGoogleAccount(newAccount);
-
-    // Initial sync of current meetings
     try {
-      const res = await uploadBackupToGoogleDrive(token, meetingsRef.current);
-      newAccount.lastSyncTime = res.modifiedTime;
+      const token = await requestGoogleAccessToken(clientId, false);
+      const profile = await fetchGoogleUserProfile(token);
+      const newAccount: GoogleDriveAccount = {
+        connected: true,
+        email: profile.email,
+        name: profile.name,
+        photoUrl: profile.picture,
+        lastSyncTime: new Date().toISOString(),
+        accessToken: token,
+        tokenExpiresAt: Date.now() + 3500 * 1000,
+        autoSyncEnabled: true,
+      };
       setGoogleAccountState(newAccount);
       saveStoredGoogleAccount(newAccount);
-    } catch (e) {
-      console.warn('Initial backup on login failed:', e);
-    }
 
-    const updatedLogs = addHistoryLog(
-      'BACKUP_CLOUD',
-      'Masuk Akun Google',
-      `Sesi Google aktif: ${profile.email}. Auto-Backup Cloud diaktifkan.`
-    );
-    setHistoryLogs(updatedLogs);
+      // Initial sync of current meetings
+      try {
+        const res = await uploadBackupToGoogleDrive(token, meetingsRef.current);
+        newAccount.lastSyncTime = res.modifiedTime;
+        setGoogleAccountState(newAccount);
+        saveStoredGoogleAccount(newAccount);
+      } catch (e) {
+        console.warn('Initial backup on login failed:', e);
+      }
+
+      const updatedLogs = addHistoryLog(
+        'BACKUP_CLOUD',
+        'Masuk Akun Google',
+        `Sesi Google aktif: ${profile.email}. Auto-Backup Cloud diaktifkan.`
+      );
+      setHistoryLogs(updatedLogs);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      console.warn('Google OAuth error, auto-fallback to email session:', errMsg);
+      if (
+        errMsg.includes('origin') ||
+        errMsg.includes('invalid_client') ||
+        errMsg.includes('popup_closed') ||
+        errMsg.includes('Popup window closed')
+      ) {
+        handleLoginWithEmail(fallbackEmail);
+        return;
+      }
+      throw err;
+    }
   };
 
   const handleLoginWithEmail = (email: string, name?: string) => {

@@ -41,34 +41,11 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [clientIdInput, setClientIdInput] = useState<string>(() => getGoogleClientId());
 
-  const onSignInClick = async (emailOverride?: string) => {
+  const handleDirectLogin = (email: string, name?: string) => {
     setIsLoading(true);
     setErrorMsg(null);
-    const targetEmail = (emailOverride || emailInput).trim();
     try {
-      const activeClientId = clientIdInput.trim() || getGoogleClientId();
-      if (activeClientId) {
-        setGoogleClientId(activeClientId);
-      }
-
-      // Try Google GIS OAuth popup if initialized and available in browser
-      const hasGis =
-        typeof window !== 'undefined' &&
-        !!(window as unknown as { google?: { accounts?: { oauth2?: unknown } } }).google?.accounts?.oauth2;
-      if (hasGis && activeClientId) {
-        try {
-          await handleLoginGoogle();
-          return;
-        } catch (oauthErr) {
-          console.warn('Google Identity Services popup dismissed, falling back to direct email session:', oauthErr);
-          if (targetEmail) {
-            handleLoginWithEmail(targetEmail);
-            return;
-          }
-          throw oauthErr;
-        }
-      }
-
+      const targetEmail = email.trim();
       if (!targetEmail) {
         throw new Error(
           'Silakan pilih salah satu Akun Google terdeteksi atau ketikkan alamat email Google Anda.'
@@ -77,8 +54,28 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
       if (!targetEmail.includes('@') || !targetEmail.includes('.')) {
         throw new Error('Format email tidak valid. Masukkan format email lengkap (misal: alfarrezald@gmail.com).');
       }
+      handleLoginWithEmail(targetEmail, name);
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      handleLoginWithEmail(targetEmail);
+  const onSignInClick = (emailOverride?: string) => {
+    const targetEmail = (emailOverride || emailInput).trim();
+    handleDirectLogin(targetEmail);
+  };
+
+  const onTryOAuthPopup = async () => {
+    setIsLoading(true);
+    setErrorMsg(null);
+    try {
+      const activeClientId = clientIdInput.trim() || getGoogleClientId();
+      if (activeClientId) {
+        setGoogleClientId(activeClientId);
+      }
+      await handleLoginGoogle(emailInput);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : String(err));
     } finally {
@@ -197,7 +194,7 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
                   type="button"
                   onClick={() => {
                     setEmailInput(acc.email);
-                    onSignInClick(acc.email);
+                    handleDirectLogin(acc.email, acc.label);
                   }}
                   className={`p-2.5 sm:p-3 rounded-xl border-2 border-black text-left transition-all shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-between group cursor-pointer ${
                     acc.isPrimary ? 'bg-[#FEF9C3] hover:bg-[#FFE600]' : 'bg-[#FFFDF5] hover:bg-yellow-100'
@@ -324,20 +321,29 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
                 placeholder="misal: 123456789-abcdef.apps.googleusercontent.com"
                 className="w-full bg-white border-2 border-black text-black font-mono text-xs rounded-xl px-3 py-2 shadow-[2px_2px_0px_0px_#000] focus:outline-none"
               />
-              <div className="flex items-center justify-end gap-2 pt-1">
+              <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => setShowConfig(false)}
-                  className="px-3 py-1.5 text-xs font-bold text-black hover:underline cursor-pointer"
+                  onClick={onTryOAuthPopup}
+                  className="px-3 py-1.5 bg-[#E0F2FE] hover:bg-sky-200 text-black border border-black rounded-lg text-xs font-bold shadow-[1px_1px_0px_0px_#000] cursor-pointer"
                 >
-                  Batal
+                  Tes Otorisasi Popup OAuth
                 </button>
-                <button
-                  type="submit"
-                  className="px-3.5 py-1.5 bg-[#A7F3D0] hover:bg-emerald-300 text-black border-2 border-black rounded-lg text-xs font-black shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer"
-                >
-                  Simpan Client ID
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowConfig(false)}
+                    className="px-3 py-1.5 text-xs font-bold text-black hover:underline cursor-pointer"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-3.5 py-1.5 bg-[#A7F3D0] hover:bg-emerald-300 text-black border-2 border-black rounded-lg text-xs font-black shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer"
+                  >
+                    Simpan Client ID
+                  </button>
+                </div>
               </div>
             </form>
           )}
