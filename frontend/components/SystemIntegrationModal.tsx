@@ -58,7 +58,7 @@ export const SystemIntegrationModal: React.FC = () => {
             </span>
           </div>
           <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-            Gateway multi-model dengan kuota enterprise tanpa filter sensorik, bertugas menyusun ringkasan eksekutif, mengekstrak keputusan sidang, dan merumuskan checklist penugasan otomatis.
+            Gateway pemrosesan naskah sidang untuk penyusunan ringkasan eksekutif, perumusan ketetapan musyawarah, dan penyusunan daftar penugasan komisi.
           </p>
           <div className="pt-2 border-t border-white/[0.05] space-y-1 font-mono text-[11px] text-zinc-400">
             <div className="flex justify-between">

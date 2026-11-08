@@ -218,7 +218,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
   });
 
   const [promptText, setPromptText] = useState<string>('');
-  const [selectedEngine, setSelectedEngine] = useState<string>('9Router (ag/gemini-3.8-flash)');
+  const [selectedEngine, setSelectedEngine] = useState<string>(
+    'Tata Naskah Dinas MPK 13 (Standar Utama)'
+  );
   const [folderPath, setFolderPath] = useState<string>('/home/suzirz/Documents/Project/NotulenJMM/notulen');
   const [newPillInput, setNewPillInput] = useState<string>('');
   const [showAddPill, setShowAddPill] = useState<boolean>(false);
