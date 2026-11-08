@@ -1,6 +1,6 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Globe,
   Smartphone,
@@ -181,41 +181,33 @@ interface CraftStudioViewProps {
 }
 
 export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession }) => {
-  // Config state with lazy initializers from localStorage
-  const [config, setConfig] = useState<CraftStudioConfig>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
-      } catch (e) {
-        console.warn('Could not load custom craft config from localStorage', e);
-      }
-    }
-    return PRESET_MPK;
-  });
-
+  const [config, setConfig] = useState<CraftStudioConfig>(PRESET_MPK);
   const [activePreset, setActivePreset] = useState<'mpk' | 'craft' | 'organisasi' | 'custom'>('mpk');
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [saveStatus, setSaveStatus] = useState<string>('');
 
   // Interactive selection states
   const [activeTabMode, setActiveTabMode] = useState<'tab1' | 'tab2'>('tab1');
-  const [selectedCardId, setSelectedCardId] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
+  const [selectedCardId, setSelectedCardId] = useState<string>('pleno');
+
+  // Hydrate custom config from localStorage once on client mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
       try {
         const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved);
+          setConfig(parsed);
           if (parsed.cards && parsed.cards.length > 0) {
-            return parsed.cards[0].id;
+            setSelectedCardId(parsed.cards[0].id);
           }
         }
       } catch (e) {
-        console.warn('Could not parse cards from localStorage', e);
+        console.warn('Could not load custom craft config from localStorage', e);
       }
-    }
-    return 'pleno';
-  });
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [promptText, setPromptText] = useState<string>('');
   const [selectedEngine, setSelectedEngine] = useState<string>(
@@ -326,14 +318,14 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6">
       {/* Top Bar: Pill Switcher, Presets & Mode Toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0e1017]/90 border border-white/[0.08] rounded-2xl p-3 sm:px-4 shadow-xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0e1017]/90 border border-white/[0.08] rounded-2xl p-3 sm:px-4">
         {/* Hardware-style Pill Tabs */}
         <div className="inline-flex items-center bg-black/40 p-1 rounded-xl border border-white/[0.05]">
           <button
             onClick={() => setActiveTabMode('tab1')}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] ${
               activeTabMode === 'tab1'
-                ? 'bg-zinc-800 text-white shadow-sm border border-white/10'
+                ? 'bg-zinc-800 text-white border border-white/10'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -357,7 +349,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
             onClick={() => setActiveTabMode('tab2')}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] ${
               activeTabMode === 'tab2'
-                ? 'bg-zinc-800 text-white shadow-sm border border-white/10'
+                ? 'bg-zinc-800 text-white border border-white/10'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -450,7 +442,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
       </div>
 
       {/* Main Studio Frame (Double-Bezel Hardware Architecture) */}
-      <div className="bg-[#111319] border border-white/[0.08] rounded-3xl p-6 sm:p-9 shadow-2xl relative space-y-8">
+      <div className="bg-[#111319] border border-white/[0.08] rounded-2xl p-6 sm:p-9 relative space-y-8">
         {/* Hero Header */}
         <div className="text-center space-y-2 max-w-2xl mx-auto">
           {isEditMode ? (
@@ -530,13 +522,13 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   onClick={() => !isEditMode && setSelectedCardId(card.id)}
                   className={`relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between min-h-[148px] active:scale-[0.99] ${
                     isSelected
-                      ? 'bg-[#161822] border border-sky-500/80 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.15)] ring-1 ring-sky-500/30'
+                      ? 'bg-[#161822] border border-sky-500/80 ring-1 ring-sky-500/30'
                       : 'bg-[#13151d] border border-white/[0.06] hover:border-white/15 hover:bg-[#171924]'
                   }`}
                 >
                   {/* Selected Checkmark Badge */}
                   {isSelected && (
-                    <div className="absolute top-3.5 right-3.5 w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center shadow-sm">
+                    <div className="absolute top-3.5 right-3.5 w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center">
                       <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                     </div>
                   )}
@@ -639,7 +631,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
           {/* Textarea Box */}
           <div className="space-y-3">
-            <div className="relative rounded-2xl bg-[#13151d] border border-white/[0.08] focus-within:border-white/20 transition-all p-4 shadow-inner">
+            <div className="relative rounded-2xl bg-[#13151d] border border-white/[0.08] focus-within:border-white/20 transition-all p-4">
               {isEditMode && (
                 <div className="mb-2 pb-2 border-b border-white/[0.06] flex items-center justify-between">
                   <span className="text-[10px] text-amber-400 font-mono">Edit Teks Placeholder:</span>
@@ -803,7 +795,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           {/* Start Action Button (Linear-tier Button-in-Button Architecture) */}
           <button
             onClick={handleStart}
-            className="group flex items-center justify-center gap-3 px-6 py-2.5 bg-white text-zinc-950 font-semibold text-xs rounded-xl shadow-lg hover:bg-zinc-200 active:scale-[0.98] transition-all self-stretch md:self-auto cursor-pointer"
+            className="group flex items-center justify-center gap-3 px-6 py-2.5 bg-white text-zinc-950 font-semibold text-xs rounded-xl hover:bg-zinc-200 active:scale-[0.98] transition-all self-stretch md:self-auto cursor-pointer"
           >
             <span>Mulai Sesi Rapat</span>
             <div className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">

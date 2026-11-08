@@ -31,7 +31,7 @@ export const SecretaryGuideModal: React.FC<SecretaryGuideModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-      <div className="bg-[#0e0f14] border border-white/10 rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-[#0e0f14] border border-white/10 rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 border-b border-white/[0.08] flex items-center justify-between bg-[#12141c]">
           <div className="flex items-center gap-3">

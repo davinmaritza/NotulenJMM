@@ -101,7 +101,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
   if (!meeting) {
     return (
-      <div className="bg-[#0f1014] border border-white/[0.08] rounded-3xl p-10 sm:p-14 text-center space-y-4 shadow-2xl">
+      <div className="bg-[#0f1014] border border-white/[0.08] rounded-2xl p-10 sm:p-14 text-center space-y-4">
         <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
           <FileText className="w-8 h-8" />
         </div>
@@ -630,56 +630,56 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
   // 5. Generate WhatsApp Formatted Text
   const generateWhatsAppText = () => {
-    let wa = `*🏛️ RISALAH & NOTULENSI RESMI SIDANG*\n`;
+    let wa = `*RISALAH & NOTULENSI RESMI SIDANG*\n`;
     wa += `*MAJELIS PERWAKILAN KELAS (MPK) SMK NEGERI 13 BANDUNG*\n`;
-    wa += `━━━━━━━━━━━━━━━━━━━━━\n\n`;
-    wa += `📋 *Agenda:* ${meeting.title}\n`;
-    wa += `🗓️ *Hari/Tanggal:* ${meeting.date}\n`;
-    wa += `📍 *Tempat:* ${meeting.location}\n`;
-    wa += `👥 *Penyelenggara:* ${meeting.organizer}\n`;
-    wa += `👑 *Pimpinan:* ${meeting.leaderName || 'Presidium Sidang MPK 13'}\n`;
-    wa += `✍️ *Notulis:* ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}\n`;
+    wa += `──────────────────────────────────────\n\n`;
+    wa += `*Agenda:* ${meeting.title}\n`;
+    wa += `*Hari/Tanggal:* ${meeting.date}\n`;
+    wa += `*Tempat:* ${meeting.location}\n`;
+    wa += `*Penyelenggara:* ${meeting.organizer}\n`;
+    wa += `*Pimpinan Sidang:* ${meeting.leaderName || 'Presidium Sidang MPK 13'}\n`;
+    wa += `*Notulis Sidang:* ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}\n`;
     if (meeting.secretaryNotes) {
-      wa += `📝 *Catatan Pengarah:* _${meeting.secretaryNotes}_\n`;
+      wa += `*Catatan Pengarah:* _${meeting.secretaryNotes}_\n`;
     }
     wa += `\n`;
 
-    wa += `*I. 📌 RINGKASAN EKSEKUTIF*\n`;
+    wa += `*I. RINGKASAN EKSEKUTIF*\n`;
     wa += `${meeting.executiveSummary || 'Belum ada ringkasan eksekutif.'}\n\n`;
 
     if (meeting.agendas.length > 0) {
-      wa += `*II. 📝 AGENDA & POKOK BAHASAN*\n`;
+      wa += `*II. AGENDA & POKOK BAHASAN*\n`;
       meeting.agendas.forEach((ag, idx) => {
         wa += `*${idx + 1}. ${ag.title}*\n`;
         ag.discussionPoints.forEach((pt) => {
-          wa += `   • ${pt}\n`;
+          wa += `   - ${pt}\n`;
         });
         wa += `\n`;
       });
     }
 
     if (meeting.decisions.length > 0) {
-      wa += `*III. ⚖️ KETETAPAN & KEPUTUSAN RESMI*\n`;
+      wa += `*III. KETETAPAN & KEPUTUSAN RESMI*\n`;
       meeting.decisions.forEach((dec) => {
-        wa += `▪️ *[${dec.number}]* ${dec.decisionText}\n`;
-        wa += `   _Kategori: ${dec.category} | Status: ${dec.status}_\n`;
+        wa += `[${dec.number}] ${dec.decisionText}\n`;
+        wa += `   Kategori: ${dec.category} | Status: ${dec.status}\n`;
       });
       wa += `\n`;
     }
 
     if (meeting.actionItems.length > 0) {
-      wa += `*IV. ✅ TINDAK LANJUT (ACTION ITEMS)*\n`;
+      wa += `*IV. TINDAK LANJUT & PENUGASAN (ACTION ITEMS)*\n`;
       meeting.actionItems.forEach((act) => {
-        const icon = act.status === 'COMPLETED' ? '☑️' : '◻️';
-        wa += `${icon} *${act.description}*\n`;
-        wa += `   👤 PJ: *${act.assignee}* | ⏱️ Batas Waktu: *${act.dueDate}*\n`;
+        const marker = act.status === 'COMPLETED' ? '[SELESAI]' : '[TERTUNDA]';
+        wa += `${marker} *${act.description}*\n`;
+        wa += `   Penanggung Jawab: *${act.assignee}* | Batas Waktu: *${act.dueDate}*\n`;
       });
       wa += `\n`;
     }
 
-    wa += `━━━━━━━━━━━━━━━━━━━━━\n`;
-    wa += `_Diverifikasi resmi oleh ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}_\n`;
-    wa += `_MPK SMK Negeri 13 Bandung_`;
+    wa += `──────────────────────────────────────\n`;
+    wa += `Diverifikasi resmi oleh ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}\n`;
+    wa += `Majelis Perwakilan Kelas SMK Negeri 13 Bandung`;
 
     return wa;
   };
@@ -828,7 +828,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     <div className="space-y-6">
       {/* Toast Notification Alert */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 p-4 bg-emerald-950/90 border border-emerald-500/40 text-emerald-200 rounded-2xl shadow-2xl flex items-center gap-3 text-xs animate-in slide-in-from-bottom-3 backdrop-blur-md">
+        <div className="fixed bottom-6 right-6 z-50 p-4 bg-emerald-950/90 border border-emerald-500/40 text-emerald-200 rounded-2xl flex items-center gap-3 text-xs animate-in slide-in-from-bottom-3 backdrop-blur-md">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
@@ -983,7 +983,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       </div>
 
       {/* Screen View: Executive Document Surface */}
-      <div className="bg-[#0e0f14] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-7">
+      <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-7">
         {/* Header & Control Actions */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 border-b border-white/[0.06] pb-6">
           <div className="space-y-2">
@@ -1038,7 +1038,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={openModificationModal}
                 title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1b1e2a] hover:bg-[#232738] text-white font-semibold rounded-xl text-xs border border-white/15 shadow-sm active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1b1e2a] hover:bg-[#232738] text-white font-semibold rounded-xl text-xs border border-white/15 active:scale-[0.985] transition-all cursor-pointer"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5 text-sky-400" />
                 <span>Modifikasi Format</span>
@@ -1064,7 +1064,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={shareToWhatsAppDirect}
                 title="Kirim naskah risalah langsung ke aplikasi WhatsApp / WhatsApp Web"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md shadow-emerald-950/40 border border-emerald-400/40 active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs border border-emerald-400/40 active:scale-[0.985] transition-all cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5 fill-current" />
                 <span>Kirim WA</span>
@@ -1084,7 +1084,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={() => window.print()}
                 title="Cetak langsung atau simpan dokumen PDF resmi ber-kop sekolah"
-                className="flex items-center gap-1.5 px-3 py-2 bg-white text-zinc-950 font-bold rounded-xl text-xs shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-2 bg-white text-zinc-950 font-bold rounded-xl text-xs hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>PDF</span>
@@ -1333,7 +1333,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       {/* MODAL 1: Pratinjau Pesan WhatsApp */}
       {showWaModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#101217] border border-white/15 rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl space-y-5 flex flex-col max-h-[90vh]">
+          <div className="bg-[#101217] border border-white/15 rounded-2xl max-w-2xl w-full p-6 sm:p-7 space-y-5 flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
@@ -1365,13 +1365,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             {/* Modal Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
               <span className="text-[11px] text-zinc-500 font-mono">
-                Format otomatis: bold (*), bullet (▪️/•), status icon
+                Format otomatis: bold (*), bullet (- / •), penomoran resmi
               </span>
 
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={copyWhatsApp}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs shadow-md transition-all cursor-pointer active:scale-[0.985]"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all cursor-pointer active:scale-[0.985]"
                 >
                   {copiedWa ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   <span>{copiedWa ? 'Tersalin ke Clipboard!' : 'Salin Pesan WA'}</span>
@@ -1393,7 +1393,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       {/* MODAL 2: MODIFIKASI FORMAT & NASKAH SIDANG LENGKAP */}
       {isModifying && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in overflow-y-auto">
-          <div className="bg-[#0f1015] border border-white/15 rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] flex flex-col my-auto">
+          <div className="bg-[#0f1015] border border-white/15 rounded-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 max-h-[92vh] flex flex-col my-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div className="flex items-center gap-3">
@@ -1805,7 +1805,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 <button
                   type="button"
                   onClick={handleApplyModifications}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-white text-zinc-950 hover:bg-zinc-200 font-bold rounded-xl text-xs shadow-md transition-all cursor-pointer active:scale-[0.985]"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-white text-zinc-950 hover:bg-zinc-200 font-bold rounded-xl text-xs transition-all cursor-pointer active:scale-[0.985]"
                 >
                   <Save className="w-3.5 h-3.5 text-zinc-950" />
                   <span>Terapkan Perubahan Format &amp; Naskah</span>

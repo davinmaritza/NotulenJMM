@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Top: Institution Emblem & Branding */}
         <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#13151d] border border-white/10 flex items-center justify-center text-white font-bold text-sm tracking-tight shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] select-none">
+            <div className="w-10 h-10 rounded-xl bg-[#13151d] border border-white/10 flex items-center justify-center text-white font-bold text-sm tracking-tight select-none">
               NJ
             </div>
             <div>
@@ -112,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => handleSelectTab('craft', '/')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 currentTab === 'craft'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
+                  ? 'bg-zinc-800 text-white font-semibold border border-white/10'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -127,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => handleSelectTab('dashboard', '/arsip')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 currentTab === 'dashboard'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
+                  ? 'bg-zinc-800 text-white font-semibold border border-white/10'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -151,7 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => handleSelectTab('record', '/record')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 currentTab === 'record'
-                  ? 'bg-rose-950/60 text-rose-200 border border-rose-500/30 font-semibold shadow-sm'
+                  ? 'bg-rose-950/60 text-rose-200 border border-rose-500/30 font-semibold'
                   : isRecording
                   ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
@@ -172,7 +172,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => handleSelectTab('notulen', '/notulen')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 currentTab === 'notulen'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
+                  ? 'bg-zinc-800 text-white font-semibold border border-white/10'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -194,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onClick={() => handleSelectTab('actions', '/tasks')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 currentTab === 'actions'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
+                  ? 'bg-zinc-800 text-white font-semibold border border-white/10'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >

@@ -44,47 +44,42 @@ interface MeetingContextType {
 const MeetingContext = createContext<MeetingContextType | undefined>(undefined);
 
 export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [meetings, setMeetings] = useState<Meeting[]>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) return parsed;
-        }
-      } catch (e) {
-        console.warn('Failed to parse stored meetings:', e);
-      }
-    }
-    return [];
-  });
-
-  const [activeMeetingId, setActiveMeetingId] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed[0].id;
-        }
-      } catch {
-        // ignore
-      }
-    }
-    return null;
-  });
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
 
   const [isRecording] = useState<boolean>(false);
   const [isSynthesizing, setIsSynthesizing] = useState<boolean>(false);
 
-  // Sync to localStorage
+  // Hydrate from localStorage once on client mount
   useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setMeetings(parsed);
+            setActiveMeetingId(parsed[0].id);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to parse stored meetings:', e);
+      }
+      setIsHydrated(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Sync to localStorage only after hydration
+  useEffect(() => {
+    if (!isHydrated) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(meetings));
     } catch (e) {
       console.warn('Failed to store meetings in localStorage:', e);
     }
-  }, [meetings]);
+  }, [meetings, isHydrated]);
 
   const activeMeeting =
     meetings.find((m) => m.id === activeMeetingId) || (meetings.length > 0 ? meetings[0] : null);

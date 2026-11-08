@@ -20,6 +20,7 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
+  X,
 } from 'lucide-react';
 
 export default function ArsipPage() {
@@ -101,7 +102,7 @@ export default function ArsipPage() {
     <div className="space-y-8">
       {/* Linear-Tier Editorial KPI Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 shadow-lg space-y-1.5">
+        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 space-y-1.5">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">
               Total Sesi Sidang
@@ -114,7 +115,7 @@ export default function ArsipPage() {
           <p className="text-[11px] text-zinc-500 font-mono">Terdokumentasi resmi</p>
         </div>
 
-        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 shadow-lg space-y-1.5">
+        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 space-y-1.5">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">
               Ketetapan Pleno
@@ -127,7 +128,7 @@ export default function ArsipPage() {
           <p className="text-[11px] text-emerald-400/90 font-mono">100% Disahkan Forum</p>
         </div>
 
-        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 shadow-lg space-y-1.5">
+        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 space-y-1.5">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">
               Penugasan Komisi
@@ -141,7 +142,7 @@ export default function ArsipPage() {
           <p className="text-[11px] text-zinc-500 font-mono">Komitmen terealisasi</p>
         </div>
 
-        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 shadow-lg space-y-1.5">
+        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 space-y-1.5">
           <div className="flex items-center justify-between text-zinc-400">
             <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">
               Format Risalah
@@ -171,7 +172,7 @@ export default function ArsipPage() {
             handleCreateNewMeeting();
             router.push('/record');
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 rounded-xl text-xs font-semibold shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all shrink-0 cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 rounded-xl text-xs font-semibold hover:bg-zinc-200 active:scale-[0.985] transition-all shrink-0 cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
           Buat Sesi Sidang Baru
@@ -194,10 +195,10 @@ export default function ArsipPage() {
             {searchQuery && (
               <button
                 onClick={() => handleSearchChange('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1"
                 title="Hapus Pencarian"
               >
-                ✕
+                <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
@@ -258,7 +259,7 @@ export default function ArsipPage() {
 
       {/* Empty State vs Meeting Cards List */}
       {meetings.length === 0 ? (
-        <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
+        <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-2xl p-10 sm:p-14 text-center space-y-5">
           <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
             <FileText className="w-8 h-8" />
           </div>
@@ -273,7 +274,7 @@ export default function ArsipPage() {
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => router.push('/record')}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
             >
               <Mic className="w-4 h-4 text-rose-500" />
               <span>Rekam Voice Note Sidang</span>
@@ -288,7 +289,7 @@ export default function ArsipPage() {
           </div>
         </div>
       ) : filteredMeetings.length === 0 ? (
-        <div className="bg-[#0e0f14] border border-white/[0.08] rounded-3xl p-10 text-center space-y-4 shadow-xl">
+        <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-10 text-center space-y-4">
           <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
             <Search className="w-6 h-6" />
           </div>
@@ -323,7 +324,7 @@ export default function ArsipPage() {
                 }}
                 className={`p-5 rounded-2xl border transition-all cursor-pointer bg-[#0e0f14] active:scale-[0.99] ${
                   meet.id === activeMeetingId
-                    ? 'border-sky-500/80 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.12)] ring-1 ring-sky-500/30'
+                    ? 'border-sky-500/80 ring-1 ring-sky-500/30'
                     : 'border-white/[0.06] hover:border-white/15 hover:bg-[#14161f]'
                 }`}
               >
@@ -425,7 +426,7 @@ export default function ArsipPage() {
                       onClick={() => handlePageChange(p)}
                       className={`w-7 h-7 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
                         p === safeCurrentPage
-                          ? 'bg-white text-zinc-950 shadow-sm'
+                          ? 'bg-white text-zinc-950 font-bold'
                           : 'bg-[#141620] text-zinc-400 hover:text-white border border-white/[0.06]'
                       }`}
                     >

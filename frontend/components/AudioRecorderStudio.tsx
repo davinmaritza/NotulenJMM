@@ -16,6 +16,7 @@ import {
   Save,
   CheckCircle2,
   RotateCcw,
+  HelpCircle,
 } from 'lucide-react';
 import { AudioSegment } from '../lib/types';
 import { transcribeAudioApi } from '@/lib/api';
@@ -329,7 +330,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
   };
 
   return (
-    <div className="bg-[#0e0f14] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+    <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-6">
       {/* Studio Header & Mode Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
         <div>
@@ -352,7 +353,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             onClick={() => setStudioMode('record')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               studioMode === 'record'
-                ? 'bg-zinc-800 text-white shadow-sm border border-white/10'
+                ? 'bg-zinc-800 text-white border border-white/10'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -363,7 +364,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             onClick={() => setStudioMode('upload')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               studioMode === 'upload'
-                ? 'bg-zinc-800 text-white shadow-sm border border-white/10'
+                ? 'bg-zinc-800 text-white border border-white/10'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -376,7 +377,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       {/* Friendly Secretary Help Box */}
       <div className="p-4 rounded-2xl bg-[#12141c] border border-white/[0.07] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-start gap-3">
-          <span className="text-base">💡</span>
+          <HelpCircle className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
           <div className="space-y-0.5">
             <p className="font-semibold text-white">Petunjuk Mudah untuk Notulis:</p>
             <p className="text-zinc-400 leading-relaxed text-[11px]">
@@ -434,10 +435,10 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               <span className="text-[11px] font-mono text-zinc-300">
                 {isRecording
                   ? isPaused
-                    ? '⏸️ Rekaman Dijeda (Paused)'
-                    : '🔴 Sedang Merekam Suara Sidang'
+                    ? 'Rekaman Dijeda (Pause)'
+                    : 'Sedang Merekam Suara Sidang'
                   : recordedBlob
-                  ? '⏹️ Rekaman Selesai (Siap Diproses)'
+                  ? 'Rekaman Selesai (Siap Diproses)'
                   : 'Siap Merekam'}
               </span>
             </div>
@@ -453,7 +454,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               <>
                 <button
                   onClick={startLiveRecording}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl text-xs shadow-lg active:scale-[0.98] transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl text-xs active:scale-[0.98] transition-all cursor-pointer"
                 >
                   <Mic className="w-4 h-4" />
                   <span>{recordedBlob ? 'Rekam Ulang Voice Note' : 'Mulai Rekam Voice Note'}</span>
@@ -490,7 +491,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
 
                 <button
                   onClick={stopRecording}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-white text-zinc-950 font-bold rounded-xl text-xs shadow-md hover:bg-zinc-200 active:scale-[0.98] transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-white text-zinc-950 font-bold rounded-xl text-xs hover:bg-zinc-200 active:scale-[0.98] transition-all cursor-pointer"
                 >
                   <Square className="w-4 h-4 fill-current" />
                   <span>Selesai Rekam</span>
@@ -657,7 +658,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         <button
           onClick={handleProcessUploadedAudio}
           disabled={isProcessing || (!selectedFile && !recordedBlob)}
-          className="w-full sm:w-auto group flex items-center justify-center gap-3 px-6 py-2.5 bg-white text-zinc-950 font-semibold text-xs rounded-xl shadow-lg hover:bg-zinc-200 active:scale-[0.985] transition-all disabled:opacity-40 cursor-pointer"
+          className="w-full sm:w-auto group flex items-center justify-center gap-3 px-6 py-2.5 bg-white text-zinc-950 font-semibold text-xs rounded-xl hover:bg-zinc-200 active:scale-[0.985] transition-all disabled:opacity-40 cursor-pointer"
         >
           {isProcessing ? (
             <>

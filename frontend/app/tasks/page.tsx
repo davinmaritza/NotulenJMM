@@ -18,7 +18,7 @@ export default function TasksPage() {
           onUpdateMeeting={handleUpdateActiveMeeting}
         />
       ) : (
-        <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-2xl">
+        <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-2xl p-10 sm:p-14 text-center space-y-5">
           <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
             <CheckCircle2 className="w-8 h-8 text-amber-400" />
           </div>
@@ -33,7 +33,7 @@ export default function TasksPage() {
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => router.push('/record')}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
             >
               <Mic className="w-4 h-4 text-rose-500" />
               <span>Mulai dengan Rekam Audio</span>

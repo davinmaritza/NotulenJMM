@@ -37,13 +37,13 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   return (
-    <div className="bg-[#0e0f14] border border-white/[0.08] rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 transition-all">
+    <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-5 sm:p-6 space-y-4 transition-all">
       {/* Top Banner Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
-              {greeting}, Davin Maritza <span className="animate-wave inline-block">👋</span>
+              {greeting}, Davin Maritza
             </span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               Notulis Siap
@@ -82,7 +82,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
             onClick={() => onSelectTab('craft')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 active:scale-[0.985] ${
               activeTab === 'craft'
-                ? 'bg-[#151824] border-sky-500/60 shadow-md ring-1 ring-sky-500/20'
+                ? 'bg-[#151824] border-sky-500/60 ring-1 ring-sky-500/20'
                 : 'bg-[#10121a] border-white/[0.06] hover:border-white/15 hover:bg-[#131622]'
             }`}
           >
@@ -110,7 +110,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
             onClick={() => onSelectTab('record')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 active:scale-[0.985] ${
               activeTab === 'record'
-                ? 'bg-rose-950/30 border-rose-500/60 shadow-md ring-1 ring-rose-500/20'
+                ? 'bg-rose-950/30 border-rose-500/60 ring-1 ring-rose-500/20'
                 : 'bg-[#10121a] border-white/[0.06] hover:border-white/15 hover:bg-[#131622]'
             }`}
           >
@@ -138,7 +138,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
             onClick={() => onSelectTab('notulen')}
             className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 active:scale-[0.985] ${
               activeTab === 'notulen'
-                ? 'bg-emerald-950/30 border-emerald-500/60 shadow-md ring-1 ring-emerald-500/20'
+                ? 'bg-emerald-950/30 border-emerald-500/60 ring-1 ring-emerald-500/20'
                 : 'bg-[#10121a] border-white/[0.06] hover:border-white/15 hover:bg-[#131622]'
             }`}
           >

@@ -70,7 +70,7 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
   ];
 
   return (
-    <div className="bg-[#0e0f14] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+    <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-6">
       {/* Editorial Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
         <div>
@@ -91,7 +91,7 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
         <button
           onClick={() => onSynthesizeNotulen(secretaryNotes)}
           disabled={isSynthesizing || transcript.length === 0}
-          className="group flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl bg-white text-zinc-950 font-semibold text-xs shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all disabled:opacity-35 cursor-pointer"
+          className="group flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl bg-white text-zinc-950 font-semibold text-xs hover:bg-zinc-200 active:scale-[0.985] transition-all disabled:opacity-35 cursor-pointer"
         >
           {isSynthesizing ? (
             <>

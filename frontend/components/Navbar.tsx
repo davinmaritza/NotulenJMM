@@ -1,7 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React from 'react';
-import { Mic, FileText, CheckSquare, Activity, Compass, BookOpen } from 'lucide-react';
+import { Mic, FileText, CheckSquare, Compass, BookOpen } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;
@@ -13,10 +13,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, isRecor
   return (
     <header className="sticky top-0 z-50 pt-3 px-3 sm:px-6 pointer-events-none">
       <div className="max-w-6xl mx-auto pointer-events-auto">
-        <div className="bg-[#0b0c10]/95 backdrop-blur-2xl border border-white/[0.08] rounded-2xl px-3.5 py-2.5 shadow-2xl shadow-black/80 flex items-center justify-between gap-3 transition-all">
+        <div className="bg-[#0b0c10]/95 backdrop-blur-2xl border border-white/[0.08] rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-3 transition-all">
           {/* Official Emblem & Monogram */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#14161d] border border-white/10 flex items-center justify-center text-white font-bold text-xs tracking-tight shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)] select-none">
+            <div className="w-9 h-9 rounded-xl bg-[#14161d] border border-white/10 flex items-center justify-center text-white font-bold text-xs tracking-tight select-none">
               NJ
             </div>
             <div>
@@ -38,7 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, isRecor
               onClick={() => setActiveTab('craft')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 activeTab === 'craft'
-                  ? 'bg-zinc-800 text-white shadow-sm border border-white/10 font-semibold'
+                  ? 'bg-zinc-800 text-white border border-white/10 font-semibold'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -50,7 +50,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, isRecor
               onClick={() => setActiveTab('dashboard')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 activeTab === 'dashboard'
-                  ? 'bg-zinc-800 text-white shadow-sm border border-white/10 font-semibold'
+                  ? 'bg-zinc-800 text-white border border-white/10 font-semibold'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -77,7 +77,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, isRecor
               onClick={() => setActiveTab('notulen')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 activeTab === 'notulen'
-                  ? 'bg-zinc-800 text-white shadow-sm border border-white/10 font-semibold'
+                  ? 'bg-zinc-800 text-white border border-white/10 font-semibold'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -89,24 +89,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, isRecor
               onClick={() => setActiveTab('actions')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
                 activeTab === 'actions'
-                  ? 'bg-zinc-800 text-white shadow-sm border border-white/10 font-semibold'
+                  ? 'bg-zinc-800 text-white border border-white/10 font-semibold'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
               <CheckSquare className="w-3.5 h-3.5 text-zinc-300" />
               <span>Ketetapan & Tugas</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('status')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
-                activeTab === 'status'
-                  ? 'bg-zinc-800 text-white shadow-sm border border-white/10 font-semibold'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
-              }`}
-            >
-              <Activity className="w-3.5 h-3.5 text-zinc-300" />
-              <span>Status Server</span>
             </button>
           </nav>
 
