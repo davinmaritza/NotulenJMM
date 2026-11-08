@@ -484,7 +484,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       lastSavedAt: timestamp,
       audioUrl: audioUrl,
       attendees: [
-        { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
+        { id: 'att-1', name: 'Pimpinan Sidang', role: 'Leader', present: true },
         { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
         { id: 'att-3', name: 'Perwakilan Komisi', role: 'Member', present: true },
       ],
