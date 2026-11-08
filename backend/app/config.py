@@ -32,6 +32,8 @@ class Settings(BaseSettings):
         "https://localhost",
         "capacitor://localhost",
         "http://localhost",
+        "https://jmm.davinn.net",
+        "http://jmm.davinn.net",
     ]
 
 settings = Settings()
