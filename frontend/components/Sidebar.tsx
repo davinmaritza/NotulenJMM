@@ -8,7 +8,6 @@ import {
   Mic,
   BookOpen,
   CheckSquare,
-  Activity,
   X,
   Clock,
   HelpCircle,
@@ -49,8 +48,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ? 'notulen'
       : pathname === '/tasks'
       ? 'actions'
-      : pathname === '/status'
-      ? 'status'
       : 'craft');
 
   const handleSelectTab = (tab: string, route: string) => {
@@ -187,10 +184,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* Group 3: Keputusan & Telemetri */}
+          {/* Group 3: Keputusan & Tindak Lanjut */}
           <div className="space-y-1.5">
             <span className="px-3 text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-500 font-semibold block">
-              Kontrol &amp; Sistem
+              Ketetapan &amp; Tugas
             </span>
 
             <button
@@ -206,21 +203,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span>Ketetapan &amp; Tugas</span>
               </div>
               <span className="text-[10px] font-mono text-zinc-500">PIC</span>
-            </button>
-
-            <button
-              onClick={() => handleSelectTab('status', '/status')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
-                currentTab === 'status'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Activity className="w-4 h-4 text-zinc-300" />
-                <span>Status Sistem</span>
-              </div>
-              <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20" />
             </button>
           </div>
 
