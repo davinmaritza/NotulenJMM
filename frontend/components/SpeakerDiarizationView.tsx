@@ -7,8 +7,9 @@ import { AudioSegment } from '../lib/types';
 interface SpeakerDiarizationViewProps {
   transcript: AudioSegment[];
   onUpdateTranscript: (updated: AudioSegment[]) => void;
-  onSynthesizeNotulen: () => void;
+  onSynthesizeNotulen: (notes?: string) => void;
   isSynthesizing: boolean;
+  initialSecretaryNotes?: string;
 }
 
 export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
@@ -16,9 +17,14 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
   onUpdateTranscript,
   onSynthesizeNotulen,
   isSynthesizing,
+  initialSecretaryNotes,
 }) => {
   const [editingSpeaker, setEditingSpeaker] = useState<string | null>(null);
   const [newSpeakerName, setNewSpeakerName] = useState<string>('');
+  const [secretaryNotes, setSecretaryNotes] = useState<string>(
+    initialSecretaryNotes ||
+      'Susun kata-kata secara formal dan lugas berstandar MPK SMK Negeri 13 Bandung. Tonjolkan keputusan resmi, alokasi anggaran dana jika ada, serta daftar penugasan PIC dan batas waktu.'
+  );
 
   const uniqueSpeakers = Array.from(new Set(transcript.map((s) => s.speaker)));
 
@@ -31,6 +37,25 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
     setEditingSpeaker(null);
     setNewSpeakerName('');
   };
+
+  const presetNotes = [
+    {
+      label: 'Formal & Yuridis MPK 13',
+      text: 'Gunakan tata bahasa formal keputusan pleno majelis, rujuk pasal AD/ART relevan, dan pastikan setiap klausul keputusan bernomor resmi.',
+    },
+    {
+      label: 'Rangkuman Padat & Tajam',
+      text: 'Buat ringkasan eksekutif sesingkat mungkin dalam 3-4 kalimat padat langsung ke inti persoalan tanpa basa-basi pengantar.',
+    },
+    {
+      label: 'Fokus Keputusan & Anggaran Dana',
+      text: 'Fokuskan perumusan notulensi pada angka anggaran biaya, sumber dana kas, dan pengesahan nominal rupiah per divisi kepengurusan.',
+    },
+    {
+      label: 'Fokus Penugasan (PIC & Deadline)',
+      text: 'Ekstraksi seluruh komitmen lisan menjadi daftar tugas operasional yang jelas dengan penanggung jawab spesifik dan tenggat waktu tegas.',
+    },
+  ];
 
   return (
     <div className="bg-[#111318] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
@@ -50,7 +75,7 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
 
         {/* Trigger 9Router Synthesizer (High-Contrast Button-in-Button) */}
         <button
-          onClick={onSynthesizeNotulen}
+          onClick={() => onSynthesizeNotulen(secretaryNotes)}
           disabled={isSynthesizing || transcript.length === 0}
           className="group flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl bg-white text-zinc-950 font-semibold text-xs shadow-md hover:bg-zinc-200 active:scale-[0.98] transition-all disabled:opacity-40 cursor-pointer"
         >
@@ -69,6 +94,41 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
             </>
           )}
         </button>
+      </div>
+
+      {/* AI Secretary Notes Steering Box */}
+      <div className="p-4 sm:p-5 bg-black/40 border border-white/[0.07] rounded-2xl space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-sky-400" />
+            <label className="text-xs font-semibold text-white">
+              Catatan / Arahan Susunan Kata untuk AI (Notes Sekretaris)
+            </label>
+          </div>
+          <span className="text-[10px] font-mono text-zinc-500">9Router AI Context Prompt</span>
+        </div>
+
+        <textarea
+          rows={2}
+          value={secretaryNotes}
+          onChange={(e) => setSecretaryNotes(e.target.value)}
+          placeholder="Tuliskan arahan khusus untuk AI: misal gaya bahasa formal, fokus anggaran dana, atau penugasan tenggat waktu..."
+          className="w-full bg-[#14161f] border border-white/[0.08] rounded-xl p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-sky-500/40 leading-relaxed font-sans"
+        />
+
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          <span className="text-[10px] font-mono text-zinc-500 mr-1">Preset Cepat:</span>
+          {presetNotes.map((p, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setSecretaryNotes(p.text)}
+              className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/[0.06] transition-all cursor-pointer"
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Speaker Mapping Quick Bar */}
@@ -98,13 +158,13 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
                     />
                     <button
                       onClick={() => handleRenameSpeaker(spk)}
-                      className="px-2 py-0.5 bg-white text-zinc-950 rounded text-[11px] font-semibold"
+                      className="px-2 py-0.5 bg-white text-zinc-950 rounded text-[11px] font-semibold cursor-pointer"
                     >
                       OK
                     </button>
                     <button
                       onClick={() => setEditingSpeaker(null)}
-                      className="text-zinc-500 hover:text-white text-[11px]"
+                      className="text-zinc-500 hover:text-white text-[11px] cursor-pointer"
                     >
                       Batal
                     </button>
@@ -117,7 +177,7 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
                         setEditingSpeaker(spk);
                         setNewSpeakerName(spk);
                       }}
-                      className="text-zinc-500 hover:text-white p-0.5 rounded transition-colors"
+                      className="text-zinc-500 hover:text-white p-0.5 rounded transition-colors cursor-pointer"
                       title="Ubah nama pembicara"
                     >
                       <Edit2 className="w-3 h-3" />

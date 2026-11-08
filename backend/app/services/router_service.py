@@ -71,13 +71,22 @@ class RouterService:
             '      "status": "PENDING"\n'
             "    }\n"
             "  ]\n"
-            "}"
+            "}\n\n"
+            "PENTING: Jika terdapat 'Instruksi Khusus Sekretaris', sesuaikan pilihan kata, gaya bahasa (formal/ringkas/detail), dan fokus risalah notulen mengikuti instruksi tersebut."
         )
+
+        notes_section = ""
+        if req.additional_notes and req.additional_notes.strip():
+            notes_section = (
+                f"\n=== INSTRUKSI KHUSUS SEKRETARIS (ARAHAN SUSUNAN KATA & GAYA NOTULEN) ===\n"
+                f"{req.additional_notes.strip()}\n"
+                f"Patuhi arahan di atas dalam pemilihan kata, penekanan poin penting, serta rumusan keputusan dan tugas.\n"
+            )
 
         user_prompt = (
             f"Judul Rapat: {req.meeting_title}\n"
             f"Penyelenggara: {req.organizer}\n"
-            f"Catatan Tambahan: {req.additional_notes or 'Tidak ada'}\n\n"
+            f"{notes_section}\n"
             f"Transkrip Rapat Berlabel Pembicara:\n{transcript_text}"
         )
 

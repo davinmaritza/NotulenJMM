@@ -37,14 +37,27 @@ export async function checkBackendHealth(): Promise<HealthCheckResult> {
 }
 
 export async function transcribeAudioApi(
-  audioBlob: Blob,
-  meetingId?: string
+  audioInput: Blob | File,
+  meetingId?: string,
+  originalFilename?: string
 ): Promise<{ segments: AudioSegment[]; durationSeconds: number; online: boolean }> {
   try {
     const formData = new FormData();
-    const file = new File([audioBlob], `recording-${Date.now()}.webm`, {
-      type: audioBlob.type || 'audio/webm',
-    });
+    let file: File;
+    if (audioInput instanceof File) {
+      file = audioInput;
+    } else {
+      const ext = audioInput.type.includes('mp3')
+        ? 'mp3'
+        : audioInput.type.includes('wav')
+        ? 'wav'
+        : audioInput.type.includes('m4a')
+        ? 'm4a'
+        : 'webm';
+      file = new File([audioInput], originalFilename || `recording-${Date.now()}.${ext}`, {
+        type: audioInput.type || 'audio/webm',
+      });
+    }
     formData.append('audio', file);
     if (meetingId) {
       formData.append('meeting_id', meetingId);
@@ -120,7 +133,8 @@ export async function transcribeAudioApi(
 export async function synthesizeNotulenApi(
   meetingTitle: string,
   transcript: AudioSegment[],
-  organizer: string = 'MPK SMK Negeri 13 Bandung'
+  organizer: string = 'MPK SMK Negeri 13 Bandung',
+  additionalNotes?: string
 ): Promise<{
   executiveSummary: string;
   agendas: MeetingAgenda[];
@@ -132,6 +146,7 @@ export async function synthesizeNotulenApi(
     const payload = {
       meeting_title: meetingTitle,
       organizer: organizer,
+      additional_notes: additionalNotes || null,
       transcript: transcript.map((s) => ({
         id: s.id,
         speaker: s.speaker,

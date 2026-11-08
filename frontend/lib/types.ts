@@ -52,4 +52,5 @@ export interface Meeting {
   agendas: MeetingAgenda[];
   decisions: Decision[];
   actionItems: ActionItem[];
+  secretaryNotes?: string;
 }
