@@ -546,11 +546,14 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
 
                 {showConfigClientId && (
                   <div className="space-y-2 pt-2 border-t border-black/15">
-                    <p className="text-[11px] text-zinc-600 font-medium leading-relaxed">
+                    <label htmlFor="custom-google-client-id" className="text-[11px] text-zinc-600 font-medium leading-relaxed block">
                       Jika Anda memiliki Google Cloud Console Client ID sendiri, masukkan di sini.
                       Nilai ini disimpan di browser lokal Anda.
-                    </p>
+                    </label>
                     <input
+                      id="custom-google-client-id"
+                      name="customGoogleClientId"
+                      aria-label="Google Cloud Console Client ID"
                       type="text"
                       value={clientIdInput}
                       onChange={(e) => {

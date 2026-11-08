@@ -111,8 +111,10 @@ export const BeginnerGuideModal: React.FC<BeginnerGuideModalProps> = ({ isOpen, 
             </button>
           </div>
 
-          <label className="hidden sm:flex items-center gap-1.5 text-[11px] font-bold text-zinc-800 cursor-pointer select-none">
+          <label htmlFor="beginner-mode-toggle" className="hidden sm:flex items-center gap-1.5 text-[11px] font-bold text-zinc-800 cursor-pointer select-none">
             <input
+              id="beginner-mode-toggle"
+              name="beginnerModeToggle"
               type="checkbox"
               checked={isBeginnerMode}
               onChange={(e) => setIsBeginnerMode(e.target.checked)}

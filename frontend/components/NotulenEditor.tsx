@@ -1432,7 +1432,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           <div className="p-5 bg-[#FEF3C7] border-2 border-black rounded-2xl shadow-[3px_3px_0px_0px_#000]">
             {isEditingMostImportant ? (
               <div className="space-y-3">
+                <label htmlFor="inline-most-important-input" className="sr-only">
+                  Keputusan Paling Utama (Most Important - Wajib Diisi)
+                </label>
                 <textarea
+                  id="inline-most-important-input"
+                  name="inlineMostImportant"
+                  aria-label="Keputusan Paling Utama (Most Important - Wajib Diisi)"
                   value={mostImportantInput}
                   onChange={(e) => setMostImportantInput(e.target.value)}
                   rows={3}
@@ -1495,7 +1501,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           <div className="p-5 bg-[#FFFDF5] border-2 border-black rounded-2xl shadow-[3px_3px_0px_0px_#000]">
             {isEditingSummary ? (
               <div className="space-y-3">
+                <label htmlFor="inline-summary-input" className="sr-only">
+                  Ringkasan Eksekutif Hasil Sidang
+                </label>
                 <textarea
+                  id="inline-summary-input"
+                  name="inlineSummary"
+                  aria-label="Ringkasan Eksekutif Hasil Sidang"
                   value={summaryInput}
                   onChange={(e) => setSummaryInput(e.target.value)}
                   rows={4}
@@ -1829,9 +1841,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             <div className="flex-1 overflow-y-auto space-y-6 pr-1">
               {/* Standar Format Selector */}
               <div className="space-y-2">
-                <label className="text-xs font-black text-black block">
+                <p className="text-xs font-black text-black block">
                   Pilih Standar Format Tata Naskah:
-                </label>
+                </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
                   {[
                     {
@@ -2018,9 +2030,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               {/* Agendas Editor */}
               <div className="space-y-3 border-t-2 border-black/10 pt-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-black text-black">
+                  <span className="text-xs font-black text-black">
                     Pokok Bahasan &amp; Agenda Pleno ({editAgendas.length})
-                  </label>
+                  </span>
                   <button
                     type="button"
                     onClick={handleAddAgenda}
@@ -2108,9 +2120,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               {/* Decisions Editor */}
               <div className="space-y-3 border-t-2 border-black/10 pt-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-black text-black">
+                  <span className="text-xs font-black text-black">
                     Ketetapan &amp; Keputusan Resmi Majelis ({editDecisions.length})
-                  </label>
+                  </span>
                   <button
                     type="button"
                     onClick={handleAddModalDecision}
@@ -2191,9 +2203,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               {/* Action Items Editor */}
               <div className="space-y-3 border-t-2 border-black/10 pt-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-black text-black">
+                  <span className="text-xs font-black text-black">
                     Tindak Lanjut &amp; Penugasan Komisi ({editActionItems.length})
-                  </label>
+                  </span>
                   <button
                     type="button"
                     onClick={handleAddModalActionItem}
@@ -2358,7 +2370,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
             {/* Quick Presets */}
             <div className="space-y-2">
-              <label className="text-[11px] font-black text-black block">Pilihan Cepat:</label>
+              <span className="text-[11px] font-black text-black block">Pilihan Cepat:</span>
               <div className="grid grid-cols-2 gap-2">
                 {getQuickDatePresets().map((preset) => (
                   <button
@@ -2376,12 +2388,17 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
             {/* Manual Selector */}
             <div className="space-y-3 border-t-2 border-black/10 pt-3">
-              <label className="text-[11px] font-black text-black block">Pengaturan Tanggal &amp; Jam Manual:</label>
+              <span className="text-[11px] font-black text-black block">Pengaturan Tanggal &amp; Jam Manual:</span>
               
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <div>
-                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Hari:</span>
+                  <label htmlFor="modal-date-picker-day" className="text-[10px] font-bold text-zinc-700 block mb-1">
+                    Hari:
+                  </label>
                   <select
+                    id="modal-date-picker-day"
+                    name="modalDatePickerDay"
+                    aria-label="Hari Sidang"
                     value={selectedDayName}
                     onChange={(e) => setSelectedDayName(e.target.value)}
                     className="w-full bg-[#FFFDF5] border-2 border-black rounded-lg px-2 py-1.5 text-xs font-bold shadow-[1px_1px_0px_0px_#000]"
@@ -2393,8 +2410,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Tanggal:</span>
+                  <label htmlFor="modal-date-picker-date" className="text-[10px] font-bold text-zinc-700 block mb-1">
+                    Tanggal:
+                  </label>
                   <input
+                    id="modal-date-picker-date"
+                    name="modalDatePickerDate"
+                    aria-label="Tanggal Sidang"
                     type="number"
                     min={1}
                     max={31}
@@ -2405,8 +2427,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Bulan:</span>
+                  <label htmlFor="modal-date-picker-month" className="text-[10px] font-bold text-zinc-700 block mb-1">
+                    Bulan:
+                  </label>
                   <select
+                    id="modal-date-picker-month"
+                    name="modalDatePickerMonth"
+                    aria-label="Bulan Sidang"
                     value={selectedMonth}
                     onChange={(e) => setSelectedMonth(e.target.value)}
                     className="w-full bg-[#FFFDF5] border-2 border-black rounded-lg px-2 py-1.5 text-xs font-bold shadow-[1px_1px_0px_0px_#000]"
@@ -2418,8 +2445,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Tahun:</span>
+                  <label htmlFor="modal-date-picker-year" className="text-[10px] font-bold text-zinc-700 block mb-1">
+                    Tahun:
+                  </label>
                   <input
+                    id="modal-date-picker-year"
+                    name="modalDatePickerYear"
+                    aria-label="Tahun Sidang"
                     type="number"
                     min={2020}
                     max={2035}
@@ -2432,8 +2464,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Jam Mulai (WIB):</span>
+                  <label htmlFor="modal-date-picker-start-time" className="text-[10px] font-bold text-zinc-700 block mb-1">
+                    Jam Mulai (WIB):
+                  </label>
                   <input
+                    id="modal-date-picker-start-time"
+                    name="modalDatePickerStartTime"
+                    aria-label="Jam Mulai Sidang"
                     type="text"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
@@ -2442,8 +2479,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Jam Selesai (WIB):</span>
+                  <label htmlFor="modal-date-picker-end-time" className="text-[10px] font-bold text-zinc-700 block mb-1">
+                    Jam Selesai (WIB):
+                  </label>
                   <input
+                    id="modal-date-picker-end-time"
+                    name="modalDatePickerEndTime"
+                    aria-label="Jam Selesai Sidang"
                     type="text"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}

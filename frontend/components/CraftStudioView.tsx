@@ -980,9 +980,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
               {/* Pilihan Ikon */}
               <div className="space-y-2 pt-1">
-                <label className="text-[11px] font-black text-black uppercase tracking-wider block">
+                <span className="text-[11px] font-black text-black uppercase tracking-wider block">
                   Pilih Ikon Kartu:
-                </label>
+                </span>
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {[
                     { name: 'Sliders', label: 'Custom / Opsi' },

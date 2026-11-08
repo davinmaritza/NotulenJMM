@@ -181,7 +181,7 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
 
           {/* Quick-Pick Detected Accounts from PC */}
           <div className="space-y-2 pt-1 border-t-2 border-black/10">
-            <label className="text-[11px] font-black text-black flex items-center justify-between">
+            <div className="text-[11px] font-black text-black flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
                 <span>Akun Google Terdeteksi di PC / Browser:</span>
@@ -189,7 +189,7 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
               <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#A7F3D0] border border-black text-black">
                 1-Klik Masuk
               </span>
-            </label>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {DETECTED_ACCOUNTS.map((acc) => (
                 <button
@@ -216,11 +216,13 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
           {/* Primary CTA: Google Sign-in Button & Email Input */}
           <div className="space-y-3 pt-2">
             <div className="space-y-1.5">
-              <label className="text-xs font-black text-black flex items-center justify-between">
+              <label htmlFor="gate-email-input" className="text-xs font-black text-black flex items-center justify-between">
                 <span>Alamat Email Google / Akun Notulis Lainnya:</span>
                 <span className="text-[10px] font-mono text-zinc-600 font-bold">Sesi Tersimpan</span>
               </label>
               <input
+                id="gate-email-input"
+                name="gateEmail"
                 type="email"
                 value={emailInput}
                 onChange={(e) => {
@@ -309,8 +311,14 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
               <p className="text-[11px] text-zinc-600">
                 Masukkan Client ID dari Google Cloud Console organisasi Anda jika diperlukan:
               </p>
+              <label htmlFor="gate-client-id-input" className="sr-only">
+                Konfigurasi Google Client ID OAuth 2.0
+              </label>
               <input
+                id="gate-client-id-input"
+                name="googleClientId"
                 type="text"
+                aria-label="Konfigurasi Google Client ID OAuth 2.0"
                 value={clientIdInput}
                 onChange={(e) => setClientIdInput(e.target.value)}
                 placeholder="misal: 123456789-abcdef.apps.googleusercontent.com"

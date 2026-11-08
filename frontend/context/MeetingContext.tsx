@@ -126,15 +126,26 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     async (meetingsToSync: Meeting[], silentAuth = true) => {
       const storedAccount = getStoredGoogleAccount();
       if (!storedAccount.connected) return;
+      if (storedAccount.autoSyncEnabled === false && silentAuth) return;
 
       const clientId = getGoogleClientId();
       if (!clientId) return;
 
       let token = storedAccount.accessToken;
+
+      // If user is in direct email session mode without an OAuth token,
+      // skip background Drive API uploads without triggering silent popup attempts.
+      if (!token && silentAuth) {
+        return;
+      }
+
       const isTokenExpired =
         !token || !storedAccount.tokenExpiresAt || Date.now() >= storedAccount.tokenExpiresAt - 60000;
 
       if (isTokenExpired) {
+        if (!token && silentAuth) {
+          return;
+        }
         try {
           token = await requestGoogleAccessToken(clientId, silentAuth);
           const updatedAcc: GoogleDriveAccount = {
@@ -145,7 +156,12 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           setGoogleAccountState(updatedAcc);
           saveStoredGoogleAccount(updatedAcc);
         } catch (authErr) {
-          console.warn('Silent auto-sync token refresh failed:', authErr);
+          if (silentAuth) {
+            // Silently stop background refresh when popup/cookies are constrained
+            setLastAutoSyncStatus('idle');
+            return;
+          }
+          console.warn('Google Drive token refresh failed:', authErr);
           setLastAutoSyncStatus('error');
           return;
         }
