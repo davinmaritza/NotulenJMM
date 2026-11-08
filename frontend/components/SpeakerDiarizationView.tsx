@@ -25,8 +25,7 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
   const [editingSegmentText, setEditingSegmentText] = useState<string>('');
 
   const [secretaryNotes, setSecretaryNotes] = useState<string>(
-    initialSecretaryNotes ||
-      'Susun kata-kata secara formal dan lugas berstandar MPK SMK Negeri 13 Bandung. Tonjolkan keputusan resmi, alokasi anggaran dana jika ada, serta daftar penugasan PIC dan batas waktu.'
+    initialSecretaryNotes || ''
   );
 
   const uniqueSpeakers = Array.from(new Set(transcript.map((s) => s.speaker)));

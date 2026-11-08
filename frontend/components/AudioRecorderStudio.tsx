@@ -46,9 +46,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
 
   // Shared Meeting Metadata
   const [meetingTitle, setMeetingTitle] = useState<string>('');
-  const [secretaryNotes, setSecretaryNotes] = useState<string>(
-    'Susun kata-kata secara formal dan lugas berstandar MPK SMK Negeri 13 Bandung. Tonjolkan keputusan resmi, alokasi anggaran dana jika ada, serta daftar penugasan PIC dan batas waktu.'
-  );
+  const [secretaryNotes, setSecretaryNotes] = useState<string>('');
 
   // File Upload State
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -616,7 +614,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         <button
           onClick={() =>
             setSecretaryNotes(
-              'Susun kata-kata secara formal dan lugas berstandar MPK SMK Negeri 13 Bandung. Tonjolkan keputusan resmi, alokasi anggaran dana jika ada, serta daftar penugasan PIC dan batas waktu.'
+              'Gunakan tata bahasa formal keputusan pleno majelis, rujuk pasal AD/ART relevan, dan pastikan setiap klausul keputusan bernomor resmi.'
             )
           }
           className="px-3 py-1.5 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-[11px] font-bold shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"

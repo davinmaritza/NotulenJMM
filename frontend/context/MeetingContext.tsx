@@ -84,8 +84,13 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setMeetings(parsed);
-            setActiveMeetingId(parsed[0].id);
+            const sanitized = parsed.map((m: Meeting) =>
+              m.secretaryNotes?.includes('Susun kata-kata secara formal')
+                ? { ...m, secretaryNotes: '' }
+                : m
+            );
+            setMeetings(sanitized);
+            setActiveMeetingId(sanitized[0].id);
           }
         }
         setGoogleAccountState(getStoredGoogleAccount());
@@ -361,8 +366,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       organizer: 'MPK SMK Negeri 13 Bandung',
       status: 'DRAFT',
       durationSeconds: 0,
-      secretaryNotes:
-        'Susun kata-kata secara formal dan lugas berstandar MPK SMK Negeri 13 Bandung. Tonjolkan keputusan resmi, alokasi anggaran dana jika ada, serta daftar penugasan PIC dan batas waktu.',
+      secretaryNotes: '',
       formatStandard: 'TATA_NASKAH_DINAS',
       lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
       attendees: [
