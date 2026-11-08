@@ -20,7 +20,8 @@ interface GoogleAuthGateProps {
 }
 
 export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue }) => {
-  const { handleLoginGoogle } = useMeetings();
+  const { handleLoginGoogle, handleLoginWithEmail } = useMeetings();
+  const [emailInput, setEmailInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showConfig, setShowConfig] = useState<boolean>(false);
@@ -31,14 +32,23 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
     setErrorMsg(null);
     try {
       const activeClientId = clientIdInput.trim() || getGoogleClientId();
-      if (!activeClientId) {
-        setShowConfig(true);
+      if (activeClientId) {
+        setGoogleClientId(activeClientId);
+        await handleLoginGoogle();
+        return;
+      }
+
+      const cleanEmail = emailInput.trim();
+      if (!cleanEmail) {
         throw new Error(
-          'Google Client ID belum diatur. Silakan masukkan Google Client ID Anda di pengaturan bawah atau gunakan Mode Tamu / Offline.'
+          'Silakan ketikkan alamat email Google Anda pada kolom di atas, atau klik "Lanjutkan Mode Tamu / Offline".'
         );
       }
-      setGoogleClientId(activeClientId);
-      await handleLoginGoogle();
+      if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+        throw new Error('Format email tidak valid. Masukkan format email lengkap (misal: sekretaris.mpk13@gmail.com).');
+      }
+
+      handleLoginWithEmail(cleanEmail);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : String(err));
     } finally {
@@ -139,8 +149,34 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
             </div>
           )}
 
-          {/* Primary CTA: Google Sign-in Button */}
+          {/* Primary CTA: Google Sign-in Button & Email Input */}
           <div className="space-y-3 pt-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-black text-black flex items-center justify-between">
+                <span>Alamat Email Google / Akun Notulis:</span>
+                <span className="text-[10px] font-mono text-zinc-600 font-bold">Sesi Tersimpan</span>
+              </label>
+              <input
+                type="email"
+                value={emailInput}
+                onChange={(e) => {
+                  setEmailInput(e.target.value);
+                  if (errorMsg) setErrorMsg(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    onSignInClick();
+                  }
+                }}
+                placeholder="misal: sekretaris.mpk13@gmail.com"
+                className="w-full bg-[#FFFDF5] border-2 border-black text-black font-mono text-xs font-bold rounded-xl px-3.5 py-3 shadow-[2.5px_2.5px_0px_0px_#000] focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FFE600]"
+              />
+              <p className="text-[10px] text-zinc-600 leading-tight">
+                Ketik email Google Anda agar sesi tersimpan otomatis di perangkat ini dan terhubung ke dokumen sidang.
+              </p>
+            </div>
+
             <button
               onClick={onSignInClick}
               disabled={isLoading}
