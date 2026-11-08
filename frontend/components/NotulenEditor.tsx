@@ -101,13 +101,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
   if (!meeting) {
     return (
-      <div className="bg-[#0f1014] border border-white/[0.08] rounded-2xl p-10 sm:p-14 text-center space-y-4">
-        <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
-          <FileText className="w-8 h-8" />
+      <div className="bg-white border-[2.5px] border-black rounded-2xl p-10 sm:p-14 text-center space-y-4 shadow-[6px_6px_0px_0px_#000]">
+        <div className="w-16 h-16 rounded-2xl bg-[#FFD93D] border-2 border-black shadow-[3px_3px_0px_0px_#000] flex items-center justify-center mx-auto text-black">
+          <FileText className="w-8 h-8 stroke-[2.5]" />
         </div>
         <div className="space-y-1.5 max-w-md mx-auto">
-          <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">Belum Ada Sesi Sidang Terpilih</h2>
-          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+          <h2 className="text-base sm:text-lg font-black text-black tracking-tight">Belum Ada Sesi Sidang Terpilih</h2>
+          <p className="text-xs text-zinc-700 leading-relaxed font-sans font-medium">
             Pilih sesi dari arsip sidang atau mulai perekaman audio/voice note sekretaris untuk menyusun risalah dan keputusan resmi.
           </p>
         </div>
@@ -983,15 +983,15 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       </div>
 
       {/* Screen View: Executive Document Surface */}
-      <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-7">
+      <div className="bg-white border-[2.5px] border-black rounded-2xl p-6 sm:p-8 space-y-7 shadow-[6px_6px_0px_0px_#000]">
         {/* Header & Control Actions */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 border-b border-white/[0.06] pb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 border-b-2 border-black/10 pb-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-[0.15em] px-2.5 py-0.5 rounded-full bg-white/[0.05] text-zinc-300 border border-white/[0.08]">
+              <span className="text-[10px] font-black uppercase tracking-[0.15em] px-2.5 py-0.5 rounded-full bg-[#FFD93D] text-black border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
                 DOKUMEN SIDANG RESMI
               </span>
-              <span className="text-[11px] font-mono text-zinc-400 px-2 py-0.5 rounded bg-zinc-900 border border-white/[0.06]">
+              <span className="text-[11px] font-black text-black px-2.5 py-0.5 rounded bg-[#FFFDF5] border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
                 {meeting.formatStandard === 'RISALAH_PADAT'
                   ? 'Risalah Padat & Ketetapan Inti'
                   : meeting.formatStandard === 'RAPAT_KERJA_ANGGARAN'
@@ -1001,62 +1001,62 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   : 'Tata Naskah Dinas MPK 13'}
               </span>
               {meeting.lastSavedAt && (
-                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-black text-black bg-[#A7F3D0] border-2 border-black px-2.5 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000]">
                   Draf Tersimpan: {meeting.lastSavedAt}
                 </span>
               )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight leading-snug">
+            <h1 className="text-xl sm:text-2xl font-black text-black tracking-tight leading-snug">
               {meeting.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 font-mono text-[11px] pt-0.5">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-800 font-bold text-[11px] pt-0.5">
               <span className="flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+                <Calendar className="w-4 h-4 text-black stroke-[2.2]" />
                 {meeting.date}
               </span>
               <span className="flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-zinc-500" />
+                <MapPin className="w-4 h-4 text-black stroke-[2.2]" />
                 {meeting.location}
               </span>
               <span className="flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-zinc-500" />
+                <User className="w-4 h-4 text-black stroke-[2.2]" />
                 {meeting.organizer}
               </span>
               <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                <Clock className="w-4 h-4 text-black stroke-[2.2]" />
                 {Math.floor(meeting.durationSeconds / 60)} Menit Audio
               </span>
             </div>
           </div>
 
           {/* Primary Action Toolbar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0a0b10] border border-white/[0.06] p-2.5 rounded-2xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFFDF5] border-2 border-black p-3 rounded-2xl shadow-[3px_3px_0px_0px_#000]">
             {/* Group 1: Draf & Format */}
             <div className="flex items-center gap-2">
               <button
                 onClick={openModificationModal}
                 title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1b1e2a] hover:bg-[#232738] text-white font-semibold rounded-xl text-xs border border-white/15 active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black font-black rounded-xl text-xs border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
-                <SlidersHorizontal className="w-3.5 h-3.5 text-sky-400" />
+                <SlidersHorizontal className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                 <span>Modifikasi Format</span>
               </button>
 
               <button
                 onClick={handleManualSaveDraft}
                 title="Simpan status draf saat ini secara online ke penyimpanan lokal"
-                className="flex items-center gap-1.5 px-3 py-2 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#A7F3D0] hover:bg-emerald-300 text-black font-black border-2 border-black rounded-xl text-xs shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
-                <Save className="w-3.5 h-3.5 text-emerald-400" />
+                <Save className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                 <span>Simpan Draf</span>
               </button>
             </div>
 
             {/* Group 2: Ekspor Dokumen & Kirim WA */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="hidden xl:inline text-[10px] font-mono uppercase tracking-wider text-zinc-500 mr-1">
+              <span className="hidden xl:inline text-[10px] font-black uppercase tracking-wider text-black mr-1">
                 Ekspor:
               </span>
 
@@ -1064,7 +1064,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={shareToWhatsAppDirect}
                 title="Kirim naskah risalah langsung ke aplikasi WhatsApp / WhatsApp Web"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs border border-emerald-400/40 active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#4ECDC4] hover:bg-teal-400 text-black font-black rounded-xl text-xs border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5 fill-current" />
                 <span>Kirim WA</span>
@@ -1074,9 +1074,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={exportWord}
                 title="Unduh dokumen Microsoft Word (.doc) lengkap dengan kop dan tabel keputusan"
-                className="flex items-center gap-1.5 px-3 py-2 bg-[#161922] hover:bg-[#1e2330] text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#38BDF8] hover:bg-sky-400 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5 text-sky-400" />
+                <Download className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                 <span>Word</span>
               </button>
 
@@ -1084,9 +1084,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={() => window.print()}
                 title="Cetak langsung atau simpan dokumen PDF resmi ber-kop sekolah"
-                className="flex items-center gap-1.5 px-3 py-2 bg-white text-zinc-950 font-bold rounded-xl text-xs hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#FF6B6B] hover:bg-rose-500 text-black font-black border-2 border-black rounded-xl text-xs shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
-                <Printer className="w-3.5 h-3.5" />
+                <Printer className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                 <span>PDF</span>
               </button>
 
@@ -1094,9 +1094,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={exportExcel}
                 title="Unduh tabel rekapitulasi keputusan dan penugasan sidang dalam format Excel (.xls)"
-                className="flex items-center gap-1.5 px-3 py-2 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#86EFAC] hover:bg-green-400 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                <FileSpreadsheet className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                 <span>Excel</span>
               </button>
 
@@ -1104,9 +1104,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={exportTxt}
                 title="Unduh format teks polos terstruktur (.txt)"
-                className="flex items-center gap-1.5 px-2.5 py-2 bg-[#14161d] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-2.5 py-2 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
-                <FileCode className="w-3.5 h-3.5" />
+                <FileCode className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                 <span>TXT</span>
               </button>
 
@@ -1114,18 +1114,20 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <button
                 onClick={() => setShowWaModal(true)}
                 title="Buka pratinjau pesan teks format WhatsApp"
-                className="p-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-white border border-white/[0.08] rounded-xl text-xs transition-all cursor-pointer"
+                className="p-2 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-xs shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                aria-label="Buka pratinjau pesan WhatsApp"
               >
-                <Share2 className="w-3.5 h-3.5 text-emerald-400" />
+                <Share2 className="w-3.5 h-3.5 text-black stroke-[2.5]" />
               </button>
 
               {/* Salin MD */}
               <button
                 onClick={exportMarkdown}
                 title="Salin naskah Markdown"
-                className="p-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-white/[0.06] rounded-xl text-xs transition-all cursor-pointer"
+                className="p-2 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-xs shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                aria-label="Salin naskah Markdown"
               >
-                {copiedMd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedMd ? <Check className="w-3.5 h-3.5 text-emerald-700 stroke-[3]" /> : <Copy className="w-3.5 h-3.5 text-black stroke-[2.5]" />}
               </button>
             </div>
           </div>
@@ -1133,13 +1135,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
         {/* Secretary Notes Directive Indicator */}
         {meeting.secretaryNotes && (
-          <div className="p-4 bg-[#141721] border border-white/[0.08] rounded-2xl flex items-start gap-3">
-            <Sparkles className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
+          <div className="p-4 bg-[#FEF08A] border-2 border-black rounded-2xl flex items-start gap-3 shadow-[3px_3px_0px_0px_#000]">
+            <Sparkles className="w-5 h-5 text-black stroke-[2.5] shrink-0 mt-0.5" />
             <div className="space-y-0.5">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold block">
+              <span className="text-[10px] uppercase tracking-wider text-black font-black block">
                 Catatan Pengarah Notulis / Sekretaris
               </span>
-              <p className="text-xs text-zinc-300 leading-relaxed font-sans">{meeting.secretaryNotes}</p>
+              <p className="text-xs text-zinc-900 leading-relaxed font-sans font-medium">{meeting.secretaryNotes}</p>
             </div>
           </div>
         )}
@@ -1147,13 +1149,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
         {/* Section 1: Ringkasan Eksekutif */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-zinc-500 font-semibold">01</span>
-            <h2 className="text-xs font-mono uppercase tracking-[0.14em] text-zinc-300 font-semibold">
+            <span className="font-black text-xs text-black bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">01</span>
+            <h2 className="text-xs font-black uppercase tracking-[0.14em] text-black">
               Ringkasan Eksekutif Hasil Sidang
             </h2>
           </div>
-          <div className="p-5 bg-black/40 border border-white/[0.06] rounded-2xl">
-            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
+          <div className="p-5 bg-[#FFFDF5] border-2 border-black rounded-2xl shadow-[3px_3px_0px_0px_#000]">
+            <p className="text-xs sm:text-sm text-zinc-900 leading-relaxed font-sans font-medium">
               {meeting.executiveSummary ||
                 'Belum ada ringkasan eksekutif. Anda dapat menambahkannya melalui tombol "Modifikasi Format" atau memproses transkrip audio.'}
             </p>
@@ -1163,18 +1165,18 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
         {/* Section 2: Agenda & Pokok Bahasan */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-zinc-500 font-semibold">02</span>
-            <h2 className="text-xs font-mono uppercase tracking-[0.14em] text-zinc-300 font-semibold">
+            <span className="font-black text-xs text-black bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">02</span>
+            <h2 className="text-xs font-black uppercase tracking-[0.14em] text-black">
               Pokok Bahasan &amp; Agenda Pleno ({meeting.agendas.length})
             </h2>
           </div>
           <div className="space-y-3">
             {meeting.agendas.map((ag, idx) => (
-              <div key={idx} className="p-4 sm:p-5 bg-[#12141a] border border-white/[0.06] rounded-2xl space-y-2.5">
-                <h3 className="text-xs sm:text-sm font-semibold text-white">
+              <div key={idx} className="p-4 sm:p-5 bg-[#FFFDF5] border-2 border-black rounded-2xl space-y-2.5 shadow-[3px_3px_0px_0px_#000]">
+                <h3 className="text-xs sm:text-sm font-black text-black">
                   {idx + 1}. {ag.title}
                 </h3>
-                <ul className="space-y-1.5 pl-4 list-disc text-xs text-zinc-300 marker:text-zinc-600">
+                <ul className="space-y-1.5 pl-4 list-disc text-xs text-zinc-800 marker:text-black font-medium">
                   {ag.discussionPoints.map((pt, ptIdx) => (
                     <li key={ptIdx} className="leading-relaxed">
                       {pt}
@@ -1190,8 +1192,8 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs text-zinc-500 font-semibold">03</span>
-              <h2 className="text-xs font-mono uppercase tracking-[0.14em] text-zinc-300 font-semibold">
+              <span className="font-black text-xs text-black bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">03</span>
+              <h2 className="text-xs font-black uppercase tracking-[0.14em] text-black">
                 Ketetapan &amp; Keputusan Resmi Majelis ({meeting.decisions.length})
               </h2>
             </div>
@@ -1201,24 +1203,24 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             {meeting.decisions.map((dec) => (
               <div
                 key={dec.id}
-                className="p-4 bg-[#12141a] border border-white/[0.06] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-white/15 transition-all"
+                className="p-4 bg-[#FFFDF5] border-2 border-black rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px] text-zinc-400 font-semibold">[{dec.number}]</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-white/[0.06]">
+                    <span className="font-mono text-[10px] text-black font-black bg-yellow-100 border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">[{dec.number}]</span>
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-white text-black border border-black shadow-[1px_1px_0px_0px_#000]">
                       {dec.category}
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#A7F3D0] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
                       {dec.status}
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm font-medium text-white">{dec.decisionText}</p>
+                  <p className="text-xs sm:text-sm font-black text-black">{dec.decisionText}</p>
                   {dec.rationale && (
-                    <p className="text-[11px] text-zinc-400 italic">Pertimbangan: {dec.rationale}</p>
+                    <p className="text-[11px] text-zinc-700 italic font-medium">Pertimbangan: {dec.rationale}</p>
                   )}
                 </div>
-                <span className="text-[10px] text-zinc-500 font-mono shrink-0">{dec.date}</span>
+                <span className="text-[10px] text-zinc-700 font-mono font-bold shrink-0">{dec.date}</span>
               </div>
             ))}
 
@@ -1235,7 +1237,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 aria-label="Rumuskan ketetapan keputusan sidang baru"
                 value={newDecisionText}
                 onChange={(e) => setNewDecisionText(e.target.value)}
-                className="flex-1 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+                className="flex-1 bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
               />
               <label htmlFor="quick-add-decision-category" className="sr-only">
                 Kategori Keputusan Sidang
@@ -1246,7 +1248,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 aria-label="Kategori Keputusan Sidang"
                 value={newDecisionCategory}
                 onChange={(e) => setNewDecisionCategory(e.target.value as Decision['category'])}
-                className="bg-[#14161d] border border-white/[0.08] text-xs text-zinc-300 rounded-xl px-3 py-2 font-mono focus:outline-none cursor-pointer"
+                className="bg-white border-2 border-black text-xs text-black font-black rounded-xl px-3 py-2 shadow-[2px_2px_0px_0px_#000] focus:outline-none cursor-pointer"
               >
                 <option value="Organisasi">Organisasi</option>
                 <option value="Keuangan">Keuangan</option>
@@ -1256,9 +1258,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               </select>
               <button
                 type="submit"
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all border border-white/10 cursor-pointer"
+                className="px-4 py-2 bg-[#FFD93D] hover:bg-yellow-400 text-black rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
               >
-                <PlusCircle className="w-3.5 h-3.5" />
+                <PlusCircle className="w-4 h-4 stroke-[2.5]" />
                 <span>Sahkan</span>
               </button>
             </form>
@@ -1268,8 +1270,8 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
         {/* Section 4: Action Items (Tindak Lanjut) */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-zinc-500 font-semibold">04</span>
-            <h2 className="text-xs font-mono uppercase tracking-[0.14em] text-zinc-300 font-semibold">
+            <span className="font-black text-xs text-black bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">04</span>
+            <h2 className="text-xs font-black uppercase tracking-[0.14em] text-black">
               Tindak Lanjut &amp; Penugasan Komisi ({meeting.actionItems.length})
             </h2>
           </div>
@@ -1281,10 +1283,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 <div
                   key={act.id}
                   onClick={() => toggleActionStatus(act.id)}
-                  className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 select-none ${
+                  className={`p-3.5 rounded-2xl border-2 border-black transition-all cursor-pointer flex items-center justify-between gap-3 select-none ${
                     isDone
-                      ? 'bg-black/40 border-white/[0.04] text-zinc-500 line-through'
-                      : 'bg-[#12141a] border-white/[0.06] hover:border-white/15 text-white'
+                      ? 'bg-zinc-100 text-zinc-500 line-through shadow-[1.5px_1.5px_0px_0px_#000]'
+                      : 'bg-[#FFFDF5] hover:bg-white text-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1299,16 +1301,16 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                       checked={isDone}
                       onChange={() => toggleActionStatus(act.id)}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-4 h-4 rounded border-white/20 bg-zinc-900 accent-emerald-500 cursor-pointer"
+                      className="w-4 h-4 rounded border-2 border-black accent-black cursor-pointer"
                     />
-                    <span className="text-xs sm:text-sm font-medium">{act.description}</span>
+                    <span className="text-xs sm:text-sm font-black">{act.description}</span>
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-zinc-400 font-mono text-[11px] shrink-0">
-                    <span className="px-2 py-0.5 rounded bg-zinc-900 border border-white/[0.06]">
+                  <div className="flex items-center gap-3 text-xs text-zinc-800 font-bold text-[11px] shrink-0">
+                    <span className="px-2 py-0.5 rounded bg-white border border-black font-black shadow-[1px_1px_0px_0px_#000]">
                       PJ: {act.assignee}
                     </span>
-                    <span className="text-zinc-500">Tenggat: {act.dueDate}</span>
+                    <span className="text-zinc-700">Tenggat: {act.dueDate}</span>
                   </div>
                 </div>
               );
@@ -1327,7 +1329,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 aria-label="Rincian tugas atau komitmen aksi"
                 value={newActionTask}
                 onChange={(e) => setNewActionTask(e.target.value)}
-                className="flex-1 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+                className="flex-1 bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
               />
               <label htmlFor="quick-add-action-assignee" className="sr-only">
                 Penanggung Jawab (PIC)
@@ -1340,7 +1342,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 aria-label="Penanggung Jawab (PIC)"
                 value={newActionAssignee}
                 onChange={(e) => setNewActionAssignee(e.target.value)}
-                className="w-full sm:w-44 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+                className="w-full sm:w-44 bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
               />
               <label htmlFor="quick-add-action-duedate" className="sr-only">
                 Tenggat Waktu Tugas
@@ -1352,13 +1354,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 aria-label="Tenggat Waktu Tugas"
                 value={newActionDueDate}
                 onChange={(e) => setNewActionDueDate(e.target.value)}
-                className="bg-[#14161d] border border-white/[0.08] text-xs text-zinc-300 rounded-xl px-3 py-2 font-mono focus:outline-none cursor-pointer"
+                className="bg-white border-2 border-black text-xs text-black font-bold rounded-xl px-3 py-2 shadow-[2px_2px_0px_0px_#000] focus:outline-none cursor-pointer"
               />
               <button
                 type="submit"
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all border border-white/10 cursor-pointer"
+                className="px-4 py-2 bg-[#FFD93D] hover:bg-yellow-400 text-black rounded-xl text-xs font-black flex items-center justify-center gap-1.5 transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
               >
-                <PlusCircle className="w-3.5 h-3.5" />
+                <PlusCircle className="w-4 h-4 stroke-[2.5]" />
                 <span>Tambah</span>
               </button>
             </form>
@@ -1368,18 +1370,18 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
       {/* MODAL 1: Pratinjau Pesan WhatsApp */}
       {showWaModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#101217] border border-white/15 rounded-2xl max-w-2xl w-full p-6 sm:p-7 space-y-5 flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border-[3px] border-black rounded-2xl max-w-2xl w-full p-6 sm:p-7 space-y-5 flex flex-col max-h-[90vh] shadow-[8px_8px_0px_0px_#000]">
+            <div className="flex items-center justify-between border-b-2 border-black/10 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                  <Share2 className="w-4 h-4" />
+                <div className="w-9 h-9 rounded-xl bg-[#4ECDC4] border-2 border-black flex items-center justify-center text-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                  <Share2 className="w-4 h-4 stroke-[2.5]" />
                 </div>
                 <div>
-                  <h3 className="text-sm sm:text-base font-semibold text-white tracking-tight">
+                  <h3 className="text-sm sm:text-base font-black text-black tracking-tight">
                     Format Pesan WhatsApp (WA)
                   </h3>
-                  <p className="text-[11px] text-zinc-400 font-mono">
+                  <p className="text-[11px] text-zinc-700 font-bold">
                     Siap disebarkan ke grup WhatsApp pengurus MPK / OSIS SMK Negeri 13 Bandung
                   </p>
                 </div>
@@ -1387,37 +1389,38 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
               <button
                 onClick={() => setShowWaModal(false)}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+                className="text-black hover:bg-yellow-100 p-1.5 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
+                aria-label="Tutup Pratinjau WhatsApp"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
             {/* WA Text Preview Area */}
-            <div className="flex-1 overflow-y-auto p-4 bg-black/60 border border-white/[0.08] rounded-2xl font-mono text-xs text-zinc-200 whitespace-pre-wrap leading-relaxed selection:bg-emerald-500/30">
+            <div className="flex-1 overflow-y-auto p-4 bg-[#FFFDF5] border-2 border-black rounded-2xl font-mono text-xs text-black whitespace-pre-wrap leading-relaxed shadow-[3px_3px_0px_0px_#000] selection:bg-[#FFE600]">
               {generateWhatsAppText()}
             </div>
 
             {/* Modal Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-              <span className="text-[11px] text-zinc-500 font-mono">
+              <span className="text-[11px] text-zinc-700 font-bold">
                 Format otomatis: bold (*), bullet (- / •), penomoran resmi
               </span>
 
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={copyWhatsApp}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs transition-all cursor-pointer active:scale-[0.985]"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-[#A7F3D0] hover:bg-emerald-300 text-black font-black border-2 border-black rounded-xl text-xs shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                 >
-                  {copiedWa ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copiedWa ? <Check className="w-4 h-4 stroke-[3]" /> : <Copy className="w-4 h-4 stroke-[2.5]" />}
                   <span>{copiedWa ? 'Tersalin ke Clipboard!' : 'Salin Pesan WA'}</span>
                 </button>
 
                 <button
                   onClick={shareToWhatsAppDirect}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold border border-white/10 transition-all cursor-pointer active:scale-[0.985]"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FFD93D] hover:bg-yellow-400 text-black font-black rounded-xl text-xs border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                 >
-                  <Send className="w-3.5 h-3.5 text-emerald-400" />
+                  <Send className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Kirim Langsung</span>
                 </button>
               </div>
@@ -1428,19 +1431,19 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
       {/* MODAL 2: MODIFIKASI FORMAT & NASKAH SIDANG LENGKAP */}
       {isModifying && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in overflow-y-auto">
-          <div className="bg-[#0f1015] border border-white/15 rounded-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 max-h-[92vh] flex flex-col my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in overflow-y-auto">
+          <div className="bg-white border-[3px] border-black rounded-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 max-h-[92vh] flex flex-col my-auto shadow-[8px_8px_0px_0px_#000]">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+            <div className="flex items-center justify-between border-b-2 border-black/10 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-                  <SlidersHorizontal className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-2xl bg-[#C4B5FD] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_0px_#000]">
+                  <SlidersHorizontal className="w-5 h-5 stroke-[2.5]" />
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
+                  <h3 className="text-base sm:text-lg font-black text-black tracking-tight">
                     Modifikasi Format &amp; Naskah Risalah Sidang
                   </h3>
-                  <p className="text-xs text-zinc-400 font-sans">
+                  <p className="text-xs text-zinc-700 font-medium">
                     Sesuaikan standar tata naskah dinas, ubah rincian agenda, keputusan pleno, dan komitmen penugasan
                   </p>
                 </div>
@@ -1448,9 +1451,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
               <button
                 onClick={() => setIsModifying(false)}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+                className="text-black hover:bg-yellow-100 p-1.5 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
+                aria-label="Tutup Modal Modifikasi"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 stroke-[2.5]" />
               </button>
             </div>
 
@@ -1458,7 +1462,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             <div className="flex-1 overflow-y-auto space-y-6 pr-1">
               {/* Standar Format Selector */}
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-zinc-300 block">
+                <label className="text-xs font-black text-black block">
                   Pilih Standar Format Tata Naskah:
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
@@ -1488,14 +1492,14 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                       key={fmt.key}
                       type="button"
                       onClick={() => setEditFormatStandard(fmt.key)}
-                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`p-3 rounded-xl border-2 border-black text-left transition-all cursor-pointer ${
                         editFormatStandard === fmt.key
-                          ? 'bg-sky-950/40 border-sky-500/60 ring-1 ring-sky-500/30'
-                          : 'bg-[#14161f] border-white/[0.06] hover:border-white/15'
+                          ? 'bg-[#FFD93D] shadow-[3px_3px_0px_0px_#000] text-black font-black'
+                          : 'bg-[#FFFDF5] border-black/70 hover:border-black text-black font-bold shadow-[1.5px_1.5px_0px_0px_#000]'
                       }`}
                     >
-                      <p className="text-xs font-semibold text-white">{fmt.title}</p>
-                      <p className="text-[10px] text-zinc-400 mt-1">{fmt.desc}</p>
+                      <p className="text-xs font-black text-black">{fmt.title}</p>
+                      <p className="text-[10px] text-zinc-700 font-medium mt-1">{fmt.desc}</p>
                     </button>
                   ))}
                 </div>
@@ -1504,7 +1508,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               {/* General Metadata Form */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label htmlFor="edit-modal-title" className="text-[11px] font-semibold text-zinc-400">Judul / Agenda Sidang:</label>
+                  <label htmlFor="edit-modal-title" className="text-[11px] font-black text-black">Judul / Agenda Sidang:</label>
                   <input
                     id="edit-modal-title"
                     name="edit-modal-title"
@@ -1512,12 +1516,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
                     aria-label="Judul atau Agenda Sidang"
-                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="edit-modal-date" className="text-[11px] font-semibold text-zinc-400">Waktu &amp; Tanggal:</label>
+                  <label htmlFor="edit-modal-date" className="text-[11px] font-black text-black">Waktu &amp; Tanggal:</label>
                   <input
                     id="edit-modal-date"
                     name="edit-modal-date"
@@ -1525,12 +1529,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     value={editDate}
                     onChange={(e) => setEditDate(e.target.value)}
                     aria-label="Waktu dan Tanggal Sidang"
-                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="edit-modal-location" className="text-[11px] font-semibold text-zinc-400">Ruangan / Tempat:</label>
+                  <label htmlFor="edit-modal-location" className="text-[11px] font-black text-black">Ruangan / Tempat:</label>
                   <input
                     id="edit-modal-location"
                     name="edit-modal-location"
@@ -1538,12 +1542,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     value={editLocation}
                     onChange={(e) => setEditLocation(e.target.value)}
                     aria-label="Ruangan atau Tempat Sidang"
-                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="edit-modal-organizer" className="text-[11px] font-semibold text-zinc-400">Penyelenggara:</label>
+                  <label htmlFor="edit-modal-organizer" className="text-[11px] font-black text-black">Penyelenggara:</label>
                   <input
                     id="edit-modal-organizer"
                     name="edit-modal-organizer"
@@ -1551,12 +1555,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     value={editOrganizer}
                     onChange={(e) => setEditOrganizer(e.target.value)}
                     aria-label="Penyelenggara Sidang"
-                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="edit-modal-leader" className="text-[11px] font-semibold text-zinc-400">Pimpinan Sidang (Presidium):</label>
+                  <label htmlFor="edit-modal-leader" className="text-[11px] font-black text-black">Pimpinan Sidang (Presidium):</label>
                   <input
                     id="edit-modal-leader"
                     name="edit-modal-leader"
@@ -1565,12 +1569,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     onChange={(e) => setEditLeaderName(e.target.value)}
                     placeholder="Ketua MPK 13"
                     aria-label="Pimpinan Sidang (Presidium)"
-                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="edit-modal-notetaker" className="text-[11px] font-semibold text-zinc-400">Notulis / Sekretaris Sidang:</label>
+                  <label htmlFor="edit-modal-notetaker" className="text-[11px] font-black text-black">Notulis / Sekretaris Sidang:</label>
                   <input
                     id="edit-modal-notetaker"
                     name="edit-modal-notetaker"
@@ -1579,14 +1583,14 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     onChange={(e) => setEditNoteTakerName(e.target.value)}
                     placeholder="Davin Maritza"
                     aria-label="Notulis atau Sekretaris Sidang"
-                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
               </div>
 
               {/* Catatan Pengarah Sekretaris */}
               <div className="space-y-1">
-                <label htmlFor="edit-modal-secretary-notes" className="text-xs font-semibold text-zinc-300">
+                <label htmlFor="edit-modal-secretary-notes" className="text-xs font-black text-black">
                   Catatan Pengarah Notulis (Arahan Format &amp; Diksi):
                 </label>
                 <textarea
@@ -1596,13 +1600,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   onChange={(e) => setEditSecretaryNotes(e.target.value)}
                   rows={2}
                   aria-label="Catatan Pengarah Notulis"
-                  className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 font-sans"
+                  className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black font-sans"
                 />
               </div>
 
               {/* Ringkasan Eksekutif */}
               <div className="space-y-1">
-                <label htmlFor="edit-modal-summary" className="text-xs font-semibold text-zinc-300">
+                <label htmlFor="edit-modal-summary" className="text-xs font-black text-black">
                   Ringkasan Eksekutif Hasil Sidang:
                 </label>
                 <textarea
@@ -1612,29 +1616,29 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   onChange={(e) => setEditExecutiveSummary(e.target.value)}
                   rows={4}
                   aria-label="Ringkasan Eksekutif Hasil Sidang"
-                  className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 font-sans leading-relaxed"
+                  className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black font-sans leading-relaxed"
                 />
               </div>
 
               {/* Agendas Editor */}
-              <div className="space-y-3 border-t border-white/[0.06] pt-4">
+              <div className="space-y-3 border-t-2 border-black/10 pt-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-zinc-300">
+                  <label className="text-xs font-black text-black">
                     Pokok Bahasan &amp; Agenda Pleno ({editAgendas.length})
                   </label>
                   <button
                     type="button"
                     onClick={handleAddAgenda}
-                    className="flex items-center gap-1 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold rounded-lg border border-white/10 transition-all cursor-pointer"
+                    className="flex items-center gap-1 px-3 py-1 bg-[#FFD93D] hover:bg-yellow-400 text-black text-xs font-black rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
                   >
-                    <Plus className="w-3 h-3" />
+                    <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>Tambah Agenda</span>
                   </button>
                 </div>
 
                 <div className="space-y-3">
                   {editAgendas.map((ag, agIdx) => (
-                    <div key={agIdx} className="p-4 bg-black/40 border border-white/[0.06] rounded-2xl space-y-2">
+                    <div key={agIdx} className="p-4 bg-[#FFFDF5] border-2 border-black rounded-2xl space-y-2 shadow-[3px_3px_0px_0px_#000]">
                       <div className="flex items-center justify-between gap-2">
                         <label htmlFor={`edit-agenda-title-${agIdx}`} className="sr-only">
                           Judul Agenda {agIdx + 1}
@@ -1650,22 +1654,22 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                             setEditAgendas(updated);
                           }}
                           aria-label={`Judul Agenda ${agIdx + 1}`}
-                          className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold"
+                          className="flex-1 bg-white border-2 border-black rounded-lg px-2.5 py-1.5 text-xs text-black font-black"
                         />
                         <button
                           type="button"
                           onClick={() => handleRemoveAgenda(agIdx)}
-                          className="text-zinc-500 hover:text-rose-400 p-1 cursor-pointer"
+                          className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer"
                           aria-label="Hapus Agenda"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4 stroke-[2.5]" />
                         </button>
                       </div>
 
                       <div className="space-y-1.5 pl-2">
                         {ag.discussionPoints.map((pt, ptIdx) => (
                           <div key={ptIdx} className="flex items-center gap-2">
-                            <span className="text-zinc-600 text-xs">•</span>
+                            <span className="text-black font-black text-xs">•</span>
                             <label htmlFor={`edit-agenda-point-${agIdx}-${ptIdx}`} className="sr-only">
                               Poin Bahasan {ptIdx + 1} Agenda {agIdx + 1}
                             </label>
@@ -1680,24 +1684,24 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                                 setEditAgendas(updated);
                               }}
                               aria-label={`Poin Bahasan ${ptIdx + 1} dari Agenda ${agIdx + 1}`}
-                              className="flex-1 bg-black/40 border border-white/[0.06] rounded-lg px-2.5 py-1 text-xs text-zinc-300"
+                              className="flex-1 bg-white border-2 border-black rounded-lg px-2.5 py-1 text-xs text-black font-medium"
                             />
                             <button
                               type="button"
                               onClick={() => handleRemoveDiscussionPoint(agIdx, ptIdx)}
-                              className="text-zinc-600 hover:text-rose-400 p-0.5 cursor-pointer"
+                              className="text-rose-600 hover:text-rose-800 p-0.5 cursor-pointer"
                               aria-label="Hapus Poin Bahasan"
                             >
-                              <X className="w-3.5 h-3.5" />
+                              <X className="w-3.5 h-3.5 stroke-[2.5]" />
                             </button>
                           </div>
                         ))}
                         <button
                           type="button"
                           onClick={() => handleAddDiscussionPoint(agIdx)}
-                          className="text-[10px] text-sky-400 hover:underline flex items-center gap-1 pt-1 cursor-pointer"
+                          className="text-xs text-black font-black hover:underline flex items-center gap-1 pt-1 cursor-pointer"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-3 h-3 stroke-[2.5]" />
                           <span>Tambah Poin Pembahasan</span>
                         </button>
                       </div>
@@ -1707,24 +1711,24 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               </div>
 
               {/* Decisions Editor */}
-              <div className="space-y-3 border-t border-white/[0.06] pt-4">
+              <div className="space-y-3 border-t-2 border-black/10 pt-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-zinc-300">
+                  <label className="text-xs font-black text-black">
                     Ketetapan &amp; Keputusan Resmi Majelis ({editDecisions.length})
                   </label>
                   <button
                     type="button"
                     onClick={handleAddModalDecision}
-                    className="flex items-center gap-1 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold rounded-lg border border-white/10 transition-all cursor-pointer"
+                    className="flex items-center gap-1 px-3 py-1 bg-[#FFD93D] hover:bg-yellow-400 text-black text-xs font-black rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
                   >
-                    <Plus className="w-3 h-3" />
+                    <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>Tambah Ketetapan</span>
                   </button>
                 </div>
 
                 <div className="space-y-2">
                   {editDecisions.map((dec, decIdx) => (
-                    <div key={dec.id} className="p-3 bg-black/40 border border-white/[0.06] rounded-xl flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                    <div key={dec.id} className="p-3 bg-[#FFFDF5] border-2 border-black rounded-xl flex flex-col sm:flex-row gap-2 items-start sm:items-center shadow-[2px_2px_0px_0px_#000]">
                       <label htmlFor={`edit-decision-number-${dec.id}`} className="sr-only">
                         Nomor Ketetapan {decIdx + 1}
                       </label>
@@ -1739,7 +1743,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           setEditDecisions(updated);
                         }}
                         aria-label={`Nomor Ketetapan ${decIdx + 1}`}
-                        className="w-full sm:w-36 bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs font-mono text-zinc-300"
+                        className="w-full sm:w-36 bg-white border-2 border-black rounded-lg px-2 py-1 text-xs font-mono font-bold text-black"
                       />
                       <label htmlFor={`edit-decision-text-${dec.id}`} className="sr-only">
                         Isi Ketetapan {decIdx + 1}
@@ -1755,7 +1759,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           setEditDecisions(updated);
                         }}
                         aria-label={`Isi Ketetapan ${decIdx + 1}`}
-                        className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1 text-xs text-white"
+                        className="flex-1 bg-white border-2 border-black rounded-lg px-2.5 py-1 text-xs text-black font-medium"
                       />
                       <label htmlFor={`edit-decision-status-${dec.id}`} className="sr-only">
                         Status Ketetapan {decIdx + 1}
@@ -1770,7 +1774,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           setEditDecisions(updated);
                         }}
                         aria-label={`Status Ketetapan ${decIdx + 1}`}
-                        className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
+                        className="bg-white border-2 border-black rounded-lg px-2 py-1 text-xs text-black font-bold font-mono"
                       >
                         <option value="DISAHKAN">DISAHKAN</option>
                         <option value="DITUNDA">DITUNDA</option>
@@ -1779,10 +1783,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                       <button
                         type="button"
                         onClick={() => handleRemoveModalDecision(dec.id)}
-                        className="text-zinc-500 hover:text-rose-400 p-1 cursor-pointer shrink-0"
+                        className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer shrink-0"
                         aria-label="Hapus Ketetapan"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4 stroke-[2.5]" />
                       </button>
                     </div>
                   ))}
@@ -1790,24 +1794,24 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               </div>
 
               {/* Action Items Editor */}
-              <div className="space-y-3 border-t border-white/[0.06] pt-4">
+              <div className="space-y-3 border-t-2 border-black/10 pt-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-zinc-300">
+                  <label className="text-xs font-black text-black">
                     Tindak Lanjut &amp; Penugasan Komisi ({editActionItems.length})
                   </label>
                   <button
                     type="button"
                     onClick={handleAddModalActionItem}
-                    className="flex items-center gap-1 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold rounded-lg border border-white/10 transition-all cursor-pointer"
+                    className="flex items-center gap-1 px-3 py-1 bg-[#FFD93D] hover:bg-yellow-400 text-black text-xs font-black rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
                   >
-                    <Plus className="w-3 h-3" />
+                    <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>Tambah Tugas</span>
                   </button>
                 </div>
 
                 <div className="space-y-2">
                   {editActionItems.map((act, actIdx) => (
-                    <div key={act.id} className="p-3 bg-black/40 border border-white/[0.06] rounded-xl flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                    <div key={act.id} className="p-3 bg-[#FFFDF5] border-2 border-black rounded-xl flex flex-col sm:flex-row gap-2 items-start sm:items-center shadow-[2px_2px_0px_0px_#000]">
                       <label htmlFor={`edit-action-desc-${act.id}`} className="sr-only">
                         Rincian Tugas {actIdx + 1}
                       </label>
@@ -1823,7 +1827,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                         }}
                         placeholder="Rincian tugas..."
                         aria-label={`Rincian Tugas ${actIdx + 1}`}
-                        className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1 text-xs text-white"
+                        className="flex-1 bg-white border-2 border-black rounded-lg px-2.5 py-1 text-xs text-black font-medium"
                       />
                       <label htmlFor={`edit-action-assignee-${act.id}`} className="sr-only">
                         Penanggung Jawab PIC Tugas {actIdx + 1}
@@ -1840,7 +1844,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                         }}
                         placeholder="PIC"
                         aria-label={`Penanggung Jawab PIC Tugas ${actIdx + 1}`}
-                        className="w-full sm:w-32 bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
+                        className="w-full sm:w-32 bg-white border-2 border-black rounded-lg px-2 py-1 text-xs text-black font-bold font-mono"
                       />
                       <label htmlFor={`edit-action-duedate-${act.id}`} className="sr-only">
                         Tenggat Waktu Tugas {actIdx + 1}
@@ -1856,7 +1860,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           setEditActionItems(updated);
                         }}
                         aria-label={`Tenggat Waktu Tugas ${actIdx + 1}`}
-                        className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
+                        className="bg-white border-2 border-black rounded-lg px-2 py-1 text-xs text-black font-bold font-mono"
                       />
                       <label htmlFor={`edit-action-status-${act.id}`} className="sr-only">
                         Status Tugas {actIdx + 1}
@@ -1871,7 +1875,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           setEditActionItems(updated);
                         }}
                         aria-label={`Status Tugas ${actIdx + 1}`}
-                        className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
+                        className="bg-white border-2 border-black rounded-lg px-2 py-1 text-xs text-black font-bold font-mono"
                       >
                         <option value="PENDING">PENDING</option>
                         <option value="IN_PROGRESS">PROSES</option>
@@ -1880,9 +1884,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                       <button
                         type="button"
                         onClick={() => handleRemoveModalActionItem(act.id)}
-                        className="text-zinc-500 hover:text-rose-400 p-1 cursor-pointer shrink-0"
+                        className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer shrink-0"
+                        aria-label="Hapus Tugas"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4 stroke-[2.5]" />
                       </button>
                     </div>
                   ))}
@@ -1891,21 +1896,21 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             </div>
 
             {/* Modal Footer Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/[0.08] pt-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t-2 border-black/10 pt-4">
               <button
                 type="button"
                 onClick={handleAiReformat}
                 disabled={isAiReformatting || !meeting.transcript || meeting.transcript.length === 0}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-950/40 hover:bg-sky-900/50 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold transition-all disabled:opacity-40 cursor-pointer"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all disabled:opacity-40 cursor-pointer"
               >
                 {isAiReformatting ? (
                   <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-black stroke-[2.5]" />
                     <span>AI Sedang Menyusun Ulang Sesuai Format...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                     <span>Format Ulang Otomatis via AI</span>
                   </>
                 )}
@@ -1915,16 +1920,16 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 <button
                   type="button"
                   onClick={() => setIsModifying(false)}
-                  className="flex-1 sm:flex-none px-4 py-2.5 bg-transparent hover:bg-white/[0.05] text-zinc-400 hover:text-white rounded-xl text-xs font-medium transition-all cursor-pointer"
+                  className="flex-1 sm:flex-none px-4 py-2.5 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="button"
                   onClick={handleApplyModifications}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-white text-zinc-950 hover:bg-zinc-200 font-bold rounded-xl text-xs transition-all cursor-pointer active:scale-[0.985]"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black rounded-xl text-xs border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                 >
-                  <Save className="w-3.5 h-3.5 text-zinc-950" />
+                  <Save className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                   <span>Terapkan Perubahan Format &amp; Naskah</span>
                 </button>
               </div>

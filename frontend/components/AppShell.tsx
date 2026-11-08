@@ -44,7 +44,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#07080a] text-[#f4f4f6] flex flex-col lg:flex-row antialiased selection:bg-white/10 selection:text-white">
+    <div className="min-h-screen bg-[#FFFDF5] text-black flex flex-col lg:flex-row antialiased selection:bg-[#FFE600] selection:text-black">
       {/* Secretary Interactive Guide Modal */}
       <SecretaryGuideModal
         isOpen={isOpenGuide}
@@ -69,14 +69,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       {/* Main Content Workspace to the Right of Sidebar */}
       <div className="flex-1 flex flex-col lg:pl-64 sm:lg:pl-72 min-w-0 min-h-screen">
         {/* Top Mobile Bar (visible only on mobile/tablet) */}
-        <header className="lg:hidden sticky top-0 z-30 bg-[#090a0f]/90 backdrop-blur-xl border-b border-white/[0.08] px-4 py-3 flex items-center justify-between">
+        <header className="lg:hidden sticky top-0 z-30 bg-[#FFFDF5] border-b-2 border-black px-4 py-3 flex items-center justify-between shadow-[0_3px_0_0_#000]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#13151d] border border-white/10 flex items-center justify-center text-white font-bold text-xs select-none">
+            <div className="w-8 h-8 rounded-xl bg-[#FFD93D] border-2 border-black flex items-center justify-center text-black font-black text-xs shadow-[2px_2px_0px_0px_#000] select-none">
               NJ
             </div>
             <div>
-              <span className="font-semibold text-xs text-white">NotulenJMM</span>
-              <span className="text-[10px] font-mono ml-1.5 px-1.5 py-0.2 rounded bg-white/[0.05] text-zinc-400 border border-white/[0.08]">
+              <span className="font-black text-xs text-black">NotulenJMM</span>
+              <span className="text-[10px] font-mono ml-1.5 px-1.5 py-0.5 rounded bg-[#C4B5FD] text-black border border-black font-bold">
                 MPK 13
               </span>
             </div>
@@ -85,14 +85,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsOpenGuide(true)}
-              className="p-1.5 rounded-lg bg-sky-950/40 text-sky-400 hover:text-white border border-sky-500/30 text-xs font-semibold cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl bg-[#FF6B6B] text-white border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-bold cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
               title="Buku Saku Notulis"
             >
               Buku Saku
             </button>
             <button
               onClick={() => setIsOpenMobile(true)}
-              className="p-1.5 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 cursor-pointer"
+              className="p-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
               title="Buka Menu Navigasi"
             >
               <Menu className="w-5 h-5" />

@@ -1,14 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #090a0f;
-  --surface-1: #111318;
-  --surface-2: #161821;
-  --surface-hover: #1c1f2b;
-  --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-active: rgba(255, 255, 255, 0.15);
-  --foreground: #f4f4f6;
-  --muted: #8b8f9e;
+  --background: #FFFDF5;
+  --foreground: #000000;
+  --surface-card: #FFFFFF;
+  --neo-ink: #000000;
+  --neo-yellow: #FFD93D;
+  --neo-coral: #FF6B6B;
+  --neo-mint: #4ECDC4;
+  --neo-lavender: #C4B5FD;
+  --neo-pink: #FFD1DC;
+  --neo-sky: #38BDF8;
+  --neo-lime: #86EFAC;
 }
 
 @theme inline {
@@ -26,32 +29,84 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Minimalist Hardware Scrollbar */
+/* Neo-Brutalist Hardware Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #090a0f;
+  background: #FFFDF5;
+  border-left: 2px solid #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: #232736;
-  border-radius: 9999px;
+  background: #FFD93D;
+  border: 2px solid #000000;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #343a4e;
+  background: #FFE600;
 }
 
-/* Double-bezel & tactile depth utility */
-.double-bezel {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+/* Neo-Brutalist Core Component Styles */
+.neo-card {
+  background-color: #FFFFFF;
+  border: 2.5px solid #000000;
+  box-shadow: 4px 4px 0px 0px #000000;
+  border-radius: 1rem;
 }
 
-.card-core {
-  background: #111318;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+.neo-card-sm {
+  background-color: #FFFFFF;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  border-radius: 0.75rem;
+}
+
+.neo-card-lg {
+  background-color: #FFFFFF;
+  border: 3px solid #000000;
+  box-shadow: 6px 6px 0px 0px #000000;
+  border-radius: 1.25rem;
+}
+
+.neo-btn {
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px 0px #000000;
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 700;
+  cursor: pointer;
+}
+.neo-btn:hover {
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 4.5px 4.5px 0px 0px #000000;
+}
+.neo-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px #000000;
+}
+
+.neo-badge {
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px 0px #000000;
+  font-weight: 700;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.neo-input {
+  background-color: #FFFFFF;
+  border: 2px solid #000000;
+  box-shadow: 2.5px 2.5px 0px 0px #000000;
+  color: #000000;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  transition: all 0.12s ease;
+}
+.neo-input:focus {
+  outline: none;
+  box-shadow: 4px 4px 0px 0px #000000;
 }
 
 /* Safe area padding for mobile notch/home indicator */

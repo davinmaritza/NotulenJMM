@@ -100,11 +100,11 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     const dataArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteTimeDomainData(dataArray);
 
-    ctx.fillStyle = '#0a0b0e';
+    ctx.fillStyle = '#FFFDF5';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = isRecording && !isPaused ? '#38bdf8' : '#525866';
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = isRecording && !isPaused ? '#E11D48' : '#000000';
     ctx.beginPath();
 
     const sliceWidth = (canvas.width * 1.0) / bufferLength;
@@ -330,57 +330,57 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
   };
 
   return (
-    <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-6 sm:p-8 space-y-6">
+    <div className="bg-white border-[2.5px] border-black rounded-2xl p-6 sm:p-8 space-y-6 shadow-[6px_6px_0px_0px_#000]">
       {/* Studio Header & Mode Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-black/10 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">
+            <h2 className="text-base sm:text-lg font-black text-black tracking-tight">
               Studio Voice Note &amp; Perekaman Sidang
             </h2>
-            <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/[0.05] text-zinc-300 border border-white/[0.08]">
+            <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FFD93D] text-black border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
               Tata Naskah Digital
             </span>
           </div>
-          <p className="text-xs text-zinc-400 mt-1 font-sans">
+          <p className="text-xs text-zinc-700 font-medium mt-1 font-sans">
             Rekam langsung suara sidang dengan kendali jeda/pause, atau unggah voice note WhatsApp/HP untuk diolah ke draf online
           </p>
         </div>
 
         {/* Mode Selector Pill */}
-        <div className="inline-flex items-center bg-[#12141a] p-1 rounded-xl border border-white/[0.06] self-start sm:self-auto">
+        <div className="inline-flex items-center bg-[#FFFDF5] p-1 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] self-start sm:self-auto">
           <button
             onClick={() => setStudioMode('record')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
               studioMode === 'record'
-                ? 'bg-zinc-800 text-white border border-white/10'
-                : 'text-zinc-400 hover:text-white'
+                ? 'bg-[#FFD93D] text-black border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]'
+                : 'text-zinc-700 hover:text-black font-bold'
             }`}
           >
-            <Mic className="w-3.5 h-3.5 text-rose-400" />
+            <Mic className="w-4 h-4 text-black stroke-[2.5]" />
             <span>Rekam Voice Note</span>
           </button>
           <button
             onClick={() => setStudioMode('upload')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-black transition-all cursor-pointer ${
               studioMode === 'upload'
-                ? 'bg-zinc-800 text-white border border-white/10'
-                : 'text-zinc-400 hover:text-white'
+                ? 'bg-[#FFD93D] text-black border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]'
+                : 'text-zinc-700 hover:text-black font-bold'
             }`}
           >
-            <Upload className="w-3.5 h-3.5 text-sky-400" />
+            <Upload className="w-4 h-4 text-black stroke-[2.5]" />
             <span>Unggah Berkas Audio</span>
           </button>
         </div>
       </div>
 
       {/* Friendly Secretary Help Box */}
-      <div className="p-4 rounded-2xl bg-[#12141c] border border-white/[0.07] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+      <div className="p-4 rounded-2xl bg-[#E0F2FE] border-2 border-black shadow-[3.5px_3.5px_0px_0px_#000] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-start gap-3">
-          <HelpCircle className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
+          <HelpCircle className="w-5 h-5 text-black stroke-[2.5] shrink-0 mt-0.5" />
           <div className="space-y-0.5">
-            <p className="font-semibold text-white">Petunjuk Mudah untuk Notulis:</p>
-            <p className="text-zinc-400 leading-relaxed text-[11px]">
+            <p className="font-black text-black">Petunjuk Mudah untuk Notulis:</p>
+            <p className="text-zinc-800 font-medium leading-relaxed text-[11px]">
               Letakkan ponsel/laptop di tengah meja rapat. Jika forum diskors atau istirahat, klik <strong>Jeda (Pause)</strong>. Kamu bisa klik <strong>Simpan Sebagai Draf Online</strong> kapan saja agar rekaman aman tersimpan di peramban.
             </p>
           </div>
@@ -394,22 +394,22 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             });
             setMeetingTitle(`Sidang Koordinasi MPK 13 — ${todayStr}`);
           }}
-          className="shrink-0 px-3 py-1.5 bg-[#1b1e2a] hover:bg-zinc-800 text-sky-300 border border-sky-500/25 rounded-xl text-[11px] font-medium transition-all cursor-pointer active:scale-[0.98]"
+          className="shrink-0 px-3.5 py-1.5 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
         >
           Isi Judul Otomatis Hari Ini
         </button>
       </div>
 
       {errorMessage && (
-        <div className="p-4 bg-rose-950/40 border border-rose-500/30 text-rose-300 rounded-2xl flex items-center gap-3 text-xs">
-          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+        <div className="p-4 bg-rose-100 border-2 border-black text-black font-bold rounded-2xl flex items-center gap-3 text-xs shadow-[3px_3px_0px_0px_#000]">
+          <AlertCircle className="w-5 h-5 shrink-0 text-rose-600 stroke-[2.5]" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       {draftToast && (
-        <div className="p-4 bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 rounded-2xl flex items-center gap-3 text-xs animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+        <div className="p-4 bg-emerald-100 border-2 border-black text-black font-bold rounded-2xl flex items-center gap-3 text-xs shadow-[3px_3px_0px_0px_#000] animate-in fade-in">
+          <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600 stroke-[2.5]" />
           <span>{draftToast}</span>
         </div>
       )}
@@ -418,21 +418,21 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       {studioMode === 'record' && (
         <div className="space-y-5">
           {/* Oscilloscope Canvas & Live Telemetry */}
-          <div className="relative border border-white/[0.08] rounded-2xl bg-[#0a0b0e] overflow-hidden">
+          <div className="relative border-[2.5px] border-black rounded-2xl bg-[#FFFDF5] overflow-hidden shadow-[4px_4px_0px_0px_#000]">
             <canvas ref={canvasRef} width={800} height={120} className="w-full h-32 block" />
 
             {/* Live Status Indicators */}
-            <div className="absolute top-3 left-4 flex items-center gap-2">
+            <div className="absolute top-3 left-4 flex items-center gap-2 bg-white border-2 border-black px-2.5 py-1 rounded-xl shadow-[1.5px_1.5px_0px_0px_#000]">
               <span
-                className={`w-2.5 h-2.5 rounded-full ${
+                className={`w-2.5 h-2.5 rounded-full border border-black ${
                   isRecording && !isPaused
                     ? 'bg-rose-500 animate-ping'
                     : isRecording && isPaused
                     ? 'bg-amber-400'
-                    : 'bg-zinc-600'
+                    : 'bg-zinc-400'
                 }`}
               />
-              <span className="text-[11px] font-mono text-zinc-300">
+              <span className="text-[11px] font-black text-black">
                 {isRecording
                   ? isPaused
                     ? 'Rekaman Dijeda (Pause)'
@@ -443,7 +443,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               </span>
             </div>
 
-            <div className="absolute top-3 right-4 font-mono text-xl font-bold text-white tracking-wider">
+            <div className="absolute top-3 right-4 font-mono text-xl font-black text-black bg-[#FFE600] border-2 border-black px-3 py-1 rounded-xl shadow-[2px_2px_0px_0px_#000] tracking-wider">
               {formatTime(seconds)}
             </div>
           </div>
@@ -454,17 +454,17 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               <>
                 <button
                   onClick={startLiveRecording}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl text-xs active:scale-[0.98] transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-6 py-3 bg-[#FF6B6B] hover:bg-rose-500 text-black font-black rounded-xl text-xs border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                 >
-                  <Mic className="w-4 h-4" />
+                  <Mic className="w-4 h-4 stroke-[2.5]" />
                   <span>{recordedBlob ? 'Rekam Ulang Voice Note' : 'Mulai Rekam Voice Note'}</span>
                 </button>
                 {recordedBlob && (
                   <button
                     onClick={resetRecording}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-[#14161f] hover:bg-zinc-800 text-zinc-400 hover:text-white font-medium rounded-xl text-xs border border-white/[0.08] transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-3 bg-[#FFFDF5] hover:bg-yellow-100 text-black font-black rounded-xl text-xs border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                   >
-                    <RotateCcw className="w-3.5 h-3.5" />
+                    <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>Reset</span>
                   </button>
                 )}
@@ -474,15 +474,15 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
                 {!isPaused ? (
                   <button
                     onClick={pauseRecording}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-semibold rounded-xl text-xs border border-amber-500/40 transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-5 py-3 bg-[#FFD93D] hover:bg-yellow-400 text-black font-black rounded-xl text-xs border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                   >
-                    <Pause className="w-4 h-4" />
+                    <Pause className="w-4 h-4 stroke-[2.5]" />
                     <span>Jeda (Pause)</span>
                   </button>
                 ) : (
                   <button
                     onClick={resumeRecording}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 font-semibold rounded-xl text-xs border border-sky-500/40 transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-5 py-3 bg-[#4ECDC4] hover:bg-teal-400 text-black font-black rounded-xl text-xs border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                   >
                     <Play className="w-4 h-4 fill-current" />
                     <span>Lanjutkan (Resume)</span>
@@ -491,7 +491,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
 
                 <button
                   onClick={stopRecording}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-white text-zinc-950 font-bold rounded-xl text-xs hover:bg-zinc-200 active:scale-[0.98] transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-6 py-3 bg-black hover:bg-zinc-800 text-white font-black rounded-xl text-xs border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                 >
                   <Square className="w-4 h-4 fill-current" />
                   <span>Selesai Rekam</span>
@@ -502,15 +502,17 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
 
           {/* Voice Note Player Preview */}
           {audioUrl && !isRecording && (
-            <div className="p-4 bg-black/40 border border-white/[0.06] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-4 bg-[#FFFDF5] border-2 border-black rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[3px_3px_0px_0px_#000]">
               <div className="flex items-center gap-3 w-full sm:w-auto">
-                <Volume2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                <div className="w-9 h-9 rounded-xl bg-[#A7F3D0] border-2 border-black flex items-center justify-center shrink-0 shadow-[1.5px_1.5px_0px_0px_#000]">
+                  <Volume2 className="w-5 h-5 text-black stroke-[2.5]" />
+                </div>
                 <div>
-                  <p className="text-xs font-semibold text-white">Pratinjau Voice Note Hasil Rekaman</p>
-                  <p className="text-[10px] font-mono text-zinc-500">Durasi: {formatTime(seconds)} • WebM Audio</p>
+                  <p className="text-xs font-black text-black">Pratinjau Voice Note Hasil Rekaman</p>
+                  <p className="text-[10px] font-mono text-zinc-700 font-bold">Durasi: {formatTime(seconds)} • WebM Audio</p>
                 </div>
               </div>
-              <audio src={audioUrl} controls className="w-full sm:w-80 h-9" />
+              <audio src={audioUrl} controls className="w-full sm:w-80 h-10 border-2 border-black rounded-xl" />
             </div>
           )}
         </div>
@@ -521,21 +523,21 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         <div className="space-y-5">
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="p-8 sm:p-10 border-2 border-dashed border-white/15 hover:border-white/30 rounded-2xl bg-black/30 hover:bg-black/50 transition-all cursor-pointer text-center space-y-3"
+            className="p-8 sm:p-10 border-2 border-dashed border-black hover:bg-yellow-50 rounded-2xl bg-[#FFFDF5] transition-all cursor-pointer text-center space-y-3 shadow-[3px_3px_0px_0px_#000]"
           >
-            <div className="w-12 h-12 rounded-2xl bg-[#14161f] border border-white/10 flex items-center justify-center mx-auto text-sky-400">
-              <FileAudio className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-2xl bg-[#FFD93D] border-2 border-black flex items-center justify-center mx-auto text-black shadow-[2px_2px_0px_0px_#000]">
+              <FileAudio className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-black text-black">
                 {selectedFile ? selectedFile.name : 'Pilih atau Tarik Berkas Voice Note / Audio ke Sini'}
               </p>
-              <p className="text-xs text-zinc-400 mt-1">
-                Format didukung: <strong className="text-zinc-200">.mp3, .wav, .m4a, .ogg, .webm, .flac, .opus</strong>
+              <p className="text-xs text-zinc-700 font-medium mt-1">
+                Format didukung: <strong className="text-black font-black">.mp3, .wav, .m4a, .ogg, .webm, .flac, .opus</strong>
               </p>
             </div>
             {selectedFile && (
-              <span className="inline-block text-[11px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-0.5 rounded-full">
+              <span className="inline-block text-[11px] font-black text-black bg-[#A7F3D0] border-2 border-black px-3 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000]">
                 Ukuran: {formatFileSize(selectedFile.size)}
               </span>
             )}
@@ -556,26 +558,28 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
 
           {/* Audio Preview if selected from file */}
           {audioUrl && (
-            <div className="p-4 bg-black/40 border border-white/[0.06] rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="p-4 bg-[#FFFDF5] border-2 border-black rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[3px_3px_0px_0px_#000]">
               <div className="flex items-center gap-3 w-full sm:w-auto">
-                <Volume2 className="w-5 h-5 text-sky-400 shrink-0" />
+                <div className="w-9 h-9 rounded-xl bg-[#38BDF8] border-2 border-black flex items-center justify-center shrink-0 shadow-[1.5px_1.5px_0px_0px_#000]">
+                  <Volume2 className="w-5 h-5 text-black stroke-[2.5]" />
+                </div>
                 <div className="space-y-0.5">
-                  <p className="text-xs font-semibold text-white truncate max-w-xs">
+                  <p className="text-xs font-black text-black truncate max-w-xs">
                     {selectedFile ? selectedFile.name : 'Audio Voice Note'}
                   </p>
-                  <p className="text-[10px] font-mono text-zinc-500">Berkas audio siap diproses atau disimpan</p>
+                  <p className="text-[10px] font-mono text-zinc-700 font-bold">Berkas audio siap diproses atau disimpan</p>
                 </div>
               </div>
-              <audio src={audioUrl} controls className="w-full sm:w-80 h-9" />
+              <audio src={audioUrl} controls className="w-full sm:w-80 h-10 border-2 border-black rounded-xl" />
             </div>
           )}
         </div>
       )}
 
       {/* COMMON METADATA FORM: TITLE & SECRETARY STEERING NOTES */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-white/[0.06]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t-2 border-black/10">
         <div className="space-y-1.5">
-          <label htmlFor="recording-meeting-title" className="text-xs font-semibold text-zinc-300">
+          <label htmlFor="recording-meeting-title" className="text-xs font-black text-black">
             Agenda / Judul Sesi Sidang:
           </label>
           <input
@@ -585,14 +589,14 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             value={meetingTitle}
             onChange={(e) => setMeetingTitle(e.target.value)}
             placeholder="Contoh: Sidang Pleno Koordinasi Panitia LDKS 2026"
-            className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+            className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2.5 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="recording-secretary-notes" className="text-xs font-semibold text-zinc-300 flex items-center justify-between">
+          <label htmlFor="recording-secretary-notes" className="text-xs font-black text-black flex items-center justify-between">
             <span>Catatan Pengarah Notulis (Arahan Format &amp; Keputusan):</span>
-            <span className="text-[10px] font-mono text-zinc-500">Panduan Diksi</span>
+            <span className="text-[10px] font-black text-black bg-yellow-200 border border-black px-1.5 py-0.2 rounded shadow-[1px_1px_0px_0px_#000]">Panduan Diksi</span>
           </label>
           <textarea
             id="recording-secretary-notes"
@@ -601,21 +605,21 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             onChange={(e) => setSecretaryNotes(e.target.value)}
             rows={3}
             placeholder="Tuliskan arahan susunan kata: misal gaya bahasa formal MPK, tonjolkan rincian anggaran dana dan tenggat waktu tugas..."
-            className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 leading-relaxed resize-none font-sans"
+            className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black leading-relaxed resize-none font-sans"
           />
         </div>
       </div>
 
       {/* Quick Preset Pills for Secretary Notes */}
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className="text-[11px] font-mono text-zinc-500">Preset Arahan:</span>
+        <span className="text-[11px] font-black text-black uppercase">Preset Arahan:</span>
         <button
           onClick={() =>
             setSecretaryNotes(
               'Susun kata-kata secara formal dan lugas berstandar MPK SMK Negeri 13 Bandung. Tonjolkan keputusan resmi, alokasi anggaran dana jika ada, serta daftar penugasan PIC dan batas waktu.'
             )
           }
-          className="px-2.5 py-1 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 border border-white/[0.06] rounded-lg text-[11px] transition-all cursor-pointer active:scale-[0.98]"
+          className="px-3 py-1.5 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-[11px] font-bold shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
         >
           Formal &amp; Yuridis MPK 13
         </button>
@@ -625,7 +629,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               'Buat ringkasan eksekutif padat 2 paragraf saja, fokuskan pada keputusan kunci dan hilangkan obrolan santai.'
             )
           }
-          className="px-2.5 py-1 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 border border-white/[0.06] rounded-lg text-[11px] transition-all cursor-pointer active:scale-[0.98]"
+          className="px-3 py-1.5 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-[11px] font-bold shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
         >
           Rangkuman Padat &amp; Tajam
         </button>
@@ -635,7 +639,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               'Fokuskan pada pembahasan anggaran kas, rincian biaya pengadaan, dan persetujuan bendahara.'
             )
           }
-          className="px-2.5 py-1 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 border border-white/[0.06] rounded-lg text-[11px] transition-all cursor-pointer active:scale-[0.98]"
+          className="px-3 py-1.5 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-[11px] font-bold shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
         >
           Fokus Keputusan &amp; Anggaran Dana
         </button>
@@ -645,39 +649,39 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               'Tekankan checklist pembagian tugas (Action Items), nama penanggung jawab per komisi, dan tenggat waktu pelaksanaan.'
             )
           }
-          className="px-2.5 py-1 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 border border-white/[0.06] rounded-lg text-[11px] transition-all cursor-pointer active:scale-[0.98]"
+          className="px-3 py-1.5 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-[11px] font-bold shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
         >
           Fokus Penugasan (PIC &amp; Deadline)
         </button>
       </div>
 
       {/* ACTION BUTTONS: SIMPAN DRAF ONLINE & PROSES AUDIOTEKS */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-white/[0.06]">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t-2 border-black/10">
         <button
           onClick={handleSaveAsDraft}
           disabled={!meetingTitle && !recordedBlob && !selectedFile}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/[0.1] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all disabled:opacity-40 cursor-pointer"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-[#A7F3D0] hover:bg-emerald-300 text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all disabled:opacity-40 cursor-pointer"
         >
-          <Save className="w-3.5 h-3.5 text-emerald-400" />
+          <Save className="w-4 h-4 text-black stroke-[2.5]" />
           <span>Simpan Sebagai Draf Online</span>
         </button>
 
         <button
           onClick={handleProcessUploadedAudio}
           disabled={isProcessing || (!selectedFile && !recordedBlob)}
-          className="w-full sm:w-auto group flex items-center justify-center gap-3 px-6 py-2.5 bg-white text-zinc-950 font-semibold text-xs rounded-xl hover:bg-zinc-200 active:scale-[0.985] transition-all disabled:opacity-40 cursor-pointer"
+          className="w-full sm:w-auto group flex items-center justify-center gap-3 px-7 py-3 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black text-xs sm:text-sm rounded-xl border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all disabled:opacity-40 cursor-pointer"
         >
           {isProcessing ? (
             <>
-              <RefreshCw className="w-4 h-4 animate-spin text-zinc-950" />
+              <RefreshCw className="w-4 h-4 animate-spin text-black stroke-[2.5]" />
               <span className="font-mono text-xs">{processingStep}</span>
             </>
           ) : (
             <>
-              <FileCheck2 className="w-4 h-4 text-zinc-950" />
+              <FileCheck2 className="w-4 h-4 text-black stroke-[2.5]" />
               <span>Proses Audio &amp; Susun Risalah Sidang</span>
-              <div className="w-4 h-4 rounded-full bg-black/10 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-                <ArrowRight className="w-2.5 h-2.5 text-zinc-950" />
+              <div className="w-5 h-5 rounded-md bg-black text-white flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                <ArrowRight className="w-3 h-3 stroke-[3]" />
               </div>
             </>
           )}

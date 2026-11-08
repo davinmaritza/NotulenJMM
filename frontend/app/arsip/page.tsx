@@ -100,69 +100,81 @@ export default function ArsipPage() {
 
   return (
     <div className="space-y-8">
-      {/* Linear-Tier Editorial KPI Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 space-y-1.5">
-          <div className="flex items-center justify-between text-zinc-400">
-            <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">
+      {/* Neo-Brutalist Pop-Art KPI Summary */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Sesi */}
+        <div className="bg-[#FEF08A] border-2 border-black rounded-2xl p-4 sm:p-5 space-y-1.5 shadow-[4px_4px_0px_0px_#000] text-black">
+          <div className="flex items-center justify-between text-black">
+            <span className="text-[11px] font-mono uppercase font-black tracking-wider">
               Total Sesi Sidang
             </span>
-            <FileText className="w-4 h-4 text-zinc-400" />
+            <div className="w-7 h-7 rounded-lg bg-black text-[#FEF08A] flex items-center justify-center shadow-[1.5px_1.5px_0px_0px_#000]">
+              <FileText className="w-4 h-4 stroke-[2.5]" />
+            </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-semibold font-mono text-white tracking-tight">
+          <p className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-black">
             {meetings.length}
           </p>
-          <p className="text-[11px] text-zinc-500 font-mono">Terdokumentasi resmi</p>
+          <p className="text-[11px] font-bold text-black/75 font-mono">Terdokumentasi resmi</p>
         </div>
 
-        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 space-y-1.5">
-          <div className="flex items-center justify-between text-zinc-400">
-            <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">
+        {/* Ketetapan Pleno */}
+        <div className="bg-[#FECDD3] border-2 border-black rounded-2xl p-4 sm:p-5 space-y-1.5 shadow-[4px_4px_0px_0px_#000] text-black">
+          <div className="flex items-center justify-between text-black">
+            <span className="text-[11px] font-mono uppercase font-black tracking-wider">
               Ketetapan Pleno
             </span>
-            <Scale className="w-4 h-4 text-emerald-400" />
+            <div className="w-7 h-7 rounded-lg bg-black text-[#FECDD3] flex items-center justify-center shadow-[1.5px_1.5px_0px_0px_#000]">
+              <Scale className="w-4 h-4 stroke-[2.5]" />
+            </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-semibold font-mono text-white tracking-tight">
+          <p className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-black">
             {totalDecisions}
           </p>
-          <p className="text-[11px] text-emerald-400/90 font-mono">100% Disahkan Forum</p>
+          <p className="text-[11px] font-bold text-black/75 font-mono">100% Disahkan Forum</p>
         </div>
 
-        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 space-y-1.5">
-          <div className="flex items-center justify-between text-zinc-400">
-            <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">
+        {/* Penugasan Komisi */}
+        <div className="bg-[#A7F3D0] border-2 border-black rounded-2xl p-4 sm:p-5 space-y-1.5 shadow-[4px_4px_0px_0px_#000] text-black">
+          <div className="flex items-center justify-between text-black">
+            <span className="text-[11px] font-mono uppercase font-black tracking-wider">
               Penugasan Komisi
             </span>
-            <CheckCircle2 className="w-4 h-4 text-amber-400" />
+            <div className="w-7 h-7 rounded-lg bg-black text-[#A7F3D0] flex items-center justify-center shadow-[1.5px_1.5px_0px_0px_#000]">
+              <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+            </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-semibold font-mono text-white tracking-tight">
+          <p className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-black">
             {completedActionItems}{' '}
-            <span className="text-base text-zinc-500 font-normal">/ {totalActionItems}</span>
+            <span className="text-base text-black/70 font-bold">/ {totalActionItems}</span>
           </p>
-          <p className="text-[11px] text-zinc-500 font-mono">Komitmen terealisasi</p>
+          <p className="text-[11px] font-bold text-black/75 font-mono">Komitmen terealisasi</p>
         </div>
 
-        <div className="bg-[#0e0f14] border border-white/[0.07] rounded-2xl p-4 sm:p-5 space-y-1.5">
-          <div className="flex items-center justify-between text-zinc-400">
-            <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-400">
+        {/* Format Risalah */}
+        <div className="bg-[#DDD6FE] border-2 border-black rounded-2xl p-4 sm:p-5 space-y-1.5 shadow-[4px_4px_0px_0px_#000] text-black">
+          <div className="flex items-center justify-between text-black">
+            <span className="text-[11px] font-mono uppercase font-black tracking-wider">
               Format Risalah
             </span>
-            <FileCheck className="w-4 h-4 text-sky-400" />
+            <div className="w-7 h-7 rounded-lg bg-black text-[#DDD6FE] flex items-center justify-center shadow-[1.5px_1.5px_0px_0px_#000]">
+              <FileCheck className="w-4 h-4 stroke-[2.5]" />
+            </div>
           </div>
-          <p className="text-base sm:text-lg font-semibold text-white tracking-tight truncate">
+          <p className="text-lg sm:text-xl font-black text-black tracking-tight truncate pt-1">
             Tata Naskah Dinas
           </p>
-          <p className="text-[11px] text-zinc-500 font-mono truncate">Berita Acara &amp; Salinan SK</p>
+          <p className="text-[11px] font-bold text-black/75 font-mono truncate">Berita Acara &amp; SK MPK</p>
         </div>
       </div>
 
       {/* Meeting List Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
         <div>
-          <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight">
             Arsip Notulen &amp; Draf Sidang
           </h2>
-          <p className="text-xs text-zinc-400 mt-0.5 font-sans">
+          <p className="text-xs text-black/75 mt-0.5 font-bold">
             Dokumen resmi persidangan &amp; draf aktif Majelis Perwakilan Kelas SMK Negeri 13 Bandung
           </p>
         </div>
@@ -172,19 +184,19 @@ export default function ArsipPage() {
             handleCreateNewMeeting();
             router.push('/record');
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-950 rounded-xl text-xs font-semibold hover:bg-zinc-200 active:scale-[0.985] transition-all shrink-0 cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#FFE600] text-black rounded-xl text-xs font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all shrink-0 cursor-pointer"
         >
-          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+          <Plus className="w-4 h-4 stroke-[3]" />
           Buat Sesi Sidang Baru
         </button>
       </div>
 
-      {/* Friendly Search, Filter & Per-Page Controls */}
+      {/* Search, Filter & Per-Page Controls */}
       {meetings.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 bg-[#0d0e13] border border-white/[0.06] rounded-2xl">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 bg-white border-2 border-black rounded-2xl shadow-[4px_4px_0px_0px_#000]">
           {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-black absolute left-3.5 top-1/2 -translate-y-1/2 stroke-[2.5]" />
             <label htmlFor="search-meetings" className="sr-only">
               Cari judul rapat, kata kunci, pimpinan, atau notulis
             </label>
@@ -196,16 +208,16 @@ export default function ArsipPage() {
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Cari judul rapat, kata kunci, pimpinan, atau notulis..."
               aria-label="Cari judul rapat, kata kunci, pimpinan, atau notulis"
-              className="w-full bg-[#12141c] border border-white/[0.08] rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20"
+              className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl pl-9 pr-8 py-2 text-xs font-bold text-black placeholder:text-black/50 focus:outline-none focus:bg-white"
             />
             {searchQuery && (
               <button
                 onClick={() => handleSearchChange('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-black hover:text-rose-600 p-1 font-bold"
                 title="Hapus Pencarian"
                 aria-label="Hapus Pencarian"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3.5 h-3.5 stroke-[2.5]" />
               </button>
             )}
           </div>
@@ -215,48 +227,50 @@ export default function ArsipPage() {
             <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
               <button
                 onClick={() => handleFilterChange('ALL')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer border-2 border-black ${
                   filterStatus === 'ALL'
-                    ? 'bg-zinc-800 text-white border border-white/10 font-semibold'
-                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'bg-[#FFE600] text-black shadow-[2px_2px_0px_0px_#000]'
+                    : 'bg-white text-black hover:bg-[#FFFDF5]'
                 }`}
               >
                 Semua ({meetings.length})
               </button>
               <button
                 onClick={() => handleFilterChange('DRAFT')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer border-2 border-black flex items-center gap-1.5 ${
                   filterStatus === 'DRAFT'
-                    ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold'
-                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'bg-[#FECDD3] text-black shadow-[2px_2px_0px_0px_#000]'
+                    : 'bg-white text-black hover:bg-[#FFFDF5]'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className="w-2 h-2 rounded-full bg-rose-500 border border-black" />
                 <span>Draf ({draftCount})</span>
               </button>
               <button
                 onClick={() => handleFilterChange('FINALIZED')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer border-2 border-black flex items-center gap-1.5 ${
                   filterStatus === 'FINALIZED'
-                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold'
-                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'bg-[#A7F3D0] text-black shadow-[2px_2px_0px_0px_#000]'
+                    : 'bg-white text-black hover:bg-[#FFFDF5]'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500 border border-black" />
                 <span>Disahkan ({finalizedCount})</span>
               </button>
             </div>
 
             {/* Per-Page Selector */}
-            <div className="flex items-center gap-1.5 pl-2 border-l border-white/[0.08] text-xs text-zinc-400 font-mono">
-              <label htmlFor="page-size-select" className="text-[11px] hidden md:inline">Baris:</label>
+            <div className="flex items-center gap-1.5 pl-2 border-l-2 border-black text-xs font-bold font-mono">
+              <label htmlFor="page-size-select" className="text-[11px] hidden md:inline text-black font-black">
+                Baris:
+              </label>
               <select
                 id="page-size-select"
                 name="page-size-select"
                 value={pageSize}
                 onChange={(e) => handlePageSizeChange(Number(e.target.value))}
                 aria-label="Jumlah baris per halaman"
-                className="bg-[#12141c] border border-white/[0.08] text-zinc-300 rounded-lg px-2 py-1 text-xs focus:outline-none cursor-pointer"
+                className="bg-[#FFFDF5] border-2 border-black text-black font-black rounded-xl px-2.5 py-1 text-xs focus:outline-none cursor-pointer shadow-[2px_2px_0px_0px_#000]"
               >
                 <option value={5}>5 / hal</option>
                 <option value={10}>10 / hal</option>
@@ -269,43 +283,43 @@ export default function ArsipPage() {
 
       {/* Empty State vs Meeting Cards List */}
       {meetings.length === 0 ? (
-        <div className="bg-[#0e0f14] border border-dashed border-white/[0.12] rounded-2xl p-10 sm:p-14 text-center space-y-5">
-          <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
-            <FileText className="w-8 h-8" />
+        <div className="bg-white border-3 border-dashed border-black rounded-3xl p-10 sm:p-14 text-center space-y-5 shadow-[6px_6px_0px_0px_#000]">
+          <div className="w-16 h-16 rounded-2xl bg-[#FFE600] border-2 border-black flex items-center justify-center mx-auto text-black shadow-[3px_3px_0px_0px_#000]">
+            <FileText className="w-8 h-8 stroke-[2.5]" />
           </div>
           <div className="space-y-2 max-w-md mx-auto">
-            <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
+            <h3 className="text-lg font-black text-black tracking-tight">
               Belum Ada Sesi Sidang Tersimpan
             </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            <p className="text-xs text-black/75 font-bold leading-relaxed">
               Sistem siap merekam voice note sekretaris dan merumuskan risalah sidang. Silakan rekam suara sidang atau unggah berkas audio di Studio.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => router.push('/record')}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B6B] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
             >
-              <Mic className="w-4 h-4 text-rose-500" />
+              <Mic className="w-4 h-4 text-black stroke-[2.5]" />
               <span>Rekam Voice Note Sidang</span>
             </button>
             <button
               onClick={() => router.push('/')}
-              className="flex items-center gap-2 px-4 py-2.5 bg-[#14161f] hover:bg-zinc-800 text-zinc-200 border border-white/10 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#38BDF8] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
             >
-              <Compass className="w-4 h-4 text-sky-400" />
+              <Compass className="w-4 h-4 text-black stroke-[2.5]" />
               <span>Buka Studio Agenda</span>
             </button>
           </div>
         </div>
       ) : filteredMeetings.length === 0 ? (
-        <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-10 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-zinc-500">
-            <Search className="w-6 h-6" />
+        <div className="bg-white border-2 border-black rounded-2xl p-10 text-center space-y-4 shadow-[4px_4px_0px_0px_#000]">
+          <div className="w-12 h-12 rounded-2xl bg-[#FEF08A] border-2 border-black flex items-center justify-center mx-auto text-black shadow-[3px_3px_0px_0px_#000]">
+            <Search className="w-6 h-6 stroke-[2.5]" />
           </div>
           <div className="space-y-1 max-w-sm mx-auto">
-            <h3 className="text-sm font-semibold text-white">Tidak Ada Sesi yang Cocok</h3>
-            <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+            <h3 className="text-sm font-black text-black">Tidak Ada Sesi yang Cocok</h3>
+            <p className="text-xs text-black/75 font-bold leading-relaxed">
               Tidak ditemukan berkas rapat dengan kata kunci &quot;{searchQuery}&quot; pada filter terpilih.
             </p>
           </div>
@@ -315,16 +329,16 @@ export default function ArsipPage() {
               setFilterStatus('ALL');
               setCurrentPage(1);
             }}
-            className="px-4 py-2 bg-[#141620] hover:bg-zinc-800 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+            className="px-4 py-2 bg-[#FFE600] text-black border-2 border-black rounded-xl text-xs font-black inline-flex items-center gap-1.5 shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Reset Filter &amp; Pencarian</span>
           </button>
         </div>
       ) : (
         <div className="space-y-4">
           {/* Card List */}
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {paginatedMeetings.map((meet) => (
               <div
                 key={meet.id}
@@ -332,76 +346,76 @@ export default function ArsipPage() {
                   setActiveMeetingId(meet.id);
                   router.push('/notulen');
                 }}
-                className={`p-5 rounded-2xl border transition-all cursor-pointer bg-[#0e0f14] active:scale-[0.99] ${
+                className={`p-5 rounded-2xl border-2 border-black transition-all cursor-pointer bg-white shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] ${
                   meet.id === activeMeetingId
-                    ? 'border-sky-500/80 ring-1 ring-sky-500/30'
-                    : 'border-white/[0.06] hover:border-white/15 hover:bg-[#14161f]'
+                    ? 'bg-[#FFFDF5] ring-2 ring-black'
+                    : ''
                 }`}
               >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full border ${
+                        className={`text-[10px] font-mono font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000] ${
                           meet.status === 'FINALIZED'
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            ? 'bg-[#A7F3D0] text-black'
                             : meet.status === 'DRAFT'
-                            ? 'bg-amber-500/10 text-amber-300 border-amber-500/25 font-semibold'
+                            ? 'bg-[#FECDD3] text-black'
                             : meet.status === 'TRANSCRIBING'
-                            ? 'bg-sky-500/10 text-sky-400 border-sky-500/20'
-                            : 'bg-zinc-900 text-zinc-400 border-white/[0.06]'
+                            ? 'bg-[#38BDF8] text-black'
+                            : 'bg-white text-black'
                         }`}
                       >
                         {meet.status === 'DRAFT' ? 'DRAF ONLINE' : meet.status}
                       </span>
                       {meet.lastSavedAt && (
-                        <span className="text-[10px] font-mono text-zinc-400">
+                        <span className="text-[10px] font-mono font-bold text-black/70">
                           Disimpan: {meet.lastSavedAt}
                         </span>
                       )}
-                      <span className="text-[11px] text-zinc-600 font-mono">ID: {meet.id}</span>
+                      <span className="text-[11px] text-black/60 font-mono font-bold">ID: {meet.id}</span>
                     </div>
 
-                    <h3 className="text-sm font-semibold text-white tracking-tight">{meet.title}</h3>
+                    <h3 className="text-base font-black text-black tracking-tight">{meet.title}</h3>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 font-mono text-[11px]">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-black/80 font-mono font-bold text-[11px]">
                       <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+                        <Calendar className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                         {meet.date}
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <User className="w-3.5 h-3.5 text-zinc-500" />
+                        <User className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                         {meet.attendees.length} Peserta
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                        <Clock className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                         {Math.floor(meet.durationSeconds / 60)} Menit Audio
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 self-end md:self-center">
+                  <div className="flex items-center gap-2.5 self-end md:self-center">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setActiveMeetingId(meet.id);
                         router.push('/record');
                       }}
-                      className="px-3 py-1.5 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 border border-white/[0.06] rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                      className="px-3.5 py-1.5 bg-[#FFFDF5] hover:bg-[#FFE600] text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] flex items-center gap-1.5 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]"
                     >
-                      <Mic className="w-3.5 h-3.5 text-rose-400" />
+                      <Mic className="w-3.5 h-3.5 text-rose-600 stroke-[2.5]" />
                       Rekam
                     </button>
-                    <button className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border border-white/10 cursor-pointer">
+                    <button className="px-4 py-1.5 bg-[#FFE600] hover:bg-[#FFD93D] text-black rounded-xl text-xs font-black flex items-center gap-1.5 transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]">
                       <span>{meet.status === 'DRAFT' ? 'Lanjutkan Draf' : 'Buka Risalah'}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
                     </button>
                     <button
                       onClick={(e) => handleDeleteMeeting(meet.id, e)}
                       title="Hapus Sesi / Draf Sidang"
-                      className="p-2 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                      className="p-2 bg-[#FECDD3] hover:bg-[#FF6B6B] text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4 stroke-[2.5]" />
                     </button>
                   </div>
                 </div>
@@ -411,33 +425,33 @@ export default function ArsipPage() {
 
           {/* Pagination Navigation Footer */}
           {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-white/[0.06] text-xs">
-              <span className="text-zinc-400 font-mono text-[11px]">
-                Menampilkan <strong className="text-white">{startIndex + 1}</strong> –{' '}
-                <strong className="text-white">{endIndex}</strong> dari{' '}
-                <strong className="text-white">{totalItems}</strong> berkas sidang
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t-2 border-black text-xs font-bold">
+              <span className="text-black/80 font-mono text-[11px]">
+                Menampilkan <strong className="text-black font-black">{startIndex + 1}</strong> –{' '}
+                <strong className="text-black font-black">{endIndex}</strong> dari{' '}
+                <strong className="text-black font-black">{totalItems}</strong> berkas sidang
               </span>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => handlePageChange(safeCurrentPage - 1)}
                   disabled={safeCurrentPage <= 1}
-                  className="px-2.5 py-1.5 rounded-lg bg-[#141620] hover:bg-zinc-800 text-zinc-300 border border-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1 text-xs"
+                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-[#FFFDF5] text-black border-2 border-black font-black shadow-[2px_2px_0px_0px_#000] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1 text-xs active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Sebelumnya</span>
                 </button>
 
                 {/* Page numbers */}
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                     <button
                       key={p}
                       onClick={() => handlePageChange(p)}
-                      className={`w-7 h-7 rounded-lg text-xs font-mono font-semibold transition-all cursor-pointer ${
+                      className={`w-7 h-7 rounded-xl text-xs font-mono transition-all cursor-pointer border-2 border-black ${
                         p === safeCurrentPage
-                          ? 'bg-white text-zinc-950 font-bold'
-                          : 'bg-[#141620] text-zinc-400 hover:text-white border border-white/[0.06]'
+                          ? 'bg-[#FFE600] text-black font-black shadow-[2px_2px_0px_0px_#000]'
+                          : 'bg-white text-black font-bold hover:bg-[#FFFDF5] shadow-[1.5px_1.5px_0px_0px_#000]'
                       }`}
                     >
                       {p}
@@ -448,10 +462,10 @@ export default function ArsipPage() {
                 <button
                   onClick={() => handlePageChange(safeCurrentPage + 1)}
                   disabled={safeCurrentPage >= totalPages}
-                  className="px-2.5 py-1.5 rounded-lg bg-[#141620] hover:bg-zinc-800 text-zinc-300 border border-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1 text-xs"
+                  className="px-3 py-1.5 rounded-xl bg-white hover:bg-[#FFFDF5] text-black border-2 border-black font-black shadow-[2px_2px_0px_0px_#000] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer flex items-center gap-1 text-xs active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]"
                 >
                   <span>Berikutnya</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-3.5 h-3.5 stroke-[2.5]" />
                 </button>
               </div>
             </div>

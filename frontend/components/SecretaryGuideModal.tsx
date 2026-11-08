@@ -30,22 +30,22 @@ export const SecretaryGuideModal: React.FC<SecretaryGuideModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-      <div className="bg-[#0e0f14] border border-white/10 rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-white border-[3px] border-black rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh] shadow-[8px_8px_0px_0px_#000]">
         {/* Header */}
-        <div className="p-6 border-b border-white/[0.08] flex items-center justify-between bg-[#12141c]">
+        <div className="p-6 border-b-2 border-black/10 flex items-center justify-between bg-[#FFFDF5]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-              <BookOpen className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-2xl bg-[#C4B5FD] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_0px_#000]">
+              <BookOpen className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-semibold text-white tracking-tight">Panduan Praktis Notulis MPK</h2>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                <h2 className="text-base font-black text-black tracking-tight">Panduan Praktis Notulis MPK</h2>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded bg-[#FFD93D] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
                   SMKN 13 BDG
                 </span>
               </div>
-              <p className="text-xs text-zinc-400 font-sans">
+              <p className="text-xs text-zinc-700 font-medium font-sans">
                 Tata cara merekam rapat, menyusun draf risalah, dan membagikan notulensi resmi.
               </p>
             </div>
@@ -53,82 +53,83 @@ export const SecretaryGuideModal: React.FC<SecretaryGuideModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 text-zinc-400 hover:text-white rounded-xl hover:bg-white/[0.05] transition-colors cursor-pointer"
+            className="p-2 text-black hover:bg-yellow-100 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-colors cursor-pointer"
             title="Tutup Panduan"
+            aria-label="Tutup Panduan Notulis"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 stroke-[2.5]" />
           </button>
         </div>
 
         {/* Navigation Pills */}
-        <div className="p-4 border-b border-white/[0.06] bg-[#090a0f] flex items-center gap-2 overflow-x-auto scrollbar-none">
+        <div className="p-3 border-b-2 border-black/10 bg-[#FFFDF5] flex items-center gap-2 overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveSection('recording')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
               activeSection === 'recording'
-                ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30 font-semibold'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                ? 'bg-[#FF6B6B] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
+                : 'bg-white text-zinc-700 hover:text-black border-2 border-black/60 hover:border-black shadow-[1px_1px_0px_0px_#000]'
             }`}
           >
-            <Mic className="w-3.5 h-3.5" />
+            <Mic className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>1. Rekam Voice Note</span>
           </button>
 
           <button
             onClick={() => setActiveSection('standards')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
               activeSection === 'standards'
-                ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30 font-semibold'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                ? 'bg-[#38BDF8] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
+                : 'bg-white text-zinc-700 hover:text-black border-2 border-black/60 hover:border-black shadow-[1px_1px_0px_0px_#000]'
             }`}
           >
-            <FileText className="w-3.5 h-3.5" />
+            <FileText className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>2. Standar Format</span>
           </button>
 
           <button
             onClick={() => setActiveSection('drafts')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
               activeSection === 'drafts'
-                ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 font-semibold'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                ? 'bg-[#FFD93D] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
+                : 'bg-white text-zinc-700 hover:text-black border-2 border-black/60 hover:border-black shadow-[1px_1px_0px_0px_#000]'
             }`}
           >
-            <Save className="w-3.5 h-3.5" />
+            <Save className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>3. Draf Online</span>
           </button>
 
           <button
             onClick={() => setActiveSection('export')}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer flex items-center gap-2 ${
               activeSection === 'export'
-                ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold'
-                : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                ? 'bg-[#4ECDC4] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]'
+                : 'bg-white text-zinc-700 hover:text-black border-2 border-black/60 hover:border-black shadow-[1px_1px_0px_0px_#000]'
             }`}
           >
-            <Share2 className="w-3.5 h-3.5" />
+            <Share2 className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>4. Ekspor &amp; WA</span>
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm text-zinc-300 font-sans leading-relaxed">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 text-sm text-zinc-800 font-sans leading-relaxed">
           {/* SECTION 1: REKAM AUDIO */}
           {activeSection === 'recording' && (
             <div className="space-y-4">
-              <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-950/20 border border-rose-500/20">
-                <Lightbulb className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#FFE4E6] border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+                <Lightbulb className="w-5 h-5 text-rose-600 stroke-[2.5] shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <h3 className="text-xs font-semibold text-rose-200">Tips Perekaman Suara Jernih di Ruang Sidang</h3>
-                  <p className="text-xs text-rose-200/80">
+                  <h3 className="text-xs font-black text-black">Tips Perekaman Suara Jernih di Ruang Sidang</h3>
+                  <p className="text-xs text-zinc-800 font-medium">
                     Letakkan laptop atau ponsel di tengah meja sidang agar suara pimpinan sidang dan seluruh peserta komisi dapat tertangkap mikrofon secara merata.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Langkah Perekaman:</h4>
-                <ol className="list-decimal pl-5 space-y-2 text-xs text-zinc-300">
+                <h4 className="text-xs font-black uppercase tracking-wider text-black">Langkah Perekaman:</h4>
+                <ol className="list-decimal pl-5 space-y-2 text-xs text-zinc-800 font-medium">
                   <li>
                     Buka tab <strong>Studio Voice Note</strong> pada bilah menu di sebelah kiri.
                   </li>
@@ -147,20 +148,20 @@ export const SecretaryGuideModal: React.FC<SecretaryGuideModalProps> = ({
                 </ol>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#141620] border border-white/[0.06] flex items-center justify-between">
+              <div className="p-4 rounded-2xl bg-[#FFFDF5] border-2 border-black flex items-center justify-between shadow-[3px_3px_0px_0px_#000]">
                 <div>
-                  <p className="text-xs font-semibold text-white">Ingin langsung mencoba merekam?</p>
-                  <p className="text-[11px] text-zinc-400">Buka Studio Perekaman Suara sekarang.</p>
+                  <p className="text-xs font-black text-black">Ingin langsung mencoba merekam?</p>
+                  <p className="text-[11px] text-zinc-700 font-medium">Buka Studio Perekaman Suara sekarang.</p>
                 </div>
                 <button
                   onClick={() => {
                     onClose();
                     if (onNavigateTab) onNavigateTab('record');
                   }}
-                  className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="px-4 py-2 bg-[#FF6B6B] hover:bg-rose-500 text-black border-2 border-black font-black rounded-xl text-xs flex items-center gap-1.5 shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                 >
                   <span>Buka Studio Rekam</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
                 </button>
               </div>
             </div>
@@ -169,53 +170,53 @@ export const SecretaryGuideModal: React.FC<SecretaryGuideModalProps> = ({
           {/* SECTION 2: STANDAR FORMAT */}
           {activeSection === 'standards' && (
             <div className="space-y-4">
-              <p className="text-xs text-zinc-300">
+              <p className="text-xs text-zinc-800 font-medium">
                 NotulenJMM menyediakan 4 format naskah dinas resmi sesuai ketentuan Majelis Perwakilan Kelas SMK Negeri 13 Bandung:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-4 rounded-2xl bg-[#141620] border border-white/[0.06] space-y-1.5">
+                <div className="p-4 rounded-2xl bg-[#E0F2FE] border-2 border-black space-y-1.5 shadow-[3px_3px_0px_0px_#000]">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-sky-400" />
-                    <h5 className="text-xs font-semibold text-white">1. Tata Naskah Dinas MPK 13</h5>
+                    <span className="w-2.5 h-2.5 rounded-full bg-sky-500 border border-black" />
+                    <h5 className="text-xs font-black text-black">1. Tata Naskah Dinas MPK 13</h5>
                   </div>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-zinc-800 font-medium">
                     Standar utama persidangan pleno resmi, penetapan AD/ART, dan penerbitan Surat Keputusan (SK) bernomor resmi.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#141620] border border-white/[0.06] space-y-1.5">
+                <div className="p-4 rounded-2xl bg-[#DCFCE7] border-2 border-black space-y-1.5 shadow-[3px_3px_0px_0px_#000]">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <h5 className="text-xs font-semibold text-white">2. Risalah Padat &amp; Ketetapan Inti</h5>
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-black" />
+                    <h5 className="text-xs font-black text-black">2. Risalah Padat &amp; Ketetapan Inti</h5>
                   </div>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-zinc-800 font-medium">
                     Untuk briefing mingguan cepat, koordinasi internal antar-pengurus harian, dan ringkasan eksekutif 2 paragraf.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#141620] border border-white/[0.06] space-y-1.5">
+                <div className="p-4 rounded-2xl bg-[#FEF08A] border-2 border-black space-y-1.5 shadow-[3px_3px_0px_0px_#000]">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-amber-400" />
-                    <h5 className="text-xs font-semibold text-white">3. Rapat Kerja &amp; Anggaran Kas</h5>
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500 border border-black" />
+                    <h5 className="text-xs font-black text-black">3. Rapat Kerja &amp; Anggaran Kas</h5>
                   </div>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-zinc-800 font-medium">
                     Fokus pada pencatatan alokasi dana, rancangan anggaran biaya (RAB), verifikasi bendahara, dan pengeluaran kas.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#141620] border border-white/[0.06] space-y-1.5">
+                <div className="p-4 rounded-2xl bg-[#DDD6FE] border-2 border-black space-y-1.5 shadow-[3px_3px_0px_0px_#000]">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-purple-400" />
-                    <h5 className="text-xs font-semibold text-white">4. Evaluasi Program Kerja &amp; LPJ</h5>
+                    <span className="w-2.5 h-2.5 rounded-full bg-purple-500 border border-black" />
+                    <h5 className="text-xs font-black text-black">4. Evaluasi Program Kerja &amp; LPJ</h5>
                   </div>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-zinc-800 font-medium">
                     Untuk sidang pertanggungjawaban kegiatan pasca-acara, analisis kendala teknis, dan catatan rekomendasi perbaikan.
                   </p>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-sky-950/20 border border-sky-500/20 text-xs text-sky-200">
+              <div className="p-3.5 rounded-2xl bg-[#FFFDF5] border-2 border-black text-xs text-black font-medium shadow-[2.5px_2.5px_0px_0px_#000]">
                 Kamu bisa berganti format kapan saja di halaman risalah dengan menekan tombol <strong>Modifikasi Format</strong>.
               </div>
             </div>
@@ -224,29 +225,29 @@ export const SecretaryGuideModal: React.FC<SecretaryGuideModalProps> = ({
           {/* SECTION 3: DRAF ONLINE */}
           {activeSection === 'drafts' && (
             <div className="space-y-4">
-              <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-950/20 border border-amber-500/20">
-                <Save className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#FEF08A] border-2 border-black shadow-[3px_3px_0px_0px_#000]">
+                <Save className="w-5 h-5 text-black stroke-[2.5] shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <h3 className="text-xs font-semibold text-amber-200">Draf Aman dan Tidak Akan Hilang</h3>
-                  <p className="text-xs text-amber-200/80">
+                  <h3 className="text-xs font-black text-black">Draf Aman dan Tidak Akan Hilang</h3>
+                  <p className="text-xs text-zinc-800 font-medium">
                     Setiap kali kamu menekan <strong>Simpan Sebagai Draf Online</strong>, seluruh catatan dan audio tersimpan di penyimpanan lokal browser dengan penanda waktu resmi (WIB).
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">Kelebihan Fitur Draf:</h4>
+                <h4 className="text-xs font-black uppercase tracking-wider text-black">Kelebihan Fitur Draf:</h4>
                 <div className="space-y-2">
-                  <div className="flex items-start gap-2.5 text-xs">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5 text-xs text-zinc-800 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 stroke-[2.5] shrink-0 mt-0.5" />
                     <span><strong>Tahan Refresh / Tutup Tab:</strong> Saat browser dibuka kembali, draf tetap muncul di tab Arsip Sidang dengan badge kuning <code>DRAF ONLINE</code>.</span>
                   </div>
-                  <div className="flex items-start gap-2.5 text-xs">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5 text-xs text-zinc-800 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 stroke-[2.5] shrink-0 mt-0.5" />
                     <span><strong>Bisa Dilanjutkan Kapan Saja:</strong> Cukup klik <em>Lanjutkan Draf</em> untuk menyambung catatan atau merekam audio tambahan.</span>
                   </div>
-                  <div className="flex items-start gap-2.5 text-xs">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2.5 text-xs text-zinc-800 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 stroke-[2.5] shrink-0 mt-0.5" />
                     <span><strong>Bisa Langsung Diekspor:</strong> Dokumen berstatus draf tetap bisa langsung diunduh ke Word, Excel, maupun dibagikan ke WhatsApp.</span>
                   </div>
                 </div>
@@ -257,36 +258,36 @@ export const SecretaryGuideModal: React.FC<SecretaryGuideModalProps> = ({
           {/* SECTION 4: EKSPOR & WHATSAPP */}
           {activeSection === 'export' && (
             <div className="space-y-4">
-              <p className="text-xs text-zinc-300">
+              <p className="text-xs text-zinc-800 font-medium">
                 NotulenJMM dirancang agar hasil rapat dapat disebarkan ke forum dalam hitungan detik tanpa perlu pengetikan ulang:
               </p>
 
               <div className="space-y-3">
-                <div className="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 flex items-start gap-3">
-                  <Share2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="p-4 rounded-2xl bg-[#DCFCE7] border-2 border-black flex items-start gap-3 shadow-[3px_3px_0px_0px_#000]">
+                  <Share2 className="w-5 h-5 text-emerald-700 stroke-[2.5] shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <h5 className="text-xs font-semibold text-emerald-200">1-Klik Kirim ke WhatsApp</h5>
-                    <p className="text-xs text-emerald-200/80">
+                    <h5 className="text-xs font-black text-black">1-Klik Kirim ke WhatsApp</h5>
+                    <p className="text-xs text-zinc-800 font-medium">
                       Klik tombol <strong>WhatsApp</strong> di risalah untuk langsung membuka WhatsApp Web atau aplikasi ponsel dengan format teks pesan rapi (agenda, ringkasan, pasal ketetapan, dan PIC tugas).
                     </p>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#141620] border border-white/[0.06] flex items-start gap-3">
-                  <FileText className="w-5 h-5 text-sky-400 shrink-0 mt-0.5" />
+                <div className="p-4 rounded-2xl bg-[#E0F2FE] border-2 border-black flex items-start gap-3 shadow-[3px_3px_0px_0px_#000]">
+                  <FileText className="w-5 h-5 text-sky-700 stroke-[2.5] shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <h5 className="text-xs font-semibold text-white">Unduh Dokumen Word (.doc) &amp; PDF</h5>
-                    <p className="text-xs text-zinc-400">
+                    <h5 className="text-xs font-black text-black">Unduh Dokumen Word (.doc) &amp; PDF</h5>
+                    <p className="text-xs text-zinc-800 font-medium">
                       Format dokumen resmi lengkap dengan Kop Surat MPK SMK Negeri 13 Bandung, kolom tanda tangan ketua &amp; notulis, dan siap dicetak atau diarsipkan.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#141620] border border-white/[0.06] flex items-start gap-3">
-                  <FileSpreadsheet className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <div className="p-4 rounded-2xl bg-[#FEF08A] border-2 border-black flex items-start gap-3 shadow-[3px_3px_0px_0px_#000]">
+                  <FileSpreadsheet className="w-5 h-5 text-black stroke-[2.5] shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <h5 className="text-xs font-semibold text-white">Tabel Matriks Keputusan Excel (.xls)</h5>
-                    <p className="text-xs text-zinc-400">
+                    <h5 className="text-xs font-black text-black">Tabel Matriks Keputusan Excel (.xls)</h5>
+                    <p className="text-xs text-zinc-800 font-medium">
                       Rekap tabel spreadsheet untuk memantau status pengerjaan tugas komisi, batas waktu, dan penanggung jawab (PIC).
                     </p>
                   </div>
@@ -297,13 +298,13 @@ export const SecretaryGuideModal: React.FC<SecretaryGuideModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-white/[0.08] bg-[#12141c] flex items-center justify-between">
-          <span className="text-[11px] text-zinc-500 font-mono">
+        <div className="p-4 border-t-2 border-black/10 bg-[#FFFDF5] flex items-center justify-between">
+          <span className="text-[11px] text-zinc-700 font-bold">
             Bantuan Praktis Notulis • NotulenJMM 2026
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-white text-zinc-950 font-semibold rounded-xl text-xs hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
+            className="px-5 py-2.5 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black rounded-xl text-xs border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
           >
             Mengerti, Lanjutkan Kerja
           </button>

@@ -62,30 +62,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpenMobile && (
         <div
           onClick={() => setIsOpenMobile(false)}
-          className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm lg:hidden animate-in fade-in"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs lg:hidden animate-in fade-in"
         />
       )}
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 w-64 sm:w-72 bg-[#090a0f] border-r border-white/[0.08] flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 bottom-0 left-0 z-50 w-64 sm:w-72 bg-[#FFFDF5] border-r-[2.5px] border-black flex flex-col justify-between transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Top: Institution Emblem & Branding */}
-        <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b-2 border-black flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#13151d] border border-white/10 flex items-center justify-center text-white font-bold text-sm tracking-tight select-none">
+            <div className="w-10 h-10 rounded-xl bg-[#FFD93D] border-2 border-black flex items-center justify-center text-black font-black text-sm tracking-tight shadow-[3px_3px_0px_0px_#000] select-none">
               NJ
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm tracking-tight text-white">NotulenJMM</span>
-                <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-300 border border-white/[0.08] select-none">
+                <span className="font-black text-sm tracking-tight text-black">NotulenJMM</span>
+                <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-[#C4B5FD] text-black border border-black font-bold shadow-[1.5px_1.5px_0px_0px_#000] select-none">
                   MPK 13
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-500 font-sans truncate max-w-[140px]">
+              <p className="text-[11px] text-zinc-600 font-sans font-medium truncate max-w-[140px]">
                 SMK Negeri 13 Bandung
               </p>
             </div>
@@ -94,7 +94,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {/* Close button for mobile */}
           <button
             onClick={() => setIsOpenMobile(false)}
-            className="lg:hidden text-zinc-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+            className="lg:hidden text-black hover:bg-black/10 p-1.5 rounded-lg border border-black transition-colors cursor-pointer"
+            aria-label="Tutup Menu Navigasi"
           >
             <X className="w-5 h-5" />
           </button>
@@ -103,106 +104,106 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Middle: Categorized Navigation List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {/* Group 1: Ruang Kerja Sidang */}
-          <div className="space-y-1.5">
-            <span className="px-3 text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-500 font-semibold block">
+          <div className="space-y-2">
+            <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
               Ruang Kerja
             </span>
 
             <button
               onClick={() => handleSelectTab('craft', '/')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
                 currentTab === 'craft'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                  ? 'bg-[#FFD93D] text-black font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] translate-x-0.5'
+                  : 'bg-white text-zinc-800 font-bold border-2 border-black/20 hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_#000]'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Compass className="w-4 h-4 text-zinc-300" />
+                <Compass className="w-4 h-4 text-black stroke-[2.5]" />
                 <span>Studio Agenda</span>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500">Mufakat</span>
+              <span className="text-[10px] font-mono font-bold text-zinc-700">Mufakat</span>
             </button>
 
             <button
               onClick={() => handleSelectTab('dashboard', '/arsip')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
                 currentTab === 'dashboard'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                  ? 'bg-[#FFD93D] text-black font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] translate-x-0.5'
+                  : 'bg-white text-zinc-800 font-bold border-2 border-black/20 hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_#000]'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <FileText className="w-4 h-4 text-zinc-300" />
+                <FileText className="w-4 h-4 text-black stroke-[2.5]" />
                 <span>Arsip &amp; Draf Sidang</span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.05] text-zinc-400 border border-white/[0.06]">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#4ECDC4] text-black font-black border border-black shadow-[1.5px_1.5px_0px_0px_#000]">
                 {totalMeetingsCount}
               </span>
             </button>
           </div>
 
           {/* Group 2: Produksi & Audio */}
-          <div className="space-y-1.5">
-            <span className="px-3 text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-500 font-semibold block">
+          <div className="space-y-2">
+            <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
               Produksi &amp; Suara
             </span>
 
             <button
               onClick={() => handleSelectTab('record', '/record')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
                 currentTab === 'record'
-                  ? 'bg-rose-950/60 text-rose-200 border border-rose-500/30 font-semibold'
+                  ? 'bg-[#FF6B6B] text-white font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] translate-x-0.5'
                   : isRecording
-                  ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                  ? 'bg-[#FF6B6B]/20 text-[#FF6B6B] font-bold border-2 border-black shadow-[2px_2px_0px_0px_#000]'
+                  : 'bg-white text-zinc-800 font-bold border-2 border-black/20 hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_#000]'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Mic className="w-4 h-4 text-rose-400" />
+                <Mic className="w-4 h-4 text-black stroke-[2.5]" />
                 <span>Studio Voice Note</span>
               </div>
               {isRecording ? (
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-600 border border-black animate-ping" />
               ) : (
-                <span className="text-[10px] font-mono text-zinc-500">Rekam</span>
+                <span className="text-[10px] font-mono font-bold text-zinc-700">Rekam</span>
               )}
             </button>
 
             <button
               onClick={() => handleSelectTab('notulen', '/notulen')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
                 currentTab === 'notulen'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                  ? 'bg-[#FFD93D] text-black font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] translate-x-0.5'
+                  : 'bg-white text-zinc-800 font-bold border-2 border-black/20 hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_#000]'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <BookOpen className="w-4 h-4 text-zinc-300" />
+                <BookOpen className="w-4 h-4 text-black stroke-[2.5]" />
                 <span>Risalah &amp; Notulen</span>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500">Editor</span>
+              <span className="text-[10px] font-mono font-bold text-zinc-700">Editor</span>
             </button>
           </div>
 
           {/* Group 3: Keputusan & Tindak Lanjut */}
-          <div className="space-y-1.5">
-            <span className="px-3 text-[10px] font-mono uppercase tracking-[0.15em] text-zinc-500 font-semibold block">
+          <div className="space-y-2">
+            <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
               Ketetapan &amp; Tugas
             </span>
 
             <button
               onClick={() => handleSelectTab('actions', '/tasks')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
                 currentTab === 'actions'
-                  ? 'bg-zinc-800 text-white font-semibold border border-white/10'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                  ? 'bg-[#FFD93D] text-black font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] translate-x-0.5'
+                  : 'bg-white text-zinc-800 font-bold border-2 border-black/20 hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_#000]'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <CheckSquare className="w-4 h-4 text-zinc-300" />
+                <CheckSquare className="w-4 h-4 text-black stroke-[2.5]" />
                 <span>Ketetapan &amp; Tugas</span>
               </div>
-              <span className="text-[10px] font-mono text-zinc-500">PIC</span>
+              <span className="text-[10px] font-mono font-bold text-zinc-700">PIC</span>
             </button>
           </div>
 
@@ -211,29 +212,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="pt-2">
               <div
                 onClick={() => handleSelectTab('notulen', '/notulen')}
-                className="p-3 bg-[#12141c] hover:bg-[#161924] border border-white/[0.07] rounded-2xl space-y-1.5 transition-all cursor-pointer group"
+                className="p-3.5 bg-white border-2 border-black rounded-xl shadow-[3px_3px_0px_0px_#000] space-y-1.5 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0px_0px_#000] cursor-pointer group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-400">
+                  <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-700 font-bold">
                     Sesi Terpilih
                   </span>
                   <span
-                    className={`text-[9px] font-mono px-2 py-0.2 rounded-full ${
+                    className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border border-black shadow-[1px_1px_0px_0px_#000] ${
                       activeMeeting.status === 'FINALIZED'
-                        ? 'bg-emerald-500/10 text-emerald-400'
+                        ? 'bg-[#4ECDC4] text-black'
                         : activeMeeting.status === 'DRAFT'
-                        ? 'bg-amber-500/10 text-amber-300'
-                        : 'bg-sky-500/10 text-sky-400'
+                        ? 'bg-[#FFD93D] text-black'
+                        : 'bg-[#C4B5FD] text-black'
                     }`}
                   >
                     {activeMeeting.status === 'DRAFT' ? 'DRAF' : activeMeeting.status}
                   </span>
                 </div>
-                <p className="text-xs font-semibold text-white truncate group-hover:text-sky-300 transition-colors">
+                <p className="text-xs font-bold text-black truncate group-hover:text-amber-800 transition-colors">
                   {activeMeeting.title}
                 </p>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
-                  <Clock className="w-3 h-3 text-zinc-500" />
+                <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-mono font-medium">
+                  <Clock className="w-3 h-3 text-black" />
                   <span>{Math.floor(activeMeeting.durationSeconds / 60)} Menit Audio</span>
                 </div>
               </div>
@@ -243,38 +244,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Quick Guide Button */}
         {onOpenGuide && (
-          <div className="px-4 pb-2">
+          <div className="px-4 pb-3">
             <button
               onClick={() => {
                 onOpenGuide();
                 setIsOpenMobile(false);
               }}
-              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#141620] hover:bg-[#1a1d2c] border border-sky-500/20 text-sky-300 text-xs font-semibold transition-all active:scale-[0.985] cursor-pointer"
+              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-[#C4B5FD] hover:bg-[#B4A0FA] border-2 border-black shadow-[3px_3px_0px_0px_#000] text-black text-xs font-bold transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <HelpCircle className="w-3.5 h-3.5 text-sky-400" />
+                <HelpCircle className="w-4 h-4 text-black stroke-[2.5]" />
                 <span>Buku Saku Notulis</span>
               </div>
-              <span className="text-[10px] font-mono text-sky-400/80">Panduan</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 bg-white border border-black rounded font-black">
+                Panduan
+              </span>
             </button>
           </div>
         )}
 
         {/* Bottom: Profile & Telemetry Badge */}
-        <div className="p-4 border-t border-white/[0.06] bg-[#07080c] space-y-3">
+        <div className="p-4 border-t-2 border-black bg-white space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-white text-xs font-semibold font-mono">
+              <div className="w-9 h-9 rounded-xl bg-[#FFD93D] border-2 border-black shadow-[2px_2px_0px_0px_#000] flex items-center justify-center text-black text-xs font-black font-mono">
                 DM
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs font-semibold text-white leading-none">Davin Maritza</p>
-                <p className="text-[10px] text-zinc-500 font-sans leading-none">Sekretariat MPK 13</p>
+                <p className="text-xs font-black text-black leading-none">Davin Maritza</p>
+                <p className="text-[10px] text-zinc-700 font-sans font-medium leading-none">Sekretariat MPK 13</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[#4ECDC4] border border-black text-[10px] font-mono font-bold text-black shadow-[1.5px_1.5px_0px_0px_#000]">
+              <span className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
               <span>Aktif</span>
             </div>
           </div>

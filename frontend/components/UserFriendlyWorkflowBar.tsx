@@ -37,69 +37,70 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   return (
-    <div className="bg-[#0e0f14] border border-white/[0.08] rounded-2xl p-5 sm:p-6 space-y-4 transition-all">
+    <div className="bg-white border-[2.5px] border-black rounded-2xl p-5 sm:p-6 space-y-4 shadow-[5px_5px_0px_0px_#000] transition-all">
       {/* Top Banner Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-sm sm:text-base font-semibold text-white tracking-tight flex items-center gap-2">
+            <span className="text-sm sm:text-base font-black text-black tracking-tight flex items-center gap-2">
               {greeting}, Davin Maritza
             </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full bg-[#A7F3D0] text-black border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
               Notulis Siap
             </span>
           </div>
-          <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+          <p className="text-xs text-zinc-700 font-medium leading-relaxed">
             Alur kerja pencatatan sidang MPK SMK Negeri 13 Bandung: Rekam suara, rumuskan keputusan resmi, dan bagikan dalam hitungan detik.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+        <div className="flex items-center gap-2.5 self-start sm:self-center shrink-0">
           <button
             onClick={onOpenGuide}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#141620] hover:bg-zinc-800 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
             title="Buka Buku Saku & Panduan Notulis"
           >
-            <HelpCircle className="w-3.5 h-3.5 text-sky-400" />
+            <HelpCircle className="w-4 h-4 text-black stroke-[2.5]" />
             <span>Buku Saku Notulis</span>
           </button>
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1.5 text-zinc-500 hover:text-zinc-300 rounded-lg hover:bg-white/[0.05] transition-colors cursor-pointer"
+            className="p-2 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
             title={isCollapsed ? 'Tampilkan Alur Kerja' : 'Ciutkan Alur Kerja'}
+            aria-label={isCollapsed ? 'Tampilkan Alur Kerja' : 'Ciutkan Alur Kerja'}
           >
-            {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+            {isCollapsed ? <ChevronDown className="w-4 h-4 stroke-[2.5]" /> : <ChevronUp className="w-4 h-4 stroke-[2.5]" />}
           </button>
         </div>
       </div>
 
       {/* 3-Step Interactive Workflow Cards */}
       {!isCollapsed && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1 border-t border-white/[0.05]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t-2 border-black/10">
           {/* STEP 1: Agenda */}
           <div
             onClick={() => onSelectTab('craft')}
-            className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 active:scale-[0.985] ${
+            className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 ${
               activeTab === 'craft'
-                ? 'bg-[#151824] border-sky-500/60 ring-1 ring-sky-500/20'
-                : 'bg-[#10121a] border-white/[0.06] hover:border-white/15 hover:bg-[#131622]'
+                ? 'bg-[#E0F2FE] border-black shadow-[4px_4px_0px_0px_#000]'
+                : 'bg-[#FFFDF5] border-black/70 hover:border-black hover:bg-white shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000]'
             }`}
           >
-            <div className="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0 mt-0.5">
-              <Compass className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-[#38BDF8] border-2 border-black flex items-center justify-center text-black shadow-[1.5px_1.5px_0px_0px_#000] shrink-0 mt-0.5">
+              <Compass className="w-4 h-4 stroke-[2.5]" />
             </div>
             <div className="space-y-0.5 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-sky-200 border border-black text-black">
                   Langkah 1
                 </span>
                 {totalMeetingsCount > 0 && (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-emerald-100" />
                 )}
               </div>
-              <h4 className="text-xs font-semibold text-white truncate">Studio Agenda &amp; Format</h4>
-              <p className="text-[11px] text-zinc-400 line-clamp-1">
+              <h4 className="text-xs font-black text-black truncate pt-0.5">Studio Agenda &amp; Format</h4>
+              <p className="text-[11px] text-zinc-700 font-medium line-clamp-1">
                 Pilih format dinas atau buat sesi sidang baru
               </p>
             </div>
@@ -108,26 +109,26 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
           {/* STEP 2: Voice Note */}
           <div
             onClick={() => onSelectTab('record')}
-            className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 active:scale-[0.985] ${
+            className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 ${
               activeTab === 'record'
-                ? 'bg-rose-950/30 border-rose-500/60 ring-1 ring-rose-500/20'
-                : 'bg-[#10121a] border-white/[0.06] hover:border-white/15 hover:bg-[#131622]'
+                ? 'bg-[#FFE4E6] border-black shadow-[4px_4px_0px_0px_#000]'
+                : 'bg-[#FFFDF5] border-black/70 hover:border-black hover:bg-white shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000]'
             }`}
           >
-            <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 shrink-0 mt-0.5">
-              <Mic className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-[#FF6B6B] border-2 border-black flex items-center justify-center text-black shadow-[1.5px_1.5px_0px_0px_#000] shrink-0 mt-0.5">
+              <Mic className="w-4 h-4 stroke-[2.5]" />
             </div>
             <div className="space-y-0.5 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-200 border border-black text-black">
                   Langkah 2
                 </span>
-                <span className="text-[9px] font-mono text-rose-400 bg-rose-500/10 px-1.5 py-0.2 rounded">
+                <span className="text-[9px] font-black text-black bg-[#FFD93D] border border-black px-1.5 py-0.2 rounded shadow-[1px_1px_0px_0px_#000]">
                   Waveform
                 </span>
               </div>
-              <h4 className="text-xs font-semibold text-white truncate">Perekam Voice Note</h4>
-              <p className="text-[11px] text-zinc-400 line-clamp-1">
+              <h4 className="text-xs font-black text-black truncate pt-0.5">Perekam Voice Note</h4>
+              <p className="text-[11px] text-zinc-700 font-medium line-clamp-1">
                 Rekam langsung, jeda saat skors, &amp; simpan draf
               </p>
             </div>
@@ -136,26 +137,26 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
           {/* STEP 3: Notulen & Ekspor */}
           <div
             onClick={() => onSelectTab('notulen')}
-            className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 active:scale-[0.985] ${
+            className={`p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start gap-3 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 ${
               activeTab === 'notulen'
-                ? 'bg-emerald-950/30 border-emerald-500/60 ring-1 ring-emerald-500/20'
-                : 'bg-[#10121a] border-white/[0.06] hover:border-white/15 hover:bg-[#131622]'
+                ? 'bg-[#DCFCE7] border-black shadow-[4px_4px_0px_0px_#000]'
+                : 'bg-[#FFFDF5] border-black/70 hover:border-black hover:bg-white shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000]'
             }`}
           >
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
-              <BookOpen className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-[#4ECDC4] border-2 border-black flex items-center justify-center text-black shadow-[1.5px_1.5px_0px_0px_#000] shrink-0 mt-0.5">
+              <BookOpen className="w-4 h-4 stroke-[2.5]" />
             </div>
             <div className="space-y-0.5 min-w-0">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
+                <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-200 border border-black text-black">
                   Langkah 3
                 </span>
-                <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded">
+                <span className="text-[9px] font-black text-black bg-[#A7F3D0] border border-black px-1.5 py-0.2 rounded shadow-[1px_1px_0px_0px_#000]">
                   Word / WA
                 </span>
               </div>
-              <h4 className="text-xs font-semibold text-white truncate">Risalah &amp; Ekspor</h4>
-              <p className="text-[11px] text-zinc-400 line-clamp-1">
+              <h4 className="text-xs font-black text-black truncate pt-0.5">Risalah &amp; Ekspor</h4>
+              <p className="text-[11px] text-zinc-700 font-medium line-clamp-1">
                 Kirim WA, unduh Word, PDF resmi &amp; Excel
               </p>
             </div>
