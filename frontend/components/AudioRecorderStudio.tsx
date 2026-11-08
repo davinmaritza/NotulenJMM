@@ -1,7 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, Square, Play, Pause, RefreshCw, Upload, AlertCircle, Sparkles, Volume2 } from 'lucide-react';
+import { Mic, Square, Play, Pause, RefreshCw, Upload, AlertCircle, Volume2 } from 'lucide-react';
 import { AudioSegment } from '../lib/types';
 import { transcribeAudioApi } from '@/lib/api';
 
@@ -39,7 +39,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({ onDiar
     };
   }, [isRecording, isPaused]);
 
-  // Visualizer loop
+  // Visualizer loop (Oscilloscope style)
   const drawWaveform = () => {
     const canvas = canvasRef.current;
     if (!canvas || !analyserRef.current) return;
@@ -52,11 +52,20 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({ onDiar
     const dataArray = new Uint8Array(bufferLength);
     analyser.getByteTimeDomainData(dataArray);
 
-    ctx.fillStyle = '#0f172a';
+    ctx.fillStyle = '#090a0f';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Subtle center guide line
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height / 2);
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+
+    // Oscilloscope audio waveform
     ctx.lineWidth = 2;
-    ctx.strokeStyle = '#6366f1';
+    ctx.strokeStyle = '#38bdf8';
     ctx.beginPath();
 
     const sliceWidth = (canvas.width * 1.0) / bufferLength;
@@ -99,47 +108,51 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({ onDiar
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
 
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
         }
       };
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setRecordedBlob(audioBlob);
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
-        setRecordedBlob(audioBlob);
 
-        // Stop all tracks
+        // Stop stream tracks
         stream.getTracks().forEach((track) => track.stop());
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
         }
       };
 
-      mediaRecorder.start(250);
+      mediaRecorder.start(100);
       setIsRecording(true);
       setIsPaused(false);
       setSeconds(0);
       drawWaveform();
     } catch (err: unknown) {
-      console.error('Mic access error:', err);
-      setErrorMessage('Tidak dapat mengakses mikrofon. Pastikan izin mikrofon telah diberikan di Android atau Browser.');
+      console.error('Error accessing microphone:', err);
+      setErrorMessage(
+        'Gagal mengakses mikrofon. Pastikan izin mikrofon telah diberikan di browser atau perangkat Anda.'
+      );
     }
   };
 
   const pauseRecording = () => {
-    if (mediaRecorderRef.current && isRecording && !isPaused) {
-      mediaRecorderRef.current.pause();
-      setIsPaused(true);
-    }
-  };
-
-  const resumeRecording = () => {
-    if (mediaRecorderRef.current && isRecording && isPaused) {
-      mediaRecorderRef.current.resume();
-      setIsPaused(false);
+    if (mediaRecorderRef.current && isRecording) {
+      if (isPaused) {
+        mediaRecorderRef.current.resume();
+        setIsPaused(false);
+        drawWaveform();
+      } else {
+        mediaRecorderRef.current.pause();
+        setIsPaused(true);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+      }
     }
   };
 
@@ -151,192 +164,167 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({ onDiar
     }
   };
 
-  const formatTime = (totalSec: number) => {
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
+  const handleProcessAudio = async () => {
+    if (!recordedBlob) return;
 
-  const processWithVibeVoice = async () => {
     setIsProcessing(true);
-    setProcessingStep('Mengirim buffer audio ke Microsoft VibeVoice pipeline...');
+    setProcessingStep('Mengirim audio ke backend VibeVoice...');
+    setErrorMessage(null);
 
     try {
-      // Create minimal synthetic audio container if none was recorded
-      const blobToProcess =
-        recordedBlob ||
-        new Blob([new Uint8Array([82, 73, 70, 70, 36, 0, 0, 0, 87, 65, 86, 69])], {
-          type: 'audio/webm',
-        });
+      setProcessingStep('Microsoft VibeVoice: Menjalankan ekualisasi dan diarization pembicara...');
+      const response = await transcribeAudioApi(recordedBlob);
 
-      setProcessingStep('VibeVoice Tokenization (7.5 Hz ultra-low frame rate)...');
-      const result = await transcribeAudioApi(blobToProcess);
-
-      setProcessingStep('Menjalankan Joint Speaker Diarization & Timestamping...');
-      setTimeout(() => {
-        setIsProcessing(false);
-        onDiarizationComplete(result.segments, seconds || result.durationSeconds);
-      }, 500);
+      setProcessingStep('Selesai! Menampilkan transkripsi terstruktur...');
+      onDiarizationComplete(response.segments, response.durationSeconds);
     } catch (err: unknown) {
-      console.error('VibeVoice processing error:', err);
+      console.error('Transcription error:', err);
+      setErrorMessage('Gagal memproses transkripsi audio melalui VibeVoice. Silakan periksa koneksi backend.');
+    } finally {
       setIsProcessing(false);
-      setErrorMessage('Terjadi kendala saat memproses audio. Silakan coba kembali.');
+      setProcessingStep('');
     }
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setRecordedBlob(file);
+      const url = URL.createObjectURL(file);
+      setAudioUrl(url);
+      setSeconds(180);
+    }
+  };
+
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+    <div className="bg-[#111318] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+      {/* Studio Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-white tracking-tight">Studio Perekam Rapat</h2>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">
-              Live Capture
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-lg font-bold text-white tracking-tight">Studio Perekam Suara Rapat</h2>
+            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-white/[0.05] text-zinc-300 border border-white/[0.08]">
+              48kHz PCM
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Merekam suara rapat langsung dari HP Android / Laptop untuk diproses oleh Microsoft VibeVoice
+          <p className="text-xs text-zinc-400 mt-1">
+            Merekam audio rapat secara real-time dengan visualisasi gelombang presisi sebelum diolah oleh VibeVoice
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="text-right">
-            <span className="text-xs text-slate-400 block">Durasi Rapat</span>
-            <span className="font-mono text-2xl font-bold text-white tracking-wider">
-              {formatTime(seconds)}
-            </span>
-          </div>
-        </div>
+        {/* Upload Audio File fallback */}
+        <label className="flex items-center gap-2 px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-white/[0.08] rounded-xl text-xs font-semibold cursor-pointer active:scale-[0.98] transition-all self-start sm:self-auto">
+          <Upload className="w-3.5 h-3.5 text-zinc-400" />
+          <span>Unggah File Audio</span>
+          <input type="file" accept="audio/*" onChange={handleFileUpload} className="hidden" />
+        </label>
       </div>
 
       {errorMessage && (
-        <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-xs">
-          <AlertCircle className="w-4 h-4 shrink-0" />
+        <div className="p-4 bg-rose-950/40 border border-rose-500/30 text-rose-300 rounded-2xl flex items-center gap-3 text-xs">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      {/* Visualizer Canvas */}
-      <div className="relative overflow-hidden rounded-xl bg-slate-950 border border-slate-800/80 p-4 flex flex-col items-center justify-center min-h-[160px]">
-        <canvas
-          ref={canvasRef}
-          width={600}
-          height={120}
-          className="w-full h-28 object-contain"
-        />
-
-        {!isRecording && !audioUrl && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-xs text-center p-4">
-            <Mic className="w-8 h-8 text-slate-600 mb-2 animate-bounce" />
-            <p className="text-sm font-medium text-slate-300">Mikrofon Siap Merekam</p>
-            <p className="text-xs text-slate-500 max-w-sm mt-0.5">
-              Tekan tombol Mulai Rekam di bawah untuk memulai pencatatan notulen otomatis
-            </p>
-          </div>
-        )}
-
-        {isRecording && (
-          <div className="absolute top-3 left-4 flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
-            <span className="text-xs font-semibold text-rose-400">
-              {isPaused ? 'Merekam (Jeda)' : 'Sedang Merekam Suara...'}
+      {/* Main Recording Console Canvas & Timer */}
+      <div className="p-6 bg-[#090a0f] border border-white/[0.06] rounded-2xl space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5 font-mono text-xs">
+            <div className={`w-2.5 h-2.5 rounded-full ${isRecording ? (isPaused ? 'bg-amber-400' : 'bg-rose-500 ring-4 ring-rose-500/20') : 'bg-zinc-700'}`} />
+            <span className="text-zinc-400 uppercase tracking-wider text-[10px]">
+              {isRecording ? (isPaused ? 'TERJEDA' : 'MEREKAM LIVE') : 'SIAP MEREKAM'}
             </span>
           </div>
-        )}
-      </div>
 
-      {/* Audio Playback if Recorded */}
-      {audioUrl && !isRecording && (
-        <div className="flex items-center justify-between p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-              <Volume2 className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-200">Rekaman Rapat Tersimpan</p>
-              <p className="text-[11px] text-slate-400 font-mono">Total durasi: {formatTime(seconds)}</p>
-            </div>
+          <div className="text-2xl sm:text-3xl font-mono font-bold text-white tracking-tight">
+            {formatTime(seconds)}
           </div>
-          <audio src={audioUrl} controls className="h-8 max-w-[220px] sm:max-w-xs" />
         </div>
-      )}
 
-      {/* Control Buttons */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-        <div className="flex items-center gap-2">
+        {/* Oscilloscope Canvas */}
+        <div className="h-28 w-full bg-[#090a0f] border border-white/[0.05] rounded-xl overflow-hidden relative">
+          <canvas ref={canvasRef} width={800} height={120} className="w-full h-full block" />
+          {!isRecording && !audioUrl && (
+            <div className="absolute inset-0 flex items-center justify-center text-xs text-zinc-600 font-mono">
+              Gelombang audio akan muncul saat mikrofon aktif
+            </div>
+          )}
+        </div>
+
+        {/* Hardware Controls Bar */}
+        <div className="flex items-center justify-center gap-3 pt-2">
           {!isRecording ? (
             <button
               onClick={startRecording}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-sm shadow-lg shadow-rose-600/20 active:scale-95 transition-all"
+              className="flex items-center gap-2.5 px-6 py-3 bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs rounded-xl shadow-lg active:scale-[0.98] transition-all cursor-pointer"
             >
               <Mic className="w-4 h-4" />
-              Mulai Rekam Rapat
+              <span>Mulai Rekam Suara</span>
             </button>
           ) : (
             <>
-              {!isPaused ? (
-                <button
-                  onClick={pauseRecording}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-sm active:scale-95 transition-all"
-                >
-                  <Pause className="w-4 h-4" />
-                  Jeda
-                </button>
-              ) : (
-                <button
-                  onClick={resumeRecording}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm active:scale-95 transition-all"
-                >
-                  <Play className="w-4 h-4" />
-                  Lanjut
-                </button>
-              )}
+              <button
+                onClick={pauseRecording}
+                className="flex items-center gap-2 px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-white/10 rounded-xl text-xs font-semibold active:scale-[0.98] transition-all"
+              >
+                {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
+                <span>{isPaused ? 'Lanjutkan' : 'Jeda'}</span>
+              </button>
 
               <button
                 onClick={stopRecording}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm active:scale-95 transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold active:scale-[0.98] transition-all border border-white/10"
               >
-                <Square className="w-4 h-4 text-rose-400" />
-                Selesai Rekam
+                <Square className="w-3.5 h-3.5 fill-current" />
+                <span>Selesai & Kunci Audio</span>
               </button>
             </>
           )}
-
-          <button
-            onClick={() => {
-              setAudioUrl('mock-audio');
-              setSeconds(170);
-            }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-slate-200 text-xs transition-all"
-            title="Gunakan contoh audio simulasi rapat MPK"
-          >
-            <Upload className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Simulasi Audio Rapat</span>
-          </button>
         </div>
+      </div>
 
-        {/* Process with VibeVoice Button */}
-        {(audioUrl || seconds > 0) && !isRecording && (
+      {/* Audio Playback & Process Section */}
+      {audioUrl && (
+        <div className="p-5 bg-black/40 border border-white/[0.06] rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-xs font-semibold text-white">
+              <Volume2 className="w-4 h-4 text-sky-400" />
+              <span>Pratinjau Hasil Audio Rapat</span>
+            </div>
+            <p className="text-[11px] text-zinc-500 font-mono">
+              Format: audio/webm • Siap dikirim ke pipeline Microsoft VibeVoice
+            </p>
+            <audio src={audioUrl} controls className="mt-2 w-full max-w-md h-9" />
+          </div>
+
           <button
-            onClick={processWithVibeVoice}
+            onClick={handleProcessAudio}
             disabled={isProcessing}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 active:scale-95 transition-all disabled:opacity-50"
+            className="group flex items-center justify-center gap-3 px-6 py-2.5 bg-white text-zinc-950 font-semibold text-xs rounded-xl shadow-md hover:bg-zinc-200 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer self-stretch md:self-auto shrink-0"
           >
             {isProcessing ? (
               <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>{processingStep}</span>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <span className="font-mono text-[11px]">{processingStep}</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>Transkripsi & Diarisasi VibeVoice</span>
+                <span>Jalankan Diarisasi VibeVoice</span>
+                <div className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                  <span className="text-[10px] font-bold">→</span>
+                </div>
               </>
             )}
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

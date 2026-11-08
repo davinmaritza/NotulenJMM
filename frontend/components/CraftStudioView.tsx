@@ -20,7 +20,7 @@ import {
   Pencil,
   Eye,
   Bot,
-  Zap,
+  Sliders,
 } from 'lucide-react';
 
 export interface CardConfig {
@@ -229,7 +229,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
     setConfig(newConfig);
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newConfig));
-      setSaveStatus('Tersimpan!');
+      setSaveStatus('Tersimpan');
       setTimeout(() => setSaveStatus(''), 2000);
     } catch (e) {
       console.warn('Failed to save to localStorage', e);
@@ -285,7 +285,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
   };
 
   // Icon component helper
-  const renderIcon = (name: CardConfig['iconName'], className: string = 'w-6 h-6') => {
+  const renderIcon = (name: CardConfig['iconName'], className: string = 'w-5 h-5') => {
     switch (name) {
       case 'Globe':
         return <Globe className={className} />;
@@ -324,16 +324,16 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-6">
-      {/* Top Bar: Control, Presets & Mode Toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/90 border border-slate-800/90 rounded-2xl p-3 sm:px-5">
-        {/* Craft-style Pill Tabs */}
-        <div className="inline-flex items-center bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+      {/* Top Bar: Pill Switcher, Presets & Mode Toggle */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0e1017]/90 border border-white/[0.08] rounded-2xl p-3 sm:px-4 shadow-xl">
+        {/* Hardware-style Pill Tabs */}
+        <div className="inline-flex items-center bg-black/40 p-1 rounded-xl border border-white/[0.05]">
           <button
             onClick={() => setActiveTabMode('tab1')}
-            className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] ${
               activeTabMode === 'tab1'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-zinc-800 text-white shadow-sm border border-white/10'
+                : 'text-zinc-400 hover:text-white'
             }`}
           >
             {isEditMode ? (
@@ -345,7 +345,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   saveConfig({ ...config, tab1Name: e.target.value });
                   setActivePreset('custom');
                 }}
-                className="bg-transparent border-b border-blue-400 text-white focus:outline-none w-28 text-center"
+                className="bg-transparent border-b border-sky-400 text-white focus:outline-none w-28 text-center"
               />
             ) : (
               config.tab1Name
@@ -354,10 +354,10 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
           <button
             onClick={() => setActiveTabMode('tab2')}
-            className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all active:scale-[0.98] ${
               activeTabMode === 'tab2'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-zinc-800 text-white shadow-sm border border-white/10'
+                : 'text-zinc-400 hover:text-white'
             }`}
           >
             {isEditMode ? (
@@ -369,7 +369,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   saveConfig({ ...config, tab2Name: e.target.value });
                   setActivePreset('custom');
                 }}
-                className="bg-transparent border-b border-blue-400 text-white focus:outline-none w-28 text-center"
+                className="bg-transparent border-b border-sky-400 text-white focus:outline-none w-28 text-center"
               />
             ) : (
               config.tab2Name
@@ -380,26 +380,26 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
         {/* Action Controls & Preset Switcher */}
         <div className="flex items-center gap-2">
           {saveStatus && (
-            <span className="text-xs font-medium text-emerald-400 flex items-center gap-1 animate-pulse">
+            <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
               <Check className="w-3.5 h-3.5" /> {saveStatus}
             </span>
           )}
 
           {/* Preset Buttons */}
-          <div className="hidden sm:flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800 text-[11px]">
-            <span className="px-2 text-slate-500 font-mono">Preset:</span>
+          <div className="hidden sm:flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/[0.05] text-[11px]">
+            <span className="px-2 text-zinc-500 font-mono text-[10px]">PRESET:</span>
             <button
               onClick={() => handleApplyPreset('mpk')}
               className={`px-2.5 py-1 rounded-lg transition-all ${
-                activePreset === 'mpk' ? 'bg-indigo-600/30 text-indigo-300 font-bold' : 'text-slate-400 hover:text-white'
+                activePreset === 'mpk' ? 'bg-zinc-800 text-white font-semibold border border-white/10' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              MPK SMK 13
+              MPK 13
             </button>
             <button
               onClick={() => handleApplyPreset('craft')}
               className={`px-2.5 py-1 rounded-lg transition-all ${
-                activePreset === 'craft' ? 'bg-indigo-600/30 text-indigo-300 font-bold' : 'text-slate-400 hover:text-white'
+                activePreset === 'craft' ? 'bg-zinc-800 text-white font-semibold border border-white/10' : 'text-zinc-400 hover:text-white'
               }`}
             >
               Craft Classic
@@ -407,7 +407,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
             <button
               onClick={() => handleApplyPreset('organisasi')}
               className={`px-2.5 py-1 rounded-lg transition-all ${
-                activePreset === 'organisasi' ? 'bg-indigo-600/30 text-indigo-300 font-bold' : 'text-slate-400 hover:text-white'
+                activePreset === 'organisasi' ? 'bg-zinc-800 text-white font-semibold border border-white/10' : 'text-zinc-400 hover:text-white'
               }`}
             >
               Organisasi
@@ -418,7 +418,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           <button
             onClick={handleResetToPreset}
             title="Reset teks ke preset saat ini"
-            className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all text-xs flex items-center gap-1 border border-slate-800"
+            className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800/80 rounded-lg transition-all text-xs flex items-center gap-1 border border-white/[0.06]"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span className="hidden md:inline">Reset</span>
@@ -427,10 +427,10 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           {/* Toggle Edit Mode */}
           <button
             onClick={() => setIsEditMode(!isEditMode)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
               isEditMode
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm shadow-amber-500/20'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                : 'bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-white/[0.08]'
             }`}
           >
             {isEditMode ? (
@@ -448,13 +448,10 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
         </div>
       </div>
 
-      {/* Main Craft Container */}
-      <div className="bg-[#12131a] border border-[#212330] rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden space-y-9">
-        {/* Subtle background glow */}
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 blur-[100px] pointer-events-none rounded-full" />
-
+      {/* Main Studio Frame (Double-Bezel Hardware Architecture) */}
+      <div className="bg-[#111319] border border-white/[0.08] rounded-3xl p-6 sm:p-9 shadow-2xl relative space-y-8">
         {/* Hero Header */}
-        <div className="text-center space-y-2 relative z-10 max-w-2xl mx-auto">
+        <div className="text-center space-y-2 max-w-2xl mx-auto">
           {isEditMode ? (
             <div className="space-y-2">
               <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
@@ -467,7 +464,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   saveConfig({ ...config, headerTitle: e.target.value });
                   setActivePreset('custom');
                 }}
-                className="w-full text-2xl sm:text-3xl font-extrabold text-white text-center bg-slate-900/80 border border-amber-500/50 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full text-2xl sm:text-3xl font-bold text-white text-center bg-black/60 border border-amber-500/40 rounded-xl px-4 py-2 focus:outline-none"
               />
               <textarea
                 value={config.headerSubtitle}
@@ -476,7 +473,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   saveConfig({ ...config, headerSubtitle: e.target.value });
                   setActivePreset('custom');
                 }}
-                className="w-full text-xs sm:text-sm text-slate-300 text-center bg-slate-900/80 border border-amber-500/50 rounded-xl px-4 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full text-xs sm:text-sm text-zinc-300 text-center bg-black/60 border border-amber-500/40 rounded-xl px-4 py-1.5 focus:outline-none"
               />
             </div>
           ) : (
@@ -484,7 +481,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
                 {config.headerTitle}
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-xl mx-auto">
                 {config.headerSubtitle}
               </p>
             </>
@@ -492,10 +489,10 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
         </div>
 
         {/* STEP 1: PICK WHAT YOU'RE MAKING */}
-        <div className="space-y-4 relative z-10">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-md shadow-blue-600/30">
+              <span className="w-6 h-6 rounded-lg bg-zinc-800 border border-white/10 text-white font-mono font-bold text-xs flex items-center justify-center">
                 1
               </span>
               {isEditMode ? (
@@ -506,23 +503,23 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                     saveConfig({ ...config, step1Title: e.target.value });
                     setActivePreset('custom');
                   }}
-                  className="text-sm sm:text-base font-bold text-white bg-slate-900 border border-amber-500/50 rounded-lg px-2.5 py-1 focus:outline-none"
+                  className="text-sm sm:text-base font-semibold text-white bg-black/50 border border-amber-500/40 rounded-lg px-2.5 py-1 focus:outline-none"
                 />
               ) : (
-                <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                   {config.step1Title}
                 </h2>
               )}
             </div>
 
             {isEditMode && (
-              <span className="text-[11px] text-amber-400/90 font-medium">
+              <span className="text-[11px] text-amber-400/90 font-mono">
                 Klik kartu untuk mengubah teks & deskripsi
               </span>
             )}
           </div>
 
-          {/* 4 Cards Grid */}
+          {/* 4 Cards Grid - Refined Tactile Double Bezel */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {config.cards.map((card, idx) => {
               const isSelected = card.id === selectedCardId;
@@ -530,16 +527,16 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 <div
                   key={card.id}
                   onClick={() => !isEditMode && setSelectedCardId(card.id)}
-                  className={`relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between min-h-[145px] ${
+                  className={`relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between min-h-[148px] active:scale-[0.99] ${
                     isSelected
-                      ? 'bg-[#181a26] border-2 border-blue-500 shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/30'
-                      : 'bg-[#151620] border border-[#242635] hover:border-slate-600/80 hover:bg-[#1a1c28]'
+                      ? 'bg-[#161822] border border-sky-500/80 shadow-[0_4px_20px_-4px_rgba(14,165,233,0.15)] ring-1 ring-sky-500/30'
+                      : 'bg-[#13151d] border border-white/[0.06] hover:border-white/15 hover:bg-[#171924]'
                   }`}
                 >
                   {/* Selected Checkmark Badge */}
                   {isSelected && (
-                    <div className="absolute top-3.5 right-3.5 w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-md shadow-blue-500/50">
-                      <Check className="w-3 h-3 stroke-[3]" />
+                    <div className="absolute top-3.5 right-3.5 w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center shadow-sm">
+                      <Check className="w-3.5 h-3.5 stroke-[2.5]" />
                     </div>
                   )}
 
@@ -549,8 +546,8 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                       <div
                         className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
                           isSelected
-                            ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
-                            : 'bg-slate-800/80 text-slate-400 border border-slate-700/60'
+                            ? 'bg-sky-500/10 text-sky-400 border border-sky-500/30'
+                            : 'bg-zinc-900 text-zinc-400 border border-white/[0.06]'
                         }`}
                       >
                         {renderIcon(card.iconName, 'w-5 h-5')}
@@ -563,7 +560,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                           onChange={(e) =>
                             handleUpdateCard(idx, 'iconName', e.target.value as CardConfig['iconName'])
                           }
-                          className="bg-slate-900 border border-slate-700 text-[10px] text-slate-300 rounded px-1.5 py-0.5"
+                          className="bg-black/80 border border-white/15 text-[10px] text-zinc-300 rounded px-1.5 py-0.5"
                         >
                           <option value="Scale">Scale (Timbangan)</option>
                           <option value="Users">Users (Pengurus)</option>
@@ -585,20 +582,20 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                           value={card.title}
                           onChange={(e) => handleUpdateCard(idx, 'title', e.target.value)}
                           placeholder="Judul Kartu"
-                          className="w-full text-sm font-bold text-white bg-slate-900 border border-amber-500/50 rounded px-2 py-1 focus:outline-none"
+                          className="w-full text-xs font-semibold text-white bg-black/60 border border-amber-500/40 rounded px-2 py-1 focus:outline-none"
                         />
                         <textarea
                           value={card.description}
                           rows={2}
                           onChange={(e) => handleUpdateCard(idx, 'description', e.target.value)}
                           placeholder="Deskripsi singkat"
-                          className="w-full text-[11px] text-slate-300 bg-slate-900 border border-amber-500/50 rounded px-2 py-1 focus:outline-none"
+                          className="w-full text-[11px] text-zinc-300 bg-black/60 border border-amber-500/40 rounded px-2 py-1 focus:outline-none"
                         />
                       </div>
                     ) : (
                       <div>
-                        <h3 className="text-sm font-bold text-white tracking-tight">{card.title}</h3>
-                        <p className="text-xs text-slate-400 mt-1 leading-snug line-clamp-2">
+                        <h3 className="text-sm font-semibold text-white tracking-tight">{card.title}</h3>
+                        <p className="text-xs text-zinc-400 mt-1 leading-snug line-clamp-2">
                           {card.description}
                         </p>
                       </div>
@@ -611,10 +608,10 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
         </div>
 
         {/* STEP 2: SAY WHAT YOU WANT */}
-        <div className="space-y-4 relative z-10">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-md shadow-blue-600/30">
+              <span className="w-6 h-6 rounded-lg bg-zinc-800 border border-white/10 text-white font-mono font-bold text-xs flex items-center justify-center">
                 2
               </span>
               {isEditMode ? (
@@ -625,25 +622,25 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                     saveConfig({ ...config, step2Title: e.target.value });
                     setActivePreset('custom');
                   }}
-                  className="text-sm sm:text-base font-bold text-white bg-slate-900 border border-amber-500/50 rounded-lg px-2.5 py-1 focus:outline-none"
+                  className="text-sm sm:text-base font-semibold text-white bg-black/50 border border-amber-500/40 rounded-lg px-2.5 py-1 focus:outline-none"
                 />
               ) : (
-                <h2 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                   {config.step2Title}
                 </h2>
               )}
             </div>
 
-            <span className="text-[11px] text-slate-400 font-mono">
+            <span className="text-[11px] text-zinc-400 font-mono">
               {promptText.length} karakter
             </span>
           </div>
 
-          {/* Textarea Box (Craft Anything Look) */}
+          {/* Textarea Box */}
           <div className="space-y-3">
-            <div className="relative rounded-2xl bg-[#151620] border border-[#242635] focus-within:border-blue-500/80 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all p-3 sm:p-4">
+            <div className="relative rounded-2xl bg-[#13151d] border border-white/[0.08] focus-within:border-white/20 transition-all p-4 shadow-inner">
               {isEditMode && (
-                <div className="mb-2 pb-2 border-b border-slate-800 flex items-center justify-between">
+                <div className="mb-2 pb-2 border-b border-white/[0.06] flex items-center justify-between">
                   <span className="text-[10px] text-amber-400 font-mono">Edit Teks Placeholder:</span>
                   <input
                     type="text"
@@ -652,7 +649,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                       saveConfig({ ...config, promptPlaceholder: e.target.value });
                       setActivePreset('custom');
                     }}
-                    className="w-3/4 text-xs bg-slate-900 border border-amber-500/40 text-slate-200 rounded px-2 py-0.5"
+                    className="w-3/4 text-xs bg-black/60 border border-amber-500/30 text-zinc-200 rounded px-2 py-0.5"
                   />
                 </div>
               )}
@@ -662,31 +659,33 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 onChange={(e) => setPromptText(e.target.value)}
                 placeholder={config.promptPlaceholder}
                 rows={4}
-                className="w-full bg-transparent text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none resize-none leading-relaxed"
+                className="w-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none resize-none leading-relaxed"
               />
 
               {/* Bottom indicator inside textarea */}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[11px] text-slate-500">
-                <span className="flex items-center gap-1.5">
-                  <Zap className="w-3 h-3 text-blue-400" />
-                  Format rapat terpilih:{' '}
-                  <strong className="text-slate-300">{selectedCard ? selectedCard.title : ''}</strong>
+              <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.05] text-[11px] text-zinc-400">
+                <span className="flex items-center gap-1.5 font-mono text-[10px]">
+                  <Sliders className="w-3 h-3 text-sky-400" />
+                  Format terpilih:{' '}
+                  <strong className="text-zinc-200 font-sans">{selectedCard ? selectedCard.title : ''}</strong>
                 </span>
-                <span className="hidden sm:inline">Tekan tombol Start di bawah untuk menjalankan</span>
+                <span className="hidden sm:inline font-mono text-[10px]">
+                  9Router Gateway • ag/gemini-3.8-flash
+                </span>
               </div>
             </div>
 
             {/* Ideas to get you started (Idea Pills) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400">
+                <span className="text-xs font-medium text-zinc-400">
                   {isEditMode ? 'Kustomisasi Inspirasi Ide (Pills):' : 'Inspirasi agenda cepat:'}
                 </span>
 
                 {isEditMode && (
                   <button
                     onClick={() => setShowAddPill(true)}
-                    className="flex items-center gap-1 text-[11px] text-blue-400 hover:text-blue-300 font-medium"
+                    className="flex items-center gap-1 text-[11px] text-sky-400 hover:text-sky-300 font-medium"
                   >
                     <Plus className="w-3 h-3" /> Tambah Ide
                   </button>
@@ -695,7 +694,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
               {/* Add pill form */}
               {showAddPill && isEditMode && (
-                <div className="flex items-center gap-2 bg-slate-900/90 border border-blue-500/40 p-2 rounded-xl">
+                <div className="flex items-center gap-2 bg-black/70 border border-white/15 p-2 rounded-xl">
                   <input
                     type="text"
                     value={newPillInput}
@@ -706,13 +705,13 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                   />
                   <button
                     onClick={handleAddPill}
-                    className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-lg"
+                    className="px-3 py-1 bg-zinc-800 text-white text-xs font-semibold rounded-lg border border-white/10"
                   >
                     Simpan
                   </button>
                   <button
                     onClick={() => setShowAddPill(false)}
-                    className="px-2 py-1 text-slate-400 text-xs"
+                    className="px-2 py-1 text-zinc-400 text-xs"
                   >
                     Batal
                   </button>
@@ -724,10 +723,10 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 {config.ideaPills.map((pill, idx) => (
                   <div
                     key={idx}
-                    className={`inline-flex items-center gap-1.5 rounded-full border text-xs transition-all ${
+                    className={`inline-flex items-center gap-1.5 rounded-lg border text-xs transition-all active:scale-[0.98] ${
                       isEditMode
-                        ? 'bg-slate-900 border-amber-500/40 px-2 py-1'
-                        : 'bg-[#181a24] hover:bg-[#202330] border-[#292c3d] text-slate-300 hover:text-white px-3.5 py-1.5 cursor-pointer hover:border-blue-500/50'
+                        ? 'bg-black/60 border-amber-500/30 px-2 py-1'
+                        : 'bg-[#151720] hover:bg-[#1a1d28] border-white/[0.06] text-zinc-300 hover:text-white px-3 py-1.5 cursor-pointer hover:border-white/15'
                     }`}
                     onClick={() => {
                       if (!isEditMode) {
@@ -741,7 +740,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                           type="text"
                           value={pill}
                           onChange={(e) => handleUpdatePill(idx, e.target.value)}
-                          className="bg-transparent text-xs text-slate-200 focus:outline-none w-48"
+                          className="bg-transparent text-xs text-zinc-200 focus:outline-none w-48"
                         />
                         <button
                           onClick={(e) => {
@@ -756,7 +755,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                     ) : (
                       <>
                         <span>{pill}</span>
-                        <ArrowRight className="w-3 h-3 opacity-50 group-hover:opacity-100" />
+                        <ArrowRight className="w-3 h-3 text-zinc-400" />
                       </>
                     )}
                   </div>
@@ -766,18 +765,18 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           </div>
         </div>
 
-        {/* BOTTOM BAR: Built by, Saved in, and Start button (Exact Craft Anything Layout) */}
-        <div className="pt-4 border-t border-[#212330] flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+        {/* BOTTOM BAR: Built by, Saved in, and Start button */}
+        <div className="pt-4 border-t border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4 text-xs">
             {/* Built by Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-slate-400 font-medium flex items-center gap-1">
-                <Bot className="w-3.5 h-3.5 text-blue-400" /> Built by:
+              <span className="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
+                <Bot className="w-3.5 h-3.5 text-zinc-400" /> Mesin AI:
               </span>
               <select
                 value={selectedEngine}
                 onChange={(e) => setSelectedEngine(e.target.value)}
-                className="bg-[#151620] border border-[#27293a] text-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500"
+                className="bg-[#151720] border border-white/[0.08] text-zinc-200 rounded-xl px-3 py-1.5 text-xs font-mono focus:outline-none focus:border-white/20"
               >
                 <option value="9Router (ag/gemini-3.8-flash)">9Router (ag/gemini-3.8-flash) [Aktif]</option>
                 <option value="9Router (openai/gpt-4o-mini)">9Router (openai/gpt-4o-mini)</option>
@@ -788,25 +787,27 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
             {/* Saved in Folder Path */}
             <div className="flex items-center gap-2">
-              <span className="text-slate-400 font-medium flex items-center gap-1">
-                <Folder className="w-3.5 h-3.5 text-amber-400" /> Saved in:
+              <span className="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
+                <Folder className="w-3.5 h-3.5 text-zinc-400" /> Target:
               </span>
               <input
                 type="text"
                 value={folderPath}
                 onChange={(e) => setFolderPath(e.target.value)}
-                className="bg-[#151620] border border-[#27293a] text-slate-300 font-mono text-[11px] rounded-xl px-3 py-1.5 w-60 sm:w-72 focus:outline-none focus:border-blue-500 truncate"
+                className="bg-[#151720] border border-white/[0.08] text-zinc-300 font-mono text-[11px] rounded-xl px-3 py-1.5 w-56 sm:w-64 focus:outline-none focus:border-white/20 truncate"
               />
             </div>
           </div>
 
-          {/* Start Action Button */}
+          {/* Start Action Button (Linear-tier Button-in-Button Architecture) */}
           <button
             onClick={handleStart}
-            className="flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-600/30 active:scale-95 transition-all self-stretch md:self-auto cursor-pointer"
+            className="group flex items-center justify-center gap-3 px-6 py-2.5 bg-white text-zinc-950 font-semibold text-xs rounded-xl shadow-lg hover:bg-zinc-200 active:scale-[0.98] transition-all self-stretch md:self-auto cursor-pointer"
           >
-            <span>Mulai Sesi</span>
-            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+            <span>Mulai Sesi Rapat</span>
+            <div className="w-5 h-5 rounded-full bg-black/10 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+              <ArrowRight className="w-3 h-3 text-zinc-950 stroke-[2.5]" />
+            </div>
           </button>
         </div>
       </div>

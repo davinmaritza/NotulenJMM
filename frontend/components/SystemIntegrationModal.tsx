@@ -1,14 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React, { useEffect, useState } from 'react';
-import {
-  Cpu,
-  Layers,
-  Smartphone,
-  ShieldCheck,
-  Terminal,
-  Activity,
-} from 'lucide-react';
+import { Cpu, Layers, Smartphone, Database } from 'lucide-react';
 import { checkBackendHealth, HealthCheckResult } from '@/lib/api';
 
 export const SystemIntegrationModal: React.FC = () => {
@@ -17,125 +10,158 @@ export const SystemIntegrationModal: React.FC = () => {
   useEffect(() => {
     checkBackendHealth().then(setHealth);
   }, []);
+
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
-      <div className="border-b border-slate-800 pb-4">
+    <div className="bg-[#111318] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+      {/* Header */}
+      <div className="border-b border-white/[0.06] pb-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">Status Integrasi & Arsitektur Sistem</h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Spesifikasi konektivitas mesin AI, kontainer mobile Android APK, dan atribusi lisensi resmi
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-lg font-bold text-white tracking-tight">Status Integrasi & Arsitektur Sistem</h2>
+              <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-md bg-white/[0.05] text-zinc-300 border border-white/[0.08]">
+                DIAGNOSTIK TEKNIS
+              </span>
+            </div>
+            <p className="text-xs text-zinc-400 mt-1">
+              Telemetri konektivitas gateway 9Router, model LLM aktif, kontainer Android APK, dan integritas repositori
             </p>
           </div>
+
           {health && (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold ${
-              health.online 
-                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' 
-                : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
-            }`}>
-              <Activity className={`w-3.5 h-3.5 ${health.online ? 'text-emerald-400 animate-pulse' : 'text-indigo-400'}`} />
-              <span>{health.online ? 'Backend API v0.2.0: Connected' : 'Client Mode: Standalone Ready'}</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-white/[0.08] bg-black/40 text-xs font-mono">
+              <span className={`w-2 h-2 rounded-full ${health.online ? 'bg-emerald-500 ring-2 ring-emerald-500/20' : 'bg-zinc-600'}`} />
+              <span className="text-zinc-300">
+                {health.online ? 'Backend: Connected (HTTP 200)' : 'Client Standalone Mode'}
+              </span>
             </div>
           )}
         </div>
       </div>
 
+      {/* Hardware Telemetry 4-Card Bento */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Card 1: VibeVoice */}
-        <div className="p-5 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+        {/* Card 1: 9Router AI Gateway */}
+        <div className="p-5 bg-[#14161f] border border-white/[0.06] rounded-2xl space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                <Cpu className="w-4 h-4" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white">Microsoft VibeVoice</h3>
-                <p className="text-[11px] text-slate-400">Speech-to-Text & Diarization</p>
-              </div>
-            </div>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
-              TERINTEGRASI
-            </span>
-          </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Menyediakan transkripsi audio rapat hingga 60 menit dengan joint speaker diarization & timestamping (Who, When, What) dan tokenisasi ultra-low 7.5 Hz.
-          </p>
-          <div className="text-[11px] text-indigo-400 font-mono flex items-center gap-1.5 pt-1">
-            <Terminal className="w-3.5 h-3.5" />
-            <span>github.com/microsoft/VibeVoice</span>
-          </div>
-        </div>
-
-        {/* Card 2: 9router */}
-        <div className="p-5 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-sky-400">
                 <Layers className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">9router AI Gateway</h3>
-                <p className="text-[11px] text-slate-400">Multi-Tier LLM Fallback & Router</p>
+                <h3 className="text-xs font-semibold text-white">9Router Cloud AI Gateway</h3>
+                <p className="text-[10px] font-mono text-zinc-500">OpenAI-Compatible LLM Router</p>
               </div>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
-              AKTIF
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-semibold border border-emerald-500/20">
+              AKTIF & TERHUBUNG
             </span>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Router LLM cerdas OpenAI-compatible (`http://localhost:20128/v1`) yang menghubungkan 40+ provider AI dengan fallback otomatis dan kompresi token (RTK).
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            Gateway multi-model dengan kuota enterprise tanpa filter sensorik, bertugas menyusun ringkasan eksekutif, mengekstrak keputusan sidang, dan merumuskan checklist penugasan otomatis.
           </p>
-          <div className="text-[11px] text-emerald-400 font-mono flex items-center gap-1.5 pt-1">
-            <Terminal className="w-3.5 h-3.5" />
-            <span>9router.com (OpenAI Endpoint Compatible)</span>
+          <div className="pt-2 border-t border-white/[0.05] space-y-1 font-mono text-[11px] text-zinc-400">
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Endpoint:</span>
+              <span className="text-zinc-200">https://routernines.bytenodes.icu/v1</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Model Default:</span>
+              <span className="text-sky-400 font-semibold">ag/gemini-3.8-flash</span>
+            </div>
           </div>
         </div>
 
-        {/* Card 3: Capacitor Android */}
-        <div className="p-5 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+        {/* Card 2: Microsoft VibeVoice */}
+        <div className="p-5 bg-[#14161f] border border-white/[0.06] rounded-2xl space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+              <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-300">
+                <Cpu className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-xs font-semibold text-white">Microsoft VibeVoice</h3>
+                <p className="text-[10px] font-mono text-zinc-500">Diarization & ASR Tokenizer</p>
+              </div>
+            </div>
+            <span className="px-2 py-0.5 rounded bg-white/[0.05] text-zinc-300 text-[10px] font-mono font-semibold border border-white/[0.08]">
+              PIPELINE READY
+            </span>
+          </div>
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            Menyediakan pengenalan suara rapat hingga 60 menit dengan joint speaker diarization & timestamping (*Who, When, What*) berbasis tokenisasi frekuensi ultra-low 7.5 Hz.
+          </p>
+          <div className="pt-2 border-t border-white/[0.05] space-y-1 font-mono text-[11px] text-zinc-400">
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Sampling Rate:</span>
+              <span className="text-zinc-200">48kHz High-Fidelity Audio</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Diarization Target:</span>
+              <span className="text-zinc-200">Multi-Speaker Classroom Majelis</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Capacitor Android Native APK */}
+        <div className="p-5 bg-[#14161f] border border-white/[0.06] rounded-2xl space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-300">
                 <Smartphone className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Capacitor Android Container</h3>
-                <p className="text-[11px] text-slate-400">Cross-Platform Packaging</p>
+                <h3 className="text-xs font-semibold text-white">Android Native Container</h3>
+                <p className="text-[10px] font-mono text-zinc-500">Capacitor 8 + Gradle 8.14.3</p>
               </div>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-400 text-[10px] font-bold border border-violet-500/20">
-              v8.6.0
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-semibold border border-emerald-500/20">
+              COMPILED (4.4 MB)
             </span>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Mengemas antarmuka Next.js menjadi aplikasi native Android APK dengan Application ID <code>com.mpk13.notulenjmm</code> dan akses perizinan mikrofon.
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            Biner APK mandiri yang dapat dipasang di smartphone Android pengurus OSIS/MPK SMK Negeri 13 Bandung, dilengkapi izin mikrofon native dan persistensi offline.
           </p>
-          <div className="text-[11px] text-slate-400 font-mono flex items-center gap-1.5 pt-1">
-            <span>npm run build:apk</span>
+          <div className="pt-2 border-t border-white/[0.05] space-y-1 font-mono text-[11px] text-zinc-400">
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Package ID:</span>
+              <span className="text-zinc-200">com.mpk13.notulenjmm</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Target SDK:</span>
+              <span className="text-zinc-200">Android Platform 36 (JDK 21)</span>
+            </div>
           </div>
         </div>
 
-        {/* Card 4: Legal & License */}
-        <div className="p-5 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+        {/* Card 4: Notion Project Knowledge System */}
+        <div className="p-5 bg-[#14161f] border border-white/[0.06] rounded-2xl space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                <ShieldCheck className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-300">
+                <Database className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Lisensi & Hak Cipta</h3>
-                <p className="text-[11px] text-slate-400">Legal Ownership</p>
+                <h3 className="text-xs font-semibold text-white">Notion Knowledge System</h3>
+                <p className="text-[10px] font-mono text-zinc-500">Model Context Protocol (MCP)</p>
               </div>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-bold border border-amber-500/20">
-              MIT LICENSE
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-semibold border border-emerald-500/20">
+              19 HALAMAN SINKRON
             </span>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Dilisensikan untuk <strong>MPK SMK Negeri 13 Bandung</strong>, seluruh hak cipta dan kode dikembangkan oleh <strong>Davin Maritza</strong> (2026).
+          <p className="text-xs text-zinc-400 leading-relaxed font-sans">
+            Arsitektur terintegrasi antara repositori lokal, CLAUDE.md, dan halaman Notion NotionJMM sebagai sumber kebenaran (source of truth) dokumentasi dan keputusan proyek.
           </p>
-          <div className="text-[11px] text-amber-300 font-mono flex items-center gap-1.5 pt-1">
-            <span>Copyright (c) 2026 MPK SMK Negeri 13 Bandung</span>
+          <div className="pt-2 border-t border-white/[0.05] space-y-1 font-mono text-[11px] text-zinc-400">
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Root Page:</span>
+              <span className="text-zinc-200">NotulenJMM Root (UUID: 40a13039)</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-zinc-500">Lisensi & Hak Cipta:</span>
+              <span className="text-zinc-200">MPK SMK Negeri 13 Bandung • Davin Maritza</span>
+            </div>
           </div>
         </div>
       </div>

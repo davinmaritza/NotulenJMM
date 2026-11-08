@@ -11,6 +11,7 @@ import {
   PlusCircle,
   Scale,
   Sparkles,
+  Check,
 } from 'lucide-react';
 import { Meeting, Decision, ActionItem } from '../lib/types';
 
@@ -86,36 +87,37 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     setNewActionDueDate('');
   };
 
-  const copyMarkdown = () => {
-    const md = `
-# NOTULEN RESMI RAPAT MPK SMK NEGERI 13 BANDUNG
-**Judul Rapat**: ${meeting.title}
-**Waktu & Lokasi**: ${meeting.date} | ${meeting.location}
-**Penyelenggara**: ${meeting.organizer}
+  const exportMarkdown = () => {
+    let md = `# NOTULENSI RESMI SIDANG / RAPAT\n`;
+    md += `## MAJELIS PERWAKILAN KELAS (MPK) SMK NEGERI 13 BANDUNG\n\n`;
+    md += `**Judul Rapat:** ${meeting.title}\n`;
+    md += `**Tanggal:** ${meeting.date}\n`;
+    md += `**Lokasi:** ${meeting.location}\n`;
+    md += `**Penyelenggara:** ${meeting.organizer}\n`;
+    md += `**Dibuat oleh:** Davin Maritza • Didukung oleh 9Router & VibeVoice\n\n`;
 
----
+    md += `---\n\n`;
+    md += `### I. RINGKASAN EKSEKUTIF\n${meeting.executiveSummary || 'Belum ada ringkasan eksekutif.'}\n\n`;
 
-## 1. RINGKASAN EKSEKUTIF (9Router AI Synthesizer)
-${meeting.executiveSummary || 'Belum ada ringkasan eksekutif.'}
+    md += `### II. AGENDA & PEMBAHASAN\n`;
+    meeting.agendas.forEach((ag, idx) => {
+      md += `#### ${idx + 1}. ${ag.title}\n`;
+      ag.discussionPoints.forEach((pt) => {
+        md += `- ${pt}\n`;
+      });
+      md += `\n`;
+    });
 
----
+    md += `### III. DAFTAR KEPUTUSAN RESMI\n`;
+    meeting.decisions.forEach((dec) => {
+      md += `- **[${dec.number}]** ${dec.decisionText} (*Kategori: ${dec.category} | Status: ${dec.status}*)\n`;
+    });
+    md += `\n`;
 
-## 2. AGENDA & PEMBAHASAN
-${meeting.agendas.map((a, i) => `### Agenda ${i + 1}: ${a.title}\n${a.discussionPoints.map((p) => `- ${p}`).join('\n')}`).join('\n\n')}
-
----
-
-## 3. ARSIP KEPUTUSAN RESMI (DECISION LOG)
-${meeting.decisions.map((d) => `- **[${d.status}] ${d.number}**: ${d.decisionText} (Kategori: ${d.category})\n  *Pertimbangan*: ${d.rationale}`).join('\n')}
-
----
-
-## 4. DAFTAR TINDAK LANJUT (ACTION ITEMS)
-${meeting.actionItems.map((act) => `- [${act.status === 'COMPLETED' ? 'x' : ' '}] **${act.description}** | PIC: ${act.assignee} | Tenggat: ${act.dueDate}`).join('\n')}
-
----
-*Dibuat oleh Davin Maritza | Lisensi MPK SMK Negeri 13 Bandung*
-    `.trim();
+    md += `### IV. TINDAK LANJUT (ACTION ITEMS)\n`;
+    meeting.actionItems.forEach((act) => {
+      md += `- [${act.status === 'COMPLETED' ? 'x' : ' '}] **${act.description}** — *Penanggung Jawab: ${act.assignee} (Batas Waktu: ${act.dueDate})*\n`;
+    });
 
     navigator.clipboard.writeText(md);
     setCopied(true);
@@ -124,238 +126,228 @@ ${meeting.actionItems.map((act) => `- [${act.status === 'COMPLETED' ? 'x' : ' '}
 
   return (
     <div className="space-y-6">
-      {/* Top Banner & Export Actions */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase tracking-wider">
-            Dokumen Notulen Resmi
-          </span>
-          <h2 className="text-xl font-bold text-white tracking-tight mt-2">{meeting.title}</h2>
-          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-2">
-            <span className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5 text-slate-500" />
-              {meeting.date}
-            </span>
-            <span className="flex items-center gap-1">
-              <User className="w-3.5 h-3.5 text-slate-500" />
-              {meeting.organizer}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={copyMarkdown}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold active:scale-95 transition-all"
-          >
-            <Copy className="w-3.5 h-3.5 text-indigo-400" />
-            {copied ? 'Tersalin ke Clipboard!' : 'Salin Markdown'}
-          </button>
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-indigo-600/20 active:scale-95 transition-all"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            Cetak PDF
-          </button>
-        </div>
-      </div>
-
-      {/* Executive Summary */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-            Ringkasan Eksekutif (9Router AI)
-          </h3>
-        </div>
-        <p className="text-sm text-slate-300 leading-relaxed bg-slate-950/70 p-4 rounded-xl border border-slate-800/80">
-          {meeting.executiveSummary || 'Belum ada ringkasan. Tekan "Sintesis Notulen Cerdas via 9Router" pada tab transkripsi untuk merumuskan ringkasan otomatis.'}
-        </p>
-      </div>
-
-      {/* Agendas Breakdown */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-          <FileText className="w-4 h-4 text-indigo-400" />
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-            Agenda & Hasil Pembahasan
-          </h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {meeting.agendas.map((agenda, idx) => (
-            <div key={idx} className="p-4 bg-slate-950/70 border border-slate-800/80 rounded-xl space-y-2">
-              <span className="text-xs font-semibold text-indigo-400 block">Agenda {idx + 1}</span>
-              <h4 className="text-sm font-bold text-slate-200">{agenda.title}</h4>
-              <ul className="space-y-1.5 pt-1">
-                {agenda.discussionPoints.map((pt, pIdx) => (
-                  <li key={pIdx} className="text-xs text-slate-400 flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-600 mt-1.5 shrink-0" />
-                    <span>{pt}</span>
-                  </li>
-                ))}
-              </ul>
+      {/* Official Header Card */}
+      <div className="bg-[#111318] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/[0.06] pb-6">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-white/[0.05] text-zinc-300 border border-white/[0.08]">
+                DOKUMEN NOTULEN RESMI
+              </span>
+              <span className="text-[10px] font-mono text-zinc-500">FORMAT KEPUTUSAN MAJELIS</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Formal Decisions Log */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <Scale className="w-4 h-4 text-emerald-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              Arsip Keputusan Resmi (Decision Log)
-            </h3>
-          </div>
-          <span className="text-xs font-medium text-slate-400">
-            {meeting.decisions.length} Keputusan Disahkan
-          </span>
-        </div>
-
-        <div className="space-y-3">
-          {meeting.decisions.map((dec) => (
-            <div
-              key={dec.id}
-              className="p-4 bg-slate-950/70 border border-slate-800/90 rounded-xl space-y-2 hover:border-slate-700 transition-all"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 font-mono font-bold text-[11px] border border-emerald-500/30">
-                    {dec.number}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[11px]">
-                    {dec.category}
-                  </span>
-                </div>
-                <span className="text-emerald-400 font-semibold text-[11px] flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  {dec.status}
-                </span>
-              </div>
-              <p className="text-sm font-medium text-slate-100">{dec.decisionText}</p>
-              <p className="text-xs text-slate-400 italic">Pertimbangan: {dec.rationale}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Form Add Decision */}
-        <form onSubmit={handleAddDecision} className="pt-2 border-t border-slate-800/80 flex flex-col sm:flex-row gap-2">
-          <input
-            type="text"
-            value={newDecisionText}
-            onChange={(e) => setNewDecisionText(e.target.value)}
-            placeholder="Tambah butir keputusan resmi baru..."
-            className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500"
-          />
-          <select
-            value={newDecisionCategory}
-            onChange={(e) => setNewDecisionCategory(e.target.value as Decision['category'])}
-            className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-hidden focus:border-indigo-500"
-          >
-            <option value="Program Kerja">Program Kerja</option>
-            <option value="Organisasi">Organisasi</option>
-            <option value="Keuangan">Keuangan</option>
-            <option value="Disiplin">Disiplin</option>
-            <option value="Umum">Umum</option>
-          </select>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shrink-0 transition-all"
-          >
-            Simpan Keputusan
-          </button>
-        </form>
-      </div>
-
-      {/* Action Items Tracking */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-indigo-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              Tindak Lanjut & Penugasan (Action Items)
-            </h3>
-          </div>
-          <span className="text-xs font-medium text-slate-400">
-            {meeting.actionItems.filter((a) => a.status === 'COMPLETED').length} dari {meeting.actionItems.length} Selesai
-          </span>
-        </div>
-
-        <div className="space-y-2.5">
-          {meeting.actionItems.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => toggleActionStatus(item.id)}
-              className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 cursor-pointer select-none transition-all ${
-                item.status === 'COMPLETED'
-                  ? 'bg-slate-950/40 border-slate-800/50 opacity-60'
-                  : item.status === 'IN_PROGRESS'
-                  ? 'bg-slate-950/80 border-indigo-500/40 shadow-xs'
-                  : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={item.status === 'COMPLETED'}
-                  onChange={() => {}} // handled by parent onClick
-                  className="w-4 h-4 rounded-md accent-indigo-600 bg-slate-900 border-slate-700"
-                />
-                <div>
-                  <p
-                    className={`text-xs font-medium ${
-                      item.status === 'COMPLETED' ? 'line-through text-slate-500' : 'text-slate-200'
-                    }`}
-                  >
-                    {item.description}
-                  </p>
-                  <p className="text-[11px] text-slate-400 font-mono mt-0.5">
-                    PIC: <span className="text-indigo-300 font-sans">{item.assignee}</span> • Batas: {item.dueDate}
-                  </p>
-                </div>
-              </div>
-
-              <span
-                className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border shrink-0 ${
-                  item.status === 'COMPLETED'
-                    ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                    : item.status === 'IN_PROGRESS'
-                    ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                    : 'bg-slate-800 text-slate-400 border-slate-700'
-                }`}
-              >
-                {item.status.replace('_', ' ')}
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">{meeting.title}</h1>
+            <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 font-mono text-[11px] pt-1">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-zinc-500" />
+                {meeting.date}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-zinc-500" />
+                {meeting.organizer}
               </span>
             </div>
-          ))}
+          </div>
+
+          {/* Export Actions */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={exportMarkdown}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.98] transition-all"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-zinc-400" />}
+              <span>{copied ? 'Tersalin!' : 'Salin Markdown'}</span>
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-white text-zinc-950 font-semibold rounded-xl text-xs shadow-md hover:bg-zinc-200 active:scale-[0.98] transition-all"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Cetak PDF</span>
+            </button>
+          </div>
         </div>
 
-        {/* Form Add Action Item */}
-        <form onSubmit={handleAddActionItem} className="pt-2 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-4 gap-2">
-          <input
-            type="text"
-            value={newActionTask}
-            onChange={(e) => setNewActionTask(e.target.value)}
-            placeholder="Deskripsi tugas baru..."
-            className="sm:col-span-2 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500"
-          />
-          <input
-            type="text"
-            value={newActionAssignee}
-            onChange={(e) => setNewActionAssignee(e.target.value)}
-            placeholder="Penanggung Jawab (PIC)"
-            className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            Tambah Tugas
-          </button>
-        </form>
+        {/* Section 1: Ringkasan Eksekutif (9Router AI) */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-300 font-semibold">
+              Ringkasan Eksekutif (9Router AI)
+            </h2>
+          </div>
+          <div className="p-4 bg-black/40 border border-white/[0.05] rounded-2xl">
+            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
+              {meeting.executiveSummary ||
+                'Belum ada ringkasan. Tekan "Sintesis Notulen Cerdas via 9Router" pada tab transkripsi untuk merumuskan ringkasan otomatis.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Section 2: Agenda & Hasil Pembahasan */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4 text-zinc-400" />
+            <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-300 font-semibold">
+              Agenda & Hasil Pembahasan
+            </h2>
+          </div>
+          <div className="space-y-3">
+            {meeting.agendas.map((ag, idx) => (
+              <div key={idx} className="p-4 bg-[#14161f] border border-white/[0.06] rounded-2xl space-y-2">
+                <h3 className="text-xs sm:text-sm font-semibold text-white">
+                  {idx + 1}. {ag.title}
+                </h3>
+                <ul className="space-y-1.5 pl-4 list-disc text-xs text-zinc-300 marker:text-zinc-500">
+                  {ag.discussionPoints.map((pt, ptIdx) => (
+                    <li key={ptIdx} className="leading-relaxed">
+                      {pt}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 3: Keputusan Resmi (Legal Decision Log) */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Scale className="w-4 h-4 text-emerald-400" />
+              <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-300 font-semibold">
+                Ketetapan & Keputusan Resmi Majelis ({meeting.decisions.length})
+              </h2>
+            </div>
+          </div>
+
+          <div className="space-y-2.5">
+            {meeting.decisions.map((dec) => (
+              <div
+                key={dec.id}
+                className="p-4 bg-[#14161f] border border-white/[0.06] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-white/15 transition-all"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-zinc-400 font-semibold">[{dec.number}]</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-white/[0.06]">
+                      {dec.category}
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                      {dec.status}
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-medium text-white">{dec.decisionText}</p>
+                </div>
+                <span className="text-[10px] text-zinc-500 font-mono shrink-0">{dec.date}</span>
+              </div>
+            ))}
+
+            {/* Quick Add Decision Input */}
+            <form onSubmit={handleAddDecision} className="flex flex-col sm:flex-row gap-2 pt-2">
+              <input
+                type="text"
+                placeholder="Tambah rumusan keputusan resmi baru..."
+                value={newDecisionText}
+                onChange={(e) => setNewDecisionText(e.target.value)}
+                className="flex-1 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+              />
+              <select
+                value={newDecisionCategory}
+                onChange={(e) => setNewDecisionCategory(e.target.value as Decision['category'])}
+                className="bg-zinc-900 border border-white/[0.08] text-xs text-zinc-300 rounded-xl px-3 py-2 font-mono focus:outline-none"
+              >
+                <option value="Organisasi">Organisasi</option>
+                <option value="Keuangan">Keuangan</option>
+                <option value="Program Kerja">Program Kerja</option>
+                <option value="Disiplin">Disiplin</option>
+                <option value="Umum">Umum</option>
+              </select>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all border border-white/10"
+              >
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>Sahkan</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Section 4: Action Items (Tindak Lanjut) */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-amber-400" />
+            <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-300 font-semibold">
+              Tindak Lanjut & Penugasan (Action Items)
+            </h2>
+          </div>
+
+          <div className="space-y-2">
+            {meeting.actionItems.map((act) => {
+              const isDone = act.status === 'COMPLETED';
+              return (
+                <div
+                  key={act.id}
+                  onClick={() => toggleActionStatus(act.id)}
+                  className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                    isDone
+                      ? 'bg-black/30 border-white/[0.04] text-zinc-500 line-through'
+                      : 'bg-[#14161f] border-white/[0.06] hover:border-white/15 text-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={isDone}
+                      onChange={() => {}}
+                      className="w-4 h-4 rounded border-white/20 bg-zinc-900 accent-emerald-500 cursor-pointer"
+                    />
+                    <span className="text-xs sm:text-sm font-medium">{act.description}</span>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-xs text-zinc-400 font-mono text-[11px] shrink-0">
+                    <span className="px-2 py-0.5 rounded bg-zinc-900 border border-white/[0.06]">
+                      PJ: {act.assignee}
+                    </span>
+                    <span className="text-zinc-500">Tenggat: {act.dueDate}</span>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Quick Add Action Item */}
+            <form onSubmit={handleAddActionItem} className="flex flex-col sm:flex-row gap-2 pt-2">
+              <input
+                type="text"
+                placeholder="Nama tugas atau aksi..."
+                value={newActionTask}
+                onChange={(e) => setNewActionTask(e.target.value)}
+                className="flex-1 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+              />
+              <input
+                type="text"
+                placeholder="Penanggung Jawab"
+                value={newActionAssignee}
+                onChange={(e) => setNewActionAssignee(e.target.value)}
+                className="w-full sm:w-44 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
+              />
+              <input
+                type="date"
+                value={newActionDueDate}
+                onChange={(e) => setNewActionDueDate(e.target.value)}
+                className="bg-zinc-900 border border-white/[0.08] text-xs text-zinc-300 rounded-xl px-3 py-2 font-mono focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all border border-white/10"
+              >
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>Tambah</span>
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
