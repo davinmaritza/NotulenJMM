@@ -284,26 +284,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => {
                   if (typeof window !== 'undefined') {
                     sessionStorage.removeItem('notulenjmm_guest_mode');
-                  }
-                  handleLoginWithEmail('alfarrezald@gmail.com', 'Davin Maritza / Alfarrezald');
-                }}
-                className="w-full py-2 px-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-lg text-[10px] font-black flex items-center justify-center gap-1.5 shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
-                title="1-Klik Masuk sebagai alfarrezald@gmail.com"
-              >
-                <Sparkles className="w-3.5 h-3.5 fill-black text-black shrink-0" />
-                <span className="truncate">Masuk: alfarrezald@gmail.com</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    sessionStorage.removeItem('notulenjmm_guest_mode');
                     window.location.reload();
                   }
                 }}
-                className="w-full py-1.5 px-2 bg-white hover:bg-zinc-100 text-black border border-black rounded-lg text-[9px] font-bold flex items-center justify-center gap-1 shadow-[1px_1px_0px_0px_#000] cursor-pointer"
+                className="w-full py-2 px-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-lg text-[10px] font-black flex items-center justify-center gap-1.5 shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
+                title="Masuk dengan Akun Google"
               >
-                <span>Pilih Akun Lain / Login</span>
+                <Sparkles className="w-3.5 h-3.5 fill-black text-black shrink-0" />
+                <span className="truncate">Masuk Akun Google</span>
               </button>
             </div>
           </div>

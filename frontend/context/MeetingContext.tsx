@@ -283,10 +283,14 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     await performDriveSync(meetingsRef.current, false);
   };
 
-  const handleLoginGoogle = async (fallbackEmail = 'alfarrezald@gmail.com') => {
+  const handleLoginGoogle = async (fallbackEmail?: string) => {
     const clientId = getGoogleClientId();
     if (!clientId) {
-      handleLoginWithEmail(fallbackEmail);
+      if (fallbackEmail) {
+        handleLoginWithEmail(fallbackEmail);
+      } else {
+        throw new Error('Google Client ID belum diatur di sistem atau file .env.local.');
+      }
       return;
     }
     try {
@@ -325,10 +329,11 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const errMsg = err instanceof Error ? err.message : String(err);
       console.warn('Google OAuth error, auto-fallback to email session:', errMsg);
       if (
-        errMsg.includes('origin') ||
-        errMsg.includes('invalid_client') ||
-        errMsg.includes('popup_closed') ||
-        errMsg.includes('Popup window closed')
+        fallbackEmail &&
+        (errMsg.includes('origin') ||
+          errMsg.includes('invalid_client') ||
+          errMsg.includes('popup_closed') ||
+          errMsg.includes('Popup window closed'))
       ) {
         handleLoginWithEmail(fallbackEmail);
         return;

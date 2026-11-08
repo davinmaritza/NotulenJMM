@@ -70,13 +70,7 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
     try {
       const activeClientId = clientIdInput.trim() || getGoogleClientId();
       if (!activeClientId) {
-        // Fallback directly to verified local email session
-        handleLoginWithEmail('alfarrezald@gmail.com', 'Davin Maritza / Alfarrezald');
-        setStatusMessage({
-          type: 'success',
-          text: 'Berhasil masuk sebagai alfarrezald@gmail.com (Mode Sesi Mandiri). Data notulen tersimpan aman di browser Anda!',
-        });
-        return;
+        throw new Error('Google Client ID belum diatur. Silakan isi Client ID terlebih dahulu.');
       }
       setGoogleClientId(activeClientId);
 
@@ -106,27 +100,14 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
 
       setStatusMessage({
         type: 'success',
-        text: `Berhasil terhubung ke akun Google: ${profile.email}. Auto-Backup Otomatis telah AKTIF!`,
+        text: `Berhasil terhubung ke akun Google: ${profile.email}. Auto-Backup Google Drive aktif!`,
       });
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
-      if (
-        errMsg.includes('origin') ||
-        errMsg.includes('invalid_client') ||
-        errMsg.includes('ditutup') ||
-        errMsg.includes('popup')
-      ) {
-        handleLoginWithEmail('alfarrezald@gmail.com', 'Davin Maritza / Alfarrezald');
-        setStatusMessage({
-          type: 'info',
-          text: `Origin localhost:3000 belum didaftarkan di Google Cloud Console. Anda telah otomatis dialihkan ke sesi aktif 'alfarrezald@gmail.com' agar seluruh dokumen dan fitur tetap 100% aktif!`,
-        });
-      } else {
-        setStatusMessage({
-          type: 'error',
-          text: errMsg,
-        });
-      }
+      setStatusMessage({
+        type: 'error',
+        text: errMsg,
+      });
     } finally {
       setIsLoading(false);
     }
