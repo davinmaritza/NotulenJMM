@@ -64,4 +64,24 @@ export interface Meeting {
   leaderName?: string;
   noteTakerName?: string;
   audioUrl?: string;
+  isArchived?: boolean;
+  archivedAt?: string;
+  archiveNumber?: string;
 }
+
+export interface HistoryLog {
+  id: string;
+  timestamp: string;
+  action: 'CREATE' | 'EDIT' | 'ARCHIVE' | 'BACKUP_CLOUD' | 'RESTORE' | 'DELETE';
+  title: string;
+  details: string;
+}
+
+export interface GoogleDriveAccount {
+  connected: boolean;
+  email?: string;
+  name?: string;
+  photoUrl?: string;
+  lastSyncTime?: string;
+}
+

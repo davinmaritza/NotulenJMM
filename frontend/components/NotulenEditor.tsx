@@ -24,6 +24,7 @@ import {
   Plus,
   RefreshCw,
   CheckCircle2,
+  Archive,
 } from 'lucide-react';
 import { Meeting, Decision, ActionItem, MeetingAgenda, MeetingFormatStandard } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
@@ -143,6 +144,29 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       lastSavedAt: timestamp,
     });
     showToast(`Draf sidang "${meeting.title}" berhasil disimpan secara online (${timestamp})`);
+  };
+
+  const handleToggleArchive = () => {
+    if (!meeting) return;
+    const isNowArchived = !meeting.isArchived;
+    const year = new Date().getFullYear();
+    const month = String(new Date().getMonth() + 1).padStart(2, '0');
+    const seq = meeting.id.slice(-4).toUpperCase();
+    const archiveNumber = meeting.archiveNumber || `REG-MPK13/ARSIP/${year}/${month}/${seq}`;
+
+    const updated: Meeting = {
+      ...meeting,
+      status: isNowArchived ? 'FINALIZED' : meeting.status,
+      isArchived: isNowArchived,
+      archivedAt: isNowArchived ? new Date().toISOString() : undefined,
+      archiveNumber: isNowArchived ? archiveNumber : undefined,
+    };
+    onUpdateMeeting(updated);
+    showToast(
+      isNowArchived
+        ? `Sesi resmi didaftarkan sebagai Arsip MPK 13 (${archiveNumber})!`
+        : 'Status arsip resmi dibatalkan.'
+    );
   };
 
   const handleAddDecision = (e: React.FormEvent) => {
@@ -1005,6 +1029,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   Draf Tersimpan: {meeting.lastSavedAt}
                 </span>
               )}
+              {meeting.isArchived && (
+                <span className="text-[10px] font-mono font-black text-black bg-[#FEF08A] border-2 border-black px-2.5 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000] flex items-center gap-1">
+                  <Archive className="w-3 h-3 stroke-[2.5]" />
+                  <span>{meeting.archiveNumber || 'ARSIP RESMI'}</span>
+                </span>
+              )}
             </div>
 
             <h1 className="text-xl sm:text-2xl font-black text-black tracking-tight leading-snug">
@@ -1034,7 +1064,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           {/* Primary Action Toolbar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFFDF5] border-2 border-black p-3 rounded-2xl shadow-[3px_3px_0px_0px_#000]">
             {/* Group 1: Draf & Format */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={openModificationModal}
                 title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"
@@ -1051,6 +1081,24 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               >
                 <Save className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                 <span>Simpan Draf</span>
+              </button>
+
+              {/* Action: Jadikan / Batal Arsip */}
+              <button
+                onClick={handleToggleArchive}
+                title={
+                  meeting.isArchived
+                    ? 'Sesi ini telah terdaftar sebagai Arsip Resmi MPK 13. Klik untuk membatalkan status arsip.'
+                    : 'Kunci dan daftarkan sesi ini sebagai Arsip Resmi MPK 13'
+                }
+                className={`flex items-center gap-1.5 px-3.5 py-2 font-black border-2 border-black rounded-xl text-xs shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer ${
+                  meeting.isArchived
+                    ? 'bg-[#FEF08A] text-black ring-2 ring-black'
+                    : 'bg-[#FFE600] hover:bg-[#ffd93d] text-black'
+                }`}
+              >
+                <Archive className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+                <span>{meeting.isArchived ? 'Arsip Terdaftar' : 'Jadikan Arsip'}</span>
               </button>
             </div>
 

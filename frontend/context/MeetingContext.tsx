@@ -1,8 +1,14 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Meeting, AudioSegment } from '../lib/types';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { Meeting, AudioSegment, HistoryLog, GoogleDriveAccount } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
+import {
+  getStoredGoogleAccount,
+  saveStoredGoogleAccount,
+  getStoredHistoryLogs,
+  addHistoryLog,
+} from '../lib/googleDriveBackup';
 
 const STORAGE_KEY = 'notulenjmm_meetings_v2';
 
@@ -13,6 +19,9 @@ interface MeetingContextType {
   setActiveMeetingId: (id: string | null) => void;
   handleUpdateActiveMeeting: (updated: Meeting) => void;
   handleDeleteMeeting: (id: string, e?: React.MouseEvent) => void;
+  handleArchiveMeeting: (id: string) => void;
+  handleUnarchiveMeeting: (id: string) => void;
+  handleRestoreBackup: (restoredMeetings: Meeting[]) => void;
   handleSaveDraft: (draft: {
     title: string;
     secretaryNotes: string;
@@ -39,6 +48,10 @@ interface MeetingContextType {
   }) => string;
   isRecording: boolean;
   isSynthesizing: boolean;
+  historyLogs: HistoryLog[];
+  googleAccount: GoogleDriveAccount;
+  setGoogleAccount: (acc: GoogleDriveAccount) => void;
+  refreshHistoryLogs: () => void;
 }
 
 const MeetingContext = createContext<MeetingContextType | undefined>(undefined);
@@ -50,6 +63,18 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const [isRecording] = useState<boolean>(false);
   const [isSynthesizing, setIsSynthesizing] = useState<boolean>(false);
+
+  const [historyLogs, setHistoryLogs] = useState<HistoryLog[]>([]);
+  const [googleAccount, setGoogleAccountState] = useState<GoogleDriveAccount>({ connected: false });
+
+  const setGoogleAccount = (acc: GoogleDriveAccount) => {
+    setGoogleAccountState(acc);
+    saveStoredGoogleAccount(acc);
+  };
+
+  const refreshHistoryLogs = useCallback(() => {
+    setHistoryLogs(getStoredHistoryLogs());
+  }, []);
 
   // Hydrate from localStorage once on client mount
   useEffect(() => {
@@ -63,6 +88,8 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             setActiveMeetingId(parsed[0].id);
           }
         }
+        setGoogleAccountState(getStoredGoogleAccount());
+        setHistoryLogs(getStoredHistoryLogs());
       } catch (e) {
         console.warn('Failed to parse stored meetings:', e);
       }
@@ -86,15 +113,85 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const handleUpdateActiveMeeting = (updated: Meeting) => {
     setMeetings((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
+    const updatedLogs = addHistoryLog(
+      'EDIT',
+      'Pembaruan Dokumen Sidang',
+      `Menyimpan pembaruan pada naskah '${updated.title}'.`
+    );
+    setHistoryLogs(updatedLogs);
   };
 
   const handleDeleteMeeting = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
+    const target = meetings.find((m) => m.id === id);
     setMeetings((prev) => prev.filter((m) => m.id !== id));
     if (activeMeetingId === id) {
       const remaining = meetings.filter((m) => m.id !== id);
       setActiveMeetingId(remaining.length > 0 ? remaining[0].id : null);
     }
+    if (target) {
+      const updatedLogs = addHistoryLog(
+        'DELETE',
+        'Penghapusan Sesi Sidang',
+        `Menghapus sesi '${target.title}'.`
+      );
+      setHistoryLogs(updatedLogs);
+    }
+  };
+
+  const handleArchiveMeeting = (id: string) => {
+    const target = meetings.find((m) => m.id === id);
+    if (!target) return;
+    const year = new Date().getFullYear();
+    const month = String(new Date().getMonth() + 1).padStart(2, '0');
+    const seq = String(meetings.filter((m) => m.isArchived).length + 1).padStart(3, '0');
+    const archiveNumber = target.archiveNumber || `REG-MPK13/ARSIP/${year}/${month}/${seq}`;
+    const archivedAt = new Date().toISOString();
+
+    const updated: Meeting = {
+      ...target,
+      status: 'FINALIZED',
+      isArchived: true,
+      archivedAt,
+      archiveNumber,
+    };
+
+    setMeetings((prev) => prev.map((m) => (m.id === id ? updated : m)));
+    const updatedLogs = addHistoryLog(
+      'ARCHIVE',
+      'Pengarsipan Dokumen Resmi',
+      `Sesi '${target.title}' resmi didaftarkan sebagai Arsip MPK 13 (${archiveNumber}).`
+    );
+    setHistoryLogs(updatedLogs);
+  };
+
+  const handleUnarchiveMeeting = (id: string) => {
+    const target = meetings.find((m) => m.id === id);
+    if (!target) return;
+    const updated: Meeting = {
+      ...target,
+      isArchived: false,
+    };
+    setMeetings((prev) => prev.map((m) => (m.id === id ? updated : m)));
+    const updatedLogs = addHistoryLog(
+      'EDIT',
+      'Pembatalan Pengarsipan',
+      `Sesi '${target.title}' dikembalikan dari lemari arsip ke daftar aktif.`
+    );
+    setHistoryLogs(updatedLogs);
+  };
+
+  const handleRestoreBackup = (restoredMeetings: Meeting[]) => {
+    if (!Array.isArray(restoredMeetings) || restoredMeetings.length === 0) return;
+    setMeetings(restoredMeetings);
+    setActiveMeetingId(restoredMeetings[0].id);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(restoredMeetings));
+    } catch (e) {
+      console.warn('Failed to persist restored meetings:', e);
+    }
+    const updatedLogs = getStoredHistoryLogs();
+    setHistoryLogs(updatedLogs);
   };
 
   const handleSaveDraft = (draft: {
@@ -121,7 +218,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       lastSavedAt: timestamp,
       audioUrl: draft.audioUrl || undefined,
       attendees: [
-        { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
+        { id: 'att-1', name: 'Pimpinan Sidang', role: 'Leader', present: true },
         { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
       ],
       transcript: [],
@@ -139,8 +236,14 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     setMeetings((prev) => [newDraft, ...prev]);
-    setActiveMeetingId(draftId);
-    return draftId;
+    setActiveMeetingId(newDraft.id);
+    const updatedLogs = addHistoryLog(
+      'CREATE',
+      'Penyimpanan Draf Baru',
+      `Menyimpan draf sesi '${newDraft.title}'.`
+    );
+    setHistoryLogs(updatedLogs);
+    return newDraft.id;
   };
 
   const handleDiarizationComplete = async (
@@ -263,7 +366,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       formatStandard: 'TATA_NASKAH_DINAS',
       lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
       attendees: [
-        { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
+        { id: 'att-1', name: 'Pimpinan Sidang', role: 'Leader', present: true },
         { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
       ],
       transcript: [],
@@ -279,6 +382,12 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     setMeetings((prev) => [newMeet, ...prev]);
     setActiveMeetingId(newMeet.id);
+    const updatedLogs = addHistoryLog(
+      'CREATE',
+      'Pembuatan Sesi Baru',
+      `Membuat sesi sidang baru '${newMeet.title}'.`
+    );
+    setHistoryLogs(updatedLogs);
     return newMeet.id;
   };
 
@@ -302,14 +411,14 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       formatStandard: 'TATA_NASKAH_DINAS',
       lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
       attendees: [
-        { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
+        { id: 'att-1', name: 'Pimpinan Sidang', role: 'Leader', present: true },
         { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
         { id: 'att-3', name: 'Peserta Sidang', role: 'Member', present: true },
       ],
       transcript: [
         {
           id: `seg-${Date.now()}`,
-          speaker: 'Speaker 1 (Davin Maritza)',
+          speaker: 'Speaker 1 (Pimpinan Sidang)',
           startTime: '00:00',
           endTime: '00:20',
           text: `Pembukaan ${session.cardTitle}. Pokok bahasan sidang: ${session.prompt}.`,
@@ -331,6 +440,12 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     setMeetings((prev) => [newMeet, ...prev]);
     setActiveMeetingId(newMeet.id);
+    const updatedLogs = addHistoryLog(
+      'CREATE',
+      'Peluncuran Studio Sidang',
+      `Meluncurkan sesi '${newMeet.title}' dari Craft Studio.`
+    );
+    setHistoryLogs(updatedLogs);
     return newMeet.id;
   };
 
@@ -343,6 +458,9 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setActiveMeetingId,
         handleUpdateActiveMeeting,
         handleDeleteMeeting,
+        handleArchiveMeeting,
+        handleUnarchiveMeeting,
+        handleRestoreBackup,
         handleSaveDraft,
         handleDiarizationComplete,
         handleSynthesizeNotulen,
@@ -350,6 +468,10 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         handleStartCraftSession,
         isRecording,
         isSynthesizing,
+        historyLogs,
+        googleAccount,
+        setGoogleAccount,
+        refreshHistoryLogs,
       }}
     >
       {children}

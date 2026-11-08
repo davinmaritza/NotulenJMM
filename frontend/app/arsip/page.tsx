@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMeetings } from '../../context/MeetingContext';
+import { CloudBackupModal } from '../../components/CloudBackupModal';
 import {
   FileText,
   Mic,
@@ -21,6 +22,8 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Cloud,
+  Archive,
 } from 'lucide-react';
 
 export default function ArsipPage() {
@@ -31,12 +34,16 @@ export default function ArsipPage() {
     setActiveMeetingId,
     handleCreateNewMeeting,
     handleDeleteMeeting,
+    handleArchiveMeeting,
+    handleUnarchiveMeeting,
+    googleAccount,
   } = useMeetings();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filterStatus, setFilterStatus] = useState<'ALL' | 'DRAFT' | 'FINALIZED'>('ALL');
+  const [filterStatus, setFilterStatus] = useState<'ALL' | 'DRAFT' | 'FINALIZED' | 'ARCHIVED'>('ALL');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
+  const [isBackupModalOpen, setIsBackupModalOpen] = useState<boolean>(false);
 
   // Metrics
   const totalDecisions = meetings.reduce((acc, m) => acc + m.decisions.length, 0);
@@ -47,7 +54,8 @@ export default function ArsipPage() {
   );
 
   const draftCount = meetings.filter((m) => m.status === 'DRAFT').length;
-  const finalizedCount = meetings.filter((m) => m.status === 'FINALIZED').length;
+  const finalizedCount = meetings.filter((m) => m.status === 'FINALIZED' && !m.isArchived).length;
+  const archivedCount = meetings.filter((m) => m.isArchived).length;
 
   // Search & Filter
   const filteredMeetings = meetings.filter((m) => {
@@ -59,12 +67,14 @@ export default function ArsipPage() {
       m.location.toLowerCase().includes(q) ||
       (m.leaderName && m.leaderName.toLowerCase().includes(q)) ||
       (m.noteTakerName && m.noteTakerName.toLowerCase().includes(q)) ||
+      (m.archiveNumber && m.archiveNumber.toLowerCase().includes(q)) ||
       m.id.toLowerCase().includes(q);
 
     const matchesFilter =
       filterStatus === 'ALL' ||
       (filterStatus === 'DRAFT' && m.status === 'DRAFT') ||
-      (filterStatus === 'FINALIZED' && m.status === 'FINALIZED');
+      (filterStatus === 'FINALIZED' && m.status === 'FINALIZED' && !m.isArchived) ||
+      (filterStatus === 'ARCHIVED' && m.isArchived);
 
     return matchesSearch && matchesFilter;
   });
@@ -88,7 +98,7 @@ export default function ArsipPage() {
     setCurrentPage(1);
   };
 
-  const handleFilterChange = (status: 'ALL' | 'DRAFT' | 'FINALIZED') => {
+  const handleFilterChange = (status: 'ALL' | 'DRAFT' | 'FINALIZED' | 'ARCHIVED') => {
     setFilterStatus(status);
     setCurrentPage(1);
   };
@@ -179,16 +189,31 @@ export default function ArsipPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            handleCreateNewMeeting();
-            router.push('/record');
-          }}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#FFE600] text-black rounded-xl text-xs font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all shrink-0 cursor-pointer"
-        >
-          <Plus className="w-4 h-4 stroke-[3]" />
-          Buat Sesi Sidang Baru
-        </button>
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Cloud Backup & Google Drive Trigger */}
+          <button
+            onClick={() => setIsBackupModalOpen(true)}
+            className="flex items-center gap-2 px-3.5 sm:px-4 py-2.5 bg-[#E0F2FE] hover:bg-sky-200 text-black rounded-xl text-xs font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all shrink-0 cursor-pointer"
+            title="Cadangkan data ke Google Drive atau pulihkan dari cadangan"
+          >
+            <Cloud className="w-4 h-4 stroke-[2.5] text-sky-800" />
+            <span>Cadangan Cloud &amp; Google</span>
+            {googleAccount.connected && (
+              <span className="w-2 h-2 rounded-full bg-emerald-500 border border-black animate-pulse" />
+            )}
+          </button>
+
+          <button
+            onClick={() => {
+              handleCreateNewMeeting();
+              router.push('/record');
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#FFE600] text-black rounded-xl text-xs font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all shrink-0 cursor-pointer"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" />
+            Buat Sesi Sidang Baru
+          </button>
+        </div>
       </div>
 
       {/* Search, Filter & Per-Page Controls */}
@@ -206,8 +231,8 @@ export default function ArsipPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder="Cari judul rapat, kata kunci, pimpinan, atau notulis..."
-              aria-label="Cari judul rapat, kata kunci, pimpinan, atau notulis"
+              placeholder="Cari judul rapat, nomor arsip, kata kunci, atau pimpinan..."
+              aria-label="Cari judul rapat, nomor arsip, kata kunci, atau pimpinan"
               className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl pl-9 pr-8 py-2 text-xs font-bold text-black placeholder:text-black/50 focus:outline-none focus:bg-white"
             />
             {searchQuery && (
@@ -256,6 +281,17 @@ export default function ArsipPage() {
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 border border-black" />
                 <span>Disahkan ({finalizedCount})</span>
+              </button>
+              <button
+                onClick={() => handleFilterChange('ARCHIVED')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer border-2 border-black flex items-center gap-1.5 ${
+                  filterStatus === 'ARCHIVED'
+                    ? 'bg-[#FEF08A] text-black shadow-[2px_2px_0px_0px_#000]'
+                    : 'bg-white text-black hover:bg-[#FFFDF5]'
+                }`}
+              >
+                <Archive className="w-3 h-3 stroke-[2.5]" />
+                <span>Arsip Resmi ({archivedCount})</span>
               </button>
             </div>
 
@@ -355,19 +391,22 @@ export default function ArsipPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className={`text-[10px] font-mono font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000] ${
-                          meet.status === 'FINALIZED'
-                            ? 'bg-[#A7F3D0] text-black'
-                            : meet.status === 'DRAFT'
-                            ? 'bg-[#FECDD3] text-black'
-                            : meet.status === 'TRANSCRIBING'
-                            ? 'bg-[#38BDF8] text-black'
-                            : 'bg-white text-black'
-                        }`}
-                      >
-                        {meet.status === 'DRAFT' ? 'DRAF ONLINE' : meet.status}
-                      </span>
+                      {meet.status === 'FINALIZED' && !meet.isArchived && (
+                        <span className="text-[10px] font-mono font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-black bg-[#A7F3D0] text-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                          DISAHKAN
+                        </span>
+                      )}
+                      {meet.status === 'DRAFT' && !meet.isArchived && (
+                        <span className="text-[10px] font-mono font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-black bg-[#FECDD3] text-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                          DRAF ONLINE
+                        </span>
+                      )}
+                      {meet.isArchived && (
+                        <span className="text-[10px] font-mono font-black uppercase px-2.5 py-0.5 rounded-full border-2 border-black bg-[#FEF08A] text-black shadow-[1.5px_1.5px_0px_0px_#000] flex items-center gap-1">
+                          <Archive className="w-3 h-3 stroke-[2.5]" />
+                          <span>{meet.archiveNumber || 'ARSIP RESMI'}</span>
+                        </span>
+                      )}
                       {meet.lastSavedAt && (
                         <span className="text-[10px] font-mono font-bold text-black/70">
                           Disimpan: {meet.lastSavedAt}
@@ -394,7 +433,36 @@ export default function ArsipPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2.5 self-end md:self-center">
+                  <div className="flex items-center gap-2 sm:gap-2.5 self-end md:self-center flex-wrap justify-end">
+                    {/* Action: Archive / Unarchive */}
+                    {meet.isArchived ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUnarchiveMeeting(meet.id);
+                        }}
+                        title="Batalkan status arsip dan kembalikan ke daftar aktif"
+                        className="px-3 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] flex items-center gap-1 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span className="hidden sm:inline">Batal Arsip</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleArchiveMeeting(meet.id);
+                        }}
+                        title="Kunci dan daftarkan sesi ini sebagai Arsip Resmi MPK 13"
+                        className="px-3 py-1.5 bg-[#FEF08A] hover:bg-[#FFE600] text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] flex items-center gap-1 transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]"
+                      >
+                        <Archive className="w-3.5 h-3.5 stroke-[2.5]" />
+                        <span className="hidden sm:inline">Jadikan Arsip</span>
+                      </button>
+                    )}
+
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -407,7 +475,7 @@ export default function ArsipPage() {
                       Rekam
                     </button>
                     <button className="px-4 py-1.5 bg-[#FFE600] hover:bg-[#FFD93D] text-black rounded-xl text-xs font-black flex items-center gap-1.5 transition-all border-2 border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000]">
-                      <span>{meet.status === 'DRAFT' ? 'Lanjutkan Draf' : 'Buka Risalah'}</span>
+                      <span>{meet.status === 'DRAFT' && !meet.isArchived ? 'Lanjutkan Draf' : 'Buka Risalah'}</span>
                       <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
                     </button>
                     <button
@@ -472,6 +540,12 @@ export default function ArsipPage() {
           )}
         </div>
       )}
+
+      {/* Cloud Backup Modal */}
+      <CloudBackupModal
+        isOpen={isBackupModalOpen}
+        onClose={() => setIsBackupModalOpen(false)}
+      />
     </div>
   );
 }
