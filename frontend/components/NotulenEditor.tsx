@@ -26,6 +26,7 @@ import {
   CheckCircle2,
   Archive,
   Cloud,
+  Loader2,
 } from 'lucide-react';
 import { Meeting, Decision, ActionItem, MeetingAgenda, MeetingFormatStandard } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
@@ -48,7 +49,8 @@ const escapeHtml = (text: string | null | undefined): string => {
 };
 
 export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateMeeting }) => {
-  const { googleAccount, isAutoSyncing } = useMeetings();
+  const { googleAccount, isAutoSyncing, handleExportGoogleDoc } = useMeetings();
+  const [isExportingGoogleDocs, setIsExportingGoogleDocs] = useState<boolean>(false);
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedWa, setCopiedWa] = useState(false);
   const [showWaModal, setShowWaModal] = useState(false);
@@ -725,6 +727,24 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     window.open(url, '_blank');
   };
 
+  // 6. Direct Export to Google Docs
+  const handleExportToGoogleDocs = async () => {
+    if (!meeting) return;
+    setIsExportingGoogleDocs(true);
+    try {
+      const res = await handleExportGoogleDoc(meeting);
+      showToast(`Berhasil diekspor ke Google Docs: ${res.title}`);
+      if (res.docUrl) {
+        window.open(res.docUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showToast(`Gagal ekspor ke Google Docs: ${msg}`);
+    } finally {
+      setIsExportingGoogleDocs(false);
+    }
+  };
+
   // Modification Modal Handlers
   const handleApplyModifications = () => {
     const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
@@ -1143,6 +1163,21 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               >
                 <Send className="w-3.5 h-3.5 fill-current" />
                 <span>Kirim WA</span>
+              </button>
+
+              {/* Export: Buka Langsung di Google Docs */}
+              <button
+                onClick={handleExportToGoogleDocs}
+                disabled={isExportingGoogleDocs}
+                title="Ekspor dan buka naskah risalah resmi langsung di Google Docs"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#E0F2FE] hover:bg-sky-300 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer disabled:opacity-50"
+              >
+                {isExportingGoogleDocs ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-700 stroke-[2.5]" />
+                ) : (
+                  <FileText className="w-3.5 h-3.5 text-blue-700 stroke-[2.5]" />
+                )}
+                <span>Google Docs</span>
               </button>
 
               {/* Export 2: Unduh Word (.doc) */}

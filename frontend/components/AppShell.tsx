@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { UserFriendlyWorkflowBar } from './UserFriendlyWorkflowBar';
+import { GoogleAuthGate } from './GoogleAuthGate';
 import { useMeetings } from '../context/MeetingContext';
 import { Menu } from 'lucide-react';
 
@@ -16,11 +17,17 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
+  const [isGuestMode, setIsGuestMode] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem('notulenjmm_guest_mode') === 'true';
+  });
 
   const {
     meetings,
     activeMeeting,
     isRecording,
+    googleAccount,
+    isHydrated,
   } = useMeetings();
 
   const currentTab =
@@ -41,6 +48,41 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     else if (tab === 'notulen') router.push('/notulen');
     else if (tab === 'actions') router.push('/tasks');
   };
+
+  // 1. Initial hydration skeleton to prevent auth gate flicker
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen bg-[#FFFDF5] flex flex-col items-center justify-center p-6 text-black select-none">
+        <div className="w-14 h-14 rounded-2xl bg-[#FFE600] border-2 border-black p-1.5 shadow-[4px_4px_0px_0px_#000] flex items-center justify-center mb-4">
+          <Image
+            src="/logo-mpk.png"
+            alt="Logo MPK"
+            width={44}
+            height={44}
+            className="w-full h-full object-contain animate-pulse"
+            priority
+          />
+        </div>
+        <p className="text-xs font-mono font-bold text-zinc-800 animate-pulse">
+          Memuat Workspace NotulenJMM...
+        </p>
+      </div>
+    );
+  }
+
+  // 2. Google Authentication Gate if not connected and not in guest mode
+  if (!(googleAccount.connected && googleAccount.email) && !isGuestMode) {
+    return (
+      <GoogleAuthGate
+        onGuestContinue={() => {
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('notulenjmm_guest_mode', 'true');
+          }
+          setIsGuestMode(true);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FFFDF5] text-black flex flex-col lg:flex-row antialiased selection:bg-[#FFE600] selection:text-black">

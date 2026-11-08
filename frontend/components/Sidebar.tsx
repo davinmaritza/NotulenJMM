@@ -10,7 +10,10 @@ import {
   BookOpen,
   CheckSquare,
   X,
+  Cloud,
+  LogOut,
 } from 'lucide-react';
+import { useMeetings } from '../context/MeetingContext';
 
 interface SidebarProps {
   activeTab?: string;
@@ -31,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { googleAccount, handleLogoutGoogle, handleLoginGoogle } = useMeetings();
 
   const currentTab =
     activeTab ||
@@ -206,6 +210,60 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
 
         </div>
+
+        {/* Google User Profile & Session Card */}
+        {googleAccount.connected && googleAccount.email ? (
+          <div className="p-3 border-t-2 border-black bg-[#FFFDF5]">
+            <div className="flex items-center justify-between gap-2 bg-white p-2 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000]">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-7 h-7 rounded-lg bg-[#FFE600] border border-black flex items-center justify-center font-black text-xs text-black shrink-0 shadow-[1px_1px_0px_0px_#000]">
+                  {googleAccount.email.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-black text-black truncate max-w-[130px]" title={googleAccount.email}>
+                    {googleAccount.email}
+                  </p>
+                  <div className="flex items-center gap-1 text-[9px] font-mono font-bold text-sky-800">
+                    <Cloud className="w-2.5 h-2.5 text-sky-700" />
+                    <span>Auto-Backup Aktif</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Keluar dari akun Google ini?')) {
+                    sessionStorage.removeItem('notulenjmm_guest_mode');
+                    handleLogoutGoogle();
+                  }
+                }}
+                title="Keluar dari akun Google"
+                className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-black shadow-[1px_1px_0px_0px_#000] cursor-pointer transition-colors shrink-0"
+                aria-label="Keluar dari akun Google"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="p-3 border-t-2 border-black bg-[#FFFDF5]">
+            <div className="p-2.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-1.5">
+              <div className="flex items-center justify-between text-[10px] font-bold">
+                <span className="text-zinc-600 font-mono">Mode Tamu</span>
+                <span className="px-1.5 py-0.5 rounded bg-zinc-100 border border-black text-[9px]">Offline</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleLoginGoogle()}
+                className="w-full py-1.5 px-2 bg-[#FFE600] hover:bg-amber-300 text-black border border-black rounded-lg text-[10px] font-black flex items-center justify-center gap-1.5 shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer"
+              >
+                <Cloud className="w-3 h-3 text-sky-800" />
+                <span>Masuk Akun Google</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Institutional System Status Footer */}
         <div className="p-3.5 border-t-2 border-black bg-white">

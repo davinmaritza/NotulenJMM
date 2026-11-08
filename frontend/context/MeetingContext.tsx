@@ -6,11 +6,14 @@ import { synthesizeNotulenApi } from '../lib/api';
 import {
   getStoredGoogleAccount,
   saveStoredGoogleAccount,
+  clearStoredGoogleAccount,
   getStoredHistoryLogs,
   addHistoryLog,
   getGoogleClientId,
   requestGoogleAccessToken,
   uploadBackupToGoogleDrive,
+  fetchGoogleUserProfile,
+  exportMeetingToGoogleDoc,
 } from '../lib/googleDriveBackup';
 
 const STORAGE_KEY = 'notulenjmm_meetings_v2';
@@ -53,12 +56,16 @@ interface MeetingContextType {
   isSynthesizing: boolean;
   isAutoSyncing: boolean;
   lastAutoSyncStatus: 'idle' | 'syncing' | 'synced' | 'error';
+  isHydrated: boolean;
   historyLogs: HistoryLog[];
   googleAccount: GoogleDriveAccount;
   setGoogleAccount: (acc: GoogleDriveAccount) => void;
   refreshHistoryLogs: () => void;
   handleToggleAutoSync: (enabled: boolean) => void;
   handleTriggerManualSync: () => Promise<void>;
+  handleLoginGoogle: () => Promise<void>;
+  handleLogoutGoogle: () => void;
+  handleExportGoogleDoc: (targetMeeting: Meeting) => Promise<{ docId: string; docUrl: string; title: string }>;
 }
 
 const MeetingContext = createContext<MeetingContextType | undefined>(undefined);
@@ -232,6 +239,86 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const handleTriggerManualSync = async () => {
     await performDriveSync(meetingsRef.current, false);
+  };
+
+  const handleLoginGoogle = async () => {
+    const clientId = getGoogleClientId();
+    if (!clientId) {
+      throw new Error('Google Client ID belum diatur. Silakan atur Google Client ID terlebih dahulu.');
+    }
+    const token = await requestGoogleAccessToken(clientId, false);
+    const profile = await fetchGoogleUserProfile(token);
+    const newAccount: GoogleDriveAccount = {
+      connected: true,
+      email: profile.email,
+      name: profile.name,
+      photoUrl: profile.picture,
+      lastSyncTime: new Date().toISOString(),
+      accessToken: token,
+      tokenExpiresAt: Date.now() + 3500 * 1000,
+      autoSyncEnabled: true,
+    };
+    setGoogleAccountState(newAccount);
+    saveStoredGoogleAccount(newAccount);
+
+    // Initial sync of current meetings
+    try {
+      const res = await uploadBackupToGoogleDrive(token, meetingsRef.current);
+      newAccount.lastSyncTime = res.modifiedTime;
+      setGoogleAccountState(newAccount);
+      saveStoredGoogleAccount(newAccount);
+    } catch (e) {
+      console.warn('Initial backup on login failed:', e);
+    }
+
+    const updatedLogs = addHistoryLog(
+      'BACKUP_CLOUD',
+      'Masuk Akun Google',
+      `Sesi Google aktif: ${profile.email}. Auto-Backup Cloud diaktifkan.`
+    );
+    setHistoryLogs(updatedLogs);
+  };
+
+  const handleLogoutGoogle = () => {
+    clearStoredGoogleAccount();
+    setGoogleAccountState({ connected: false });
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('notulenjmm_guest_mode');
+    }
+    const updatedLogs = addHistoryLog(
+      'BACKUP_CLOUD',
+      'Keluar Akun Google',
+      'Sesi akun Google diputuskan. Cadangan cloud dihentikan.'
+    );
+    setHistoryLogs(updatedLogs);
+  };
+
+  const handleExportGoogleDoc = async (targetMeeting: Meeting) => {
+    const storedAccount = getStoredGoogleAccount();
+    const clientId = getGoogleClientId();
+    let token = storedAccount.accessToken;
+    const isTokenExpired =
+      !token || !storedAccount.tokenExpiresAt || Date.now() >= storedAccount.tokenExpiresAt - 60000;
+
+    if (isTokenExpired) {
+      if (!clientId) {
+        throw new Error('Silakan hubungkan akun Google terlebih dahulu untuk mengekspor ke Google Docs.');
+      }
+      token = await requestGoogleAccessToken(clientId, false);
+      const updatedAcc: GoogleDriveAccount = {
+        ...storedAccount,
+        accessToken: token,
+        tokenExpiresAt: Date.now() + 3500 * 1000,
+      };
+      setGoogleAccountState(updatedAcc);
+      saveStoredGoogleAccount(updatedAcc);
+    }
+
+    if (!token) {
+      throw new Error('Token otentikasi Google tidak tersedia.');
+    }
+
+    return await exportMeetingToGoogleDoc(token, targetMeeting);
   };
 
   const activeMeeting =
@@ -595,12 +682,16 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isSynthesizing,
         isAutoSyncing,
         lastAutoSyncStatus,
+        isHydrated,
         historyLogs,
         googleAccount,
         setGoogleAccount,
         refreshHistoryLogs,
         handleToggleAutoSync,
         handleTriggerManualSync,
+        handleLoginGoogle,
+        handleLogoutGoogle,
+        handleExportGoogleDoc,
       }}
     >
       {children}
