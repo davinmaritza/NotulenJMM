@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { Meeting, AudioSegment, HistoryLog, GoogleDriveAccount } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
+import { createMplsMeetingTemplate } from '../lib/meetingTemplates';
+import { formatIndonesianDateTime } from '../lib/indonesianDate';
 import {
   getStoredGoogleAccount,
   saveStoredGoogleAccount,
@@ -44,6 +46,7 @@ interface MeetingContextType {
   ) => Promise<string>;
   handleSynthesizeNotulen: (customNotes?: string) => Promise<void>;
   handleCreateNewMeeting: () => string;
+  handleCreateMplsMeeting: () => string;
   handleStartCraftSession: (session: {
     cardTitle: string;
     cardDescription: string;
@@ -573,9 +576,22 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     try {
       const notesToUse = customNotes || activeMeeting.secretaryNotes;
+      const transcriptToUse =
+        activeMeeting.transcript && activeMeeting.transcript.length > 0
+          ? activeMeeting.transcript
+          : [
+              {
+                id: 'seg-synthetic-1',
+                speaker: 'Pimpinan Sidang',
+                startTime: '00:00',
+                endTime: '01:00',
+                text: `Rapat resmi ${activeMeeting.title}. Pokok agenda: ${activeMeeting.agendas.map((a) => a.title).join(', ')}. Arahan notulis: ${notesToUse || 'Perumusan ketetapan formal dan penugasan sidang.'}`,
+              },
+            ];
+
       const result = await synthesizeNotulenApi(
         activeMeeting.title,
-        activeMeeting.transcript,
+        transcriptToUse,
         activeMeeting.organizer,
         notesToUse
       );
@@ -585,6 +601,10 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         status: 'FINALIZED',
         secretaryNotes: notesToUse,
         executiveSummary: result.executiveSummary,
+        mostImportant:
+          activeMeeting.mostImportant ||
+          result.decisions[0]?.decisionText ||
+          'Ketetapan dan pokok penugasan sidang disahkan secara sah berstandar MPK SMK Negeri 13 Bandung.',
         agendas: result.agendas.length > 0 ? result.agendas : activeMeeting.agendas,
         decisions: result.decisions.length > 0 ? result.decisions : activeMeeting.decisions,
         actionItems: result.actionItems.length > 0 ? result.actionItems : activeMeeting.actionItems,
@@ -603,12 +623,13 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const newMeet: Meeting = {
       id: `meet-${Date.now()}`,
       title: 'Sidang Koordinasi Pengurus MPK SMK Negeri 13 Bandung',
-      date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + ' WIB',
+      date: formatIndonesianDateTime(new Date(), '09:00', '11:30'),
       location: 'Ruang Sidang Majelis / Multimedia SMK Negeri 13 Bandung',
       organizer: 'MPK SMK Negeri 13 Bandung',
-      status: 'DRAFT',
+      status: 'FINALIZED',
       durationSeconds: 0,
       secretaryNotes: '',
+      mostImportant: '',
       formatStandard: 'TATA_NASKAH_DINAS',
       lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
       attendees: [
@@ -635,6 +656,19 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
     setHistoryLogs(updatedLogs);
     return newMeet.id;
+  };
+
+  const handleCreateMplsMeeting = (): string => {
+    const mplsMeet = createMplsMeetingTemplate();
+    setMeetings((prev) => [mplsMeet, ...prev.filter((m) => m.id !== mplsMeet.id)]);
+    setActiveMeetingId(mplsMeet.id);
+    const updatedLogs = addHistoryLog(
+      'CREATE',
+      'Pembuatan Agenda MPLS',
+      `Membuat agenda resmi pembentukan panitia MPLS '${mplsMeet.title}'.`
+    );
+    setHistoryLogs(updatedLogs);
+    return mplsMeet.id;
   };
 
   const handleStartCraftSession = (session: {
@@ -711,6 +745,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         handleDiarizationComplete,
         handleSynthesizeNotulen,
         handleCreateNewMeeting,
+        handleCreateMplsMeeting,
         handleStartCraftSession,
         isRecording,
         isSynthesizing,

@@ -136,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-2.5">
                 <FileText className="w-4 h-4 text-black stroke-[2.5]" />
-                <span>Arsip &amp; Draf Sidang</span>
+                <span>Arsip Sidang Resmi</span>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#4ECDC4] text-black font-black border border-black shadow-[1.5px_1.5px_0px_0px_#000]">
                 {totalMeetingsCount}

@@ -89,8 +89,8 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
         {/* Primary CTA: Rumuskan Risalah Sidang */}
         <button
           onClick={() => onSynthesizeNotulen(secretaryNotes)}
-          disabled={isSynthesizing || transcript.length === 0}
-          className="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-xl bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black text-xs border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all disabled:opacity-35 cursor-pointer"
+          disabled={isSynthesizing}
+          className="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-xl bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black text-xs border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all disabled:opacity-50 cursor-pointer"
         >
           {isSynthesizing ? (
             <>

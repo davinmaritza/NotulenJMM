@@ -40,6 +40,7 @@ export interface MeetingAgenda {
 
 export type MeetingFormatStandard =
   | 'TATA_NASKAH_DINAS'
+  | 'PEMBENTUKAN_PANITIA_MPLS'
   | 'RISALAH_PADAT'
   | 'RAPAT_KERJA_ANGGARAN'
   | 'LPJ_EVALUASI';
@@ -55,6 +56,7 @@ export interface Meeting {
   attendees: Attendee[];
   transcript: AudioSegment[];
   executiveSummary?: string;
+  mostImportant?: string;
   agendas: MeetingAgenda[];
   decisions: Decision[];
   actionItems: ActionItem[];

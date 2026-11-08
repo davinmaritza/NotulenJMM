@@ -27,10 +27,17 @@ import {
   Archive,
   Cloud,
   Loader2,
+  Edit2,
+  Zap,
 } from 'lucide-react';
 import { Meeting, Decision, ActionItem, MeetingAgenda, MeetingFormatStandard } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
 import { useMeetings } from '../context/MeetingContext';
+import {
+  INDONESIAN_DAYS,
+  INDONESIAN_MONTHS,
+  getQuickDatePresets,
+} from '../lib/indonesianDate';
 
 interface NotulenEditorProps {
   meeting?: Meeting | null;
@@ -48,6 +55,23 @@ const escapeHtml = (text: string | null | undefined): string => {
     .replace(/'/g, '&#039;');
 };
 
+const generateEntityId = (prefix: string): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
+  }
+  return `${prefix}-${Date.now().toString(36)}`;
+};
+
+const getFutureDateString = (daysAhead: number = 7): string => {
+  const d = new Date();
+  d.setDate(d.getDate() + daysAhead);
+  return d.toISOString().split('T')[0];
+};
+
+const getTodayIsoString = (): string => {
+  return new Date().toISOString().split('T')[0];
+};
+
 export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateMeeting }) => {
   const { googleAccount, isAutoSyncing, handleExportGoogleDoc } = useMeetings();
   const [isExportingGoogleDocs, setIsExportingGoogleDocs] = useState<boolean>(false);
@@ -63,6 +87,21 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
   const [newActionAssignee, setNewActionAssignee] = useState('');
   const [newActionDueDate, setNewActionDueDate] = useState('');
 
+  // Inline Editable States
+  const [isEditingSummary, setIsEditingSummary] = useState(false);
+  const [summaryInput, setSummaryInput] = useState('');
+  const [isEditingMostImportant, setIsEditingMostImportant] = useState(false);
+  const [mostImportantInput, setMostImportantInput] = useState('');
+
+  // Indonesian Date/Time Picker Modal State
+  const [showDatePickerModal, setShowDatePickerModal] = useState(false);
+  const [selectedDayName, setSelectedDayName] = useState('Senin');
+  const [selectedDayNumber, setSelectedDayNumber] = useState(() => new Date().getDate());
+  const [selectedMonth, setSelectedMonth] = useState(() => INDONESIAN_MONTHS[new Date().getMonth()] || 'Juli');
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear());
+  const [startTime, setStartTime] = useState('08:00');
+  const [endTime, setEndTime] = useState('12:00');
+
   // Modification Drawer / Modal State
   const [isModifying, setIsModifying] = useState(false);
   const [isAiReformatting, setIsAiReformatting] = useState(false);
@@ -77,9 +116,59 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
   const [editFormatStandard, setEditFormatStandard] = useState<MeetingFormatStandard>('TATA_NASKAH_DINAS');
   const [editSecretaryNotes, setEditSecretaryNotes] = useState('');
   const [editExecutiveSummary, setEditExecutiveSummary] = useState('');
+  const [editMostImportant, setEditMostImportant] = useState('');
   const [editAgendas, setEditAgendas] = useState<MeetingAgenda[]>([]);
   const [editDecisions, setEditDecisions] = useState<Decision[]>([]);
   const [editActionItems, setEditActionItems] = useState<ActionItem[]>([]);
+
+  const handleSaveSummaryInline = () => {
+    if (!meeting) return;
+    const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    onUpdateMeeting({
+      ...meeting,
+      executiveSummary: summaryInput.trim(),
+      lastSavedAt: timestamp,
+    });
+    setIsEditingSummary(false);
+    showToast('Ringkasan eksekutif berhasil diperbarui!');
+  };
+
+  const handleSaveMostImportantInline = () => {
+    if (!meeting) return;
+    const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    onUpdateMeeting({
+      ...meeting,
+      mostImportant: mostImportantInput.trim(),
+      lastSavedAt: timestamp,
+    });
+    setIsEditingMostImportant(false);
+    showToast('Poin Kritis / Keputusan Utama berhasil disimpan!');
+  };
+
+  const handleApplyCustomDate = () => {
+    if (!meeting) return;
+    const formatted = `${selectedDayName}, ${selectedDayNumber} ${selectedMonth} ${selectedYear} • Pukul ${startTime} - ${endTime} WIB`;
+    const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    onUpdateMeeting({
+      ...meeting,
+      date: formatted,
+      lastSavedAt: timestamp,
+    });
+    setShowDatePickerModal(false);
+    showToast(`Jadwal sidang berhasil diperbarui: ${formatted}`);
+  };
+
+  const handleSelectDatePreset = (presetText: string) => {
+    if (!meeting) return;
+    const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    onUpdateMeeting({
+      ...meeting,
+      date: presetText,
+      lastSavedAt: timestamp,
+    });
+    setShowDatePickerModal(false);
+    showToast(`Jadwal sidang berhasil diperbarui: ${presetText}`);
+  };
 
   // Initialize edit form when user opens the modification modal
   const openModificationModal = () => {
@@ -93,6 +182,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       setEditFormatStandard(meeting.formatStandard || 'TATA_NASKAH_DINAS');
       setEditSecretaryNotes(meeting.secretaryNotes || '');
       setEditExecutiveSummary(meeting.executiveSummary || '');
+      setEditMostImportant(meeting.mostImportant || '');
       setEditAgendas(JSON.parse(JSON.stringify(meeting.agendas || [])));
       setEditDecisions(JSON.parse(JSON.stringify(meeting.decisions || [])));
       setEditActionItems(JSON.parse(JSON.stringify(meeting.actionItems || [])));
@@ -179,13 +269,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     if (!newDecisionText.trim()) return;
 
     const newDecision: Decision = {
-      id: `dec-${Date.now()}`,
+      id: generateEntityId('dec'),
       number: `KEP/${String(meeting.decisions.length + 1).padStart(3, '0')}/MPK-13/XI/2026`,
       decisionText: newDecisionText.trim(),
       rationale: 'Ketetapan hasil musyawarah dan pemungutan suara forum sidang pleno.',
       category: newDecisionCategory,
       status: 'DISAHKAN',
-      date: new Date().toISOString().split('T')[0],
+      date: getTodayIsoString(),
     };
 
     onUpdateMeeting({
@@ -202,10 +292,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     if (!newActionTask.trim() || !newActionAssignee.trim()) return;
 
     const newItem: ActionItem = {
-      id: `act-${Date.now()}`,
+      id: generateEntityId('act'),
       description: newActionTask.trim(),
       assignee: newActionAssignee.trim(),
-      dueDate: newActionDueDate || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+      dueDate: newActionDueDate || getFutureDateString(7),
       status: 'PENDING',
     };
 
@@ -236,6 +326,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     }
 
     md += `---\n\n`;
+    if (meeting.mostImportant) {
+      md += `> **⚡ POIN KRITIS / KEPUTUSAN PALING UTAMA (MOST IMPORTANT):**\n`;
+      md += `> ${meeting.mostImportant}\n\n`;
+    }
     md += `### I. RINGKASAN EKSEKUTIF\n${meeting.executiveSummary || 'Belum ada ringkasan eksekutif.'}\n\n`;
 
     md += `### II. POKOK BAHASAN & AGENDA\n`;
@@ -401,6 +495,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
         <div class="summary-box">
           ${escapeHtml(meeting.executiveSummary) || 'Belum ada ringkasan eksekutif.'}
         </div>
+
+        ${meeting.mostImportant ? `
+        <div style="background-color: #fef08a; border: 2pt solid #000000; padding: 10pt 12pt; margin: 10pt 0 14pt; border-radius: 4pt;">
+          <p style="margin: 0; font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #854d0e;">POIN KRITIS / KEPUTUSAN PALING UTAMA (MOST IMPORTANT):</p>
+          <p style="margin: 4pt 0 0; font-size: 11pt; font-weight: bold; color: #000000;">${escapeHtml(meeting.mostImportant)}</p>
+        </div>
+        ` : ''}
 
         <h3>II. Pokok Bahasan &amp; Agenda Pleno</h3>
         ${agendasHtml}
@@ -601,6 +702,13 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     txt += subDivider;
     txt += (meeting.executiveSummary || 'Belum ada ringkasan eksekutif.') + '\n\n';
 
+    if (meeting.mostImportant) {
+      txt += subDivider;
+      txt += '⚡ POIN KRITIS / KEPUTUSAN PALING UTAMA (MOST IMPORTANT)\n';
+      txt += subDivider;
+      txt += meeting.mostImportant + '\n\n';
+    }
+
     txt += subDivider;
     txt += 'II. POKOK BAHASAN & AGENDA\n';
     txt += subDivider;
@@ -672,6 +780,11 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       wa += `*Catatan Pengarah:* _${meeting.secretaryNotes}_\n`;
     }
     wa += `\n`;
+
+    if (meeting.mostImportant) {
+      wa += `*⚡ KETETAPAN UTAMA / POIN KRITIS (MOST IMPORTANT):*\n`;
+      wa += `_${meeting.mostImportant}_\n\n`;
+    }
 
     wa += `*I. RINGKASAN EKSEKUTIF*\n`;
     wa += `${meeting.executiveSummary || 'Belum ada ringkasan eksekutif.'}\n\n`;
@@ -759,6 +872,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       formatStandard: editFormatStandard,
       secretaryNotes: editSecretaryNotes,
       executiveSummary: editExecutiveSummary,
+      mostImportant: editMostImportant.trim(),
       agendas: editAgendas,
       decisions: editDecisions,
       actionItems: editActionItems,
@@ -781,6 +895,8 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       const formatPrompts: Record<MeetingFormatStandard, string> = {
         TATA_NASKAH_DINAS:
           'Tata Naskah Dinas Resmi MPK 13. Susun konsiderans hukum, pasal ketetapan pleno, dan bahasa yuridis resmi.',
+        PEMBENTUKAN_PANITIA_MPLS:
+          'Format Pembentukan Panitia MPLS & Pokja Kegiatan. Susun struktur panitia pelaksana (Ketua, Sekretaris, Bendahara), 6 koordinator divisi operasional, estimasi RAB, dan tata tertib ramah anak.',
         RISALAH_PADAT:
           'Format Risalah Padat & Ketetapan Inti. Ringkasan maksimal 2 paragraf tajam, langsung ke inti keputusan rapat dan PIC tanpa basa-basi.',
         RAPAT_KERJA_ANGGARAN:
@@ -931,6 +1047,17 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
         </table>
 
         <div className="space-y-5 text-xs text-black">
+          {meeting.mostImportant && (
+            <div className="bg-amber-50 p-3 border-l-4 border-amber-600 rounded">
+              <h4 className="font-bold uppercase text-amber-900 pb-1 mb-1">
+                Poin Kritis / Keputusan Paling Utama:
+              </h4>
+              <p className="leading-relaxed font-semibold text-zinc-900">
+                {meeting.mostImportant}
+              </p>
+            </div>
+          )}
+
           <div>
             <h4 className="font-bold uppercase border-b border-black pb-1 mb-2">I. Ringkasan Eksekutif Hasil Sidang</h4>
             <p className="leading-relaxed bg-zinc-50 p-3 border-l-4 border-black">
@@ -1039,7 +1166,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 DOKUMEN SIDANG RESMI
               </span>
               <span className="text-[11px] font-black text-black px-2.5 py-0.5 rounded bg-[#FFFDF5] border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
-                {meeting.formatStandard === 'RISALAH_PADAT'
+                {meeting.formatStandard === 'PEMBENTUKAN_PANITIA_MPLS'
+                  ? 'Pembentukan Panitia MPLS'
+                  : meeting.formatStandard === 'RISALAH_PADAT'
                   ? 'Risalah Padat & Ketetapan Inti'
                   : meeting.formatStandard === 'RAPAT_KERJA_ANGGARAN'
                   ? 'Format Anggaran Kas & Belanja'
@@ -1049,7 +1178,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               </span>
               {meeting.lastSavedAt && (
                 <span className="text-[10px] font-black text-black bg-[#A7F3D0] border-2 border-black px-2.5 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000]">
-                  Draf Tersimpan: {meeting.lastSavedAt}
+                  Tersimpan: {meeting.lastSavedAt}
                 </span>
               )}
               {meeting.isArchived && (
@@ -1089,10 +1218,16 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             </h1>
 
             <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-800 font-bold text-[11px] pt-0.5">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-black stroke-[2.2]" />
-                {meeting.date}
-              </span>
+              <button
+                type="button"
+                onClick={() => setShowDatePickerModal(true)}
+                title="Klik untuk memilih hari, tanggal, bulan, dan jam sidang resmi Indonesia"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFE600] hover:bg-[#ffd93d] text-black border border-black shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer transition-all hover:-translate-y-0.5"
+              >
+                <Calendar className="w-3.5 h-3.5 text-black stroke-[2.2]" />
+                <span>{meeting.date || 'Atur Hari & Tanggal Sidang'}</span>
+                <Edit2 className="w-2.5 h-2.5 opacity-70 ml-0.5" />
+              </button>
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-black stroke-[2.2]" />
                 {meeting.location}
@@ -1123,11 +1258,11 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
               <button
                 onClick={handleManualSaveDraft}
-                title="Simpan status draf saat ini secara online ke penyimpanan lokal"
+                title="Simpan perubahan status saat ini ke penyimpanan lokal"
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-[#A7F3D0] hover:bg-emerald-300 text-black font-black border-2 border-black rounded-xl text-xs shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                <span>Simpan Draf</span>
+                <span>Simpan Perubahan</span>
               </button>
 
               {/* Action: Jadikan / Batal Arsip */}
@@ -1256,19 +1391,130 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           </div>
         )}
 
+        {/* Poin Kritis / Keputusan Paling Utama (Most Important - Wajib Diisi) */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-black text-xs text-amber-950 bg-amber-400 border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000] flex items-center gap-1">
+                <Zap className="w-3 h-3 fill-black stroke-black" />
+                POIN KRITIS
+              </span>
+              <h2 className="text-xs font-black uppercase tracking-[0.14em] text-amber-900">
+                Keputusan Paling Utama (Most Important - Wajib Diisi)
+              </h2>
+            </div>
+            {!isEditingMostImportant && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMostImportantInput(meeting.mostImportant || '');
+                  setIsEditingMostImportant(true);
+                }}
+                className="flex items-center gap-1 text-[11px] font-black text-black bg-[#FFE600] hover:bg-[#ffd93d] border border-black px-2.5 py-1 rounded-lg shadow-[1.5px_1.5px_0px_0px_#000] transition-all cursor-pointer hover:-translate-y-0.5"
+              >
+                <Edit2 className="w-3 h-3 stroke-[2.5]" />
+                <span>Edit Poin Kritis</span>
+              </button>
+            )}
+          </div>
+
+          <div className="p-5 bg-[#FEF3C7] border-2 border-black rounded-2xl shadow-[3px_3px_0px_0px_#000]">
+            {isEditingMostImportant ? (
+              <div className="space-y-3">
+                <textarea
+                  value={mostImportantInput}
+                  onChange={(e) => setMostImportantInput(e.target.value)}
+                  rows={3}
+                  placeholder="Tuliskan keputusan paling esensial atau mandataris yang tidak boleh terlewat (misal: Struktur Panitia disahkan, pagu anggaran disetujui, tanggal pelaksanaan ditentukan)..."
+                  className="w-full bg-white border-2 border-black rounded-xl p-3 text-xs sm:text-sm text-black font-semibold shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-amber-500 font-sans leading-relaxed"
+                />
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingMostImportant(false)}
+                    className="px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg border border-black hover:bg-zinc-100 transition-all cursor-pointer"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveMostImportantInline}
+                    className="flex items-center gap-1.5 px-4 py-1.5 bg-[#FFE600] hover:bg-[#ffd93d] text-black text-xs font-black rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>Simpan Poin Kritis</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs sm:text-sm text-zinc-950 font-bold leading-relaxed font-sans">
+                {meeting.mostImportant || (
+                  <span className="text-amber-800 italic font-medium">
+                    (Belum ada poin kritis yang diisi. Klik &quot;Edit Poin Kritis&quot; untuk mengisi keputusan paling utama yang wajib diingat semua pihak).
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* Section 1: Ringkasan Eksekutif */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="font-black text-xs text-black bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">01</span>
-            <h2 className="text-xs font-black uppercase tracking-[0.14em] text-black">
-              Ringkasan Eksekutif Hasil Sidang
-            </h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-black text-xs text-black bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">01</span>
+              <h2 className="text-xs font-black uppercase tracking-[0.14em] text-black">
+                Ringkasan Eksekutif Hasil Sidang
+              </h2>
+            </div>
+            {!isEditingSummary && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSummaryInput(meeting.executiveSummary || '');
+                  setIsEditingSummary(true);
+                }}
+                className="flex items-center gap-1 text-[11px] font-black text-black bg-[#FFFDF5] hover:bg-yellow-100 border border-black px-2.5 py-1 rounded-lg shadow-[1.5px_1.5px_0px_0px_#000] transition-all cursor-pointer hover:-translate-y-0.5"
+              >
+                <Edit2 className="w-3 h-3 stroke-[2.5]" />
+                <span>Edit Ringkasan</span>
+              </button>
+            )}
           </div>
           <div className="p-5 bg-[#FFFDF5] border-2 border-black rounded-2xl shadow-[3px_3px_0px_0px_#000]">
-            <p className="text-xs sm:text-sm text-zinc-900 leading-relaxed font-sans font-medium">
-              {meeting.executiveSummary ||
-                'Belum ada ringkasan eksekutif. Anda dapat menambahkannya melalui tombol "Modifikasi Format" atau memproses transkrip audio.'}
-            </p>
+            {isEditingSummary ? (
+              <div className="space-y-3">
+                <textarea
+                  value={summaryInput}
+                  onChange={(e) => setSummaryInput(e.target.value)}
+                  rows={4}
+                  placeholder="Ketik ringkasan eksekutif hasil sidang..."
+                  className="w-full bg-white border-2 border-black rounded-xl p-3 text-xs sm:text-sm text-black font-medium shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black font-sans leading-relaxed"
+                />
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingSummary(false)}
+                    className="px-3 py-1.5 bg-white text-black text-xs font-bold rounded-lg border border-black hover:bg-zinc-100 transition-all cursor-pointer"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSaveSummaryInline}
+                    className="flex items-center gap-1.5 px-4 py-1.5 bg-[#A7F3D0] hover:bg-emerald-300 text-black text-xs font-black rounded-lg border-2 border-black shadow-[2px_2px_0px_0px_#000] transition-all cursor-pointer"
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>Simpan Ringkasan</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs sm:text-sm text-zinc-900 leading-relaxed font-sans font-medium">
+                {meeting.executiveSummary ||
+                  'Belum ada ringkasan eksekutif. Anda dapat menambahkannya dengan klik "Edit Ringkasan", buka "Modifikasi Format", atau rumuskan risalah sidang.'}
+              </p>
+            )}
           </div>
         </div>
 
@@ -1575,12 +1821,17 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 <label className="text-xs font-black text-black block">
                   Pilih Standar Format Tata Naskah:
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
                   {[
                     {
                       key: 'TATA_NASKAH_DINAS' as MeetingFormatStandard,
                       title: 'Tata Naskah Dinas MPK 13',
                       desc: 'Format Berita Acara & SK Resmi lengkap',
+                    },
+                    {
+                      key: 'PEMBENTUKAN_PANITIA_MPLS' as MeetingFormatStandard,
+                      title: 'Pembentukan Panitia MPLS',
+                      desc: 'SK Pokja, 6 divisi & alokasi anggaran',
                     },
                     {
                       key: 'RISALAH_PADAT' as MeetingFormatStandard,
@@ -1711,6 +1962,29 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   rows={2}
                   aria-label="Catatan Pengarah Notulis"
                   className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-medium shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black font-sans"
+                />
+              </div>
+
+              {/* Poin Kritis / Keputusan Paling Utama */}
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <label htmlFor="edit-modal-most-important" className="text-xs font-black text-amber-900 flex items-center gap-1">
+                    <Zap className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
+                    Poin Kritis / Keputusan Paling Utama (Most Important - Wajib Diisi):
+                  </label>
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-amber-200 text-amber-900 border border-black">
+                    Wajib
+                  </span>
+                </div>
+                <textarea
+                  id="edit-modal-most-important"
+                  name="edit-modal-most-important"
+                  value={editMostImportant}
+                  onChange={(e) => setEditMostImportant(e.target.value)}
+                  rows={3}
+                  placeholder="Contoh: Pembentukan Panitia Inti & Pokja MPLS 2026/2027 resmi disahkan dengan pagu anggaran Rp 8.750.000."
+                  aria-label="Poin Kritis atau Keputusan Paling Utama"
+                  className="w-full bg-amber-50 border-2 border-black rounded-xl px-3 py-2 text-xs text-black font-semibold shadow-[1.5px_1.5px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-amber-500 font-sans leading-relaxed"
                 />
               </div>
 
@@ -2043,6 +2317,152 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   <span>Terapkan Perubahan Format &amp; Naskah</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: PEMILIH HARI, TANGGAL, BULAN & WAKTU RESMI INDONESIA */}
+      {showDatePickerModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border-[3px] border-black rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-[8px_8px_0px_0px_#000]">
+            <div className="flex items-center justify-between border-b-2 border-black/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#FFE600] border-2 border-black flex items-center justify-center text-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                  <Calendar className="w-5 h-5 stroke-[2.5]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-black">Atur Waktu &amp; Tanggal Sidang</h3>
+                  <p className="text-[11px] text-zinc-600 font-medium">Format standar resmi Bahasa Indonesia</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDatePickerModal(false)}
+                className="p-1 rounded-lg border border-black hover:bg-zinc-100 cursor-pointer"
+              >
+                <X className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            </div>
+
+            {/* Quick Presets */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-black text-black block">Pilihan Cepat:</label>
+              <div className="grid grid-cols-2 gap-2">
+                {getQuickDatePresets().map((preset) => (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => handleSelectDatePreset(preset.formatted)}
+                    className="p-2.5 rounded-xl border-2 border-black bg-[#FFFDF5] hover:bg-[#FFE600] text-left text-xs font-black shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer"
+                  >
+                    <p className="text-[11px] text-zinc-600 font-bold">{preset.label}</p>
+                    <p className="text-xs font-black text-black truncate">{preset.formatted}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Manual Selector */}
+            <div className="space-y-3 border-t-2 border-black/10 pt-3">
+              <label className="text-[11px] font-black text-black block">Pengaturan Tanggal &amp; Jam Manual:</label>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div>
+                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Hari:</span>
+                  <select
+                    value={selectedDayName}
+                    onChange={(e) => setSelectedDayName(e.target.value)}
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-lg px-2 py-1.5 text-xs font-bold shadow-[1px_1px_0px_0px_#000]"
+                  >
+                    {INDONESIAN_DAYS.map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Tanggal:</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={31}
+                    value={selectedDayNumber}
+                    onChange={(e) => setSelectedDayNumber(parseInt(e.target.value) || 1)}
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-lg px-2 py-1.5 text-xs font-bold shadow-[1px_1px_0px_0px_#000]"
+                  />
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Bulan:</span>
+                  <select
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-lg px-2 py-1.5 text-xs font-bold shadow-[1px_1px_0px_0px_#000]"
+                  >
+                    {INDONESIAN_MONTHS.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Tahun:</span>
+                  <input
+                    type="number"
+                    min={2020}
+                    max={2035}
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(parseInt(e.target.value) || 2026)}
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-lg px-2 py-1.5 text-xs font-bold shadow-[1px_1px_0px_0px_#000]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Jam Mulai (WIB):</span>
+                  <input
+                    type="text"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    placeholder="08:00"
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-lg px-2.5 py-1.5 text-xs font-bold shadow-[1px_1px_0px_0px_#000]"
+                  />
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-zinc-700 block mb-1">Jam Selesai (WIB):</span>
+                  <input
+                    type="text"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    placeholder="12:00"
+                    className="w-full bg-[#FFFDF5] border-2 border-black rounded-lg px-2.5 py-1.5 text-xs font-bold shadow-[1px_1px_0px_0px_#000]"
+                  />
+                </div>
+              </div>
+
+              {/* Preview Format */}
+              <div className="p-2.5 bg-zinc-100 border border-black rounded-lg text-xs font-mono font-bold text-black text-center">
+                {selectedDayName}, {selectedDayNumber} {selectedMonth} {selectedYear} • Pukul {startTime} - {endTime} WIB
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t-2 border-black/10">
+              <button
+                type="button"
+                onClick={() => setShowDatePickerModal(false)}
+                className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-black text-xs font-bold rounded-xl border border-black cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={handleApplyCustomDate}
+                className="px-5 py-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black text-xs font-black rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer"
+              >
+                Terapkan Tanggal
+              </button>
             </div>
           </div>
         </div>

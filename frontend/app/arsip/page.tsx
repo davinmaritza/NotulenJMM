@@ -184,10 +184,10 @@ export default function ArsipPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight">
-            Arsip Notulen &amp; Draf Sidang
+            Arsip Notulen Sidang Resmi
           </h2>
           <p className="text-xs text-black/75 mt-0.5 font-bold">
-            Dokumen resmi persidangan &amp; draf aktif Majelis Perwakilan Kelas SMK Negeri 13 Bandung
+            Dokumen resmi persidangan &amp; ketetapan pleno Majelis Perwakilan Kelas SMK Negeri 13 Bandung
           </p>
         </div>
 

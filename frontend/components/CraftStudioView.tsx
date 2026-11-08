@@ -7,7 +7,6 @@ import {
   Gamepad2,
   Sparkles,
   Check,
-  Folder,
   ArrowRight,
   RotateCcw,
   Plus,
@@ -20,6 +19,8 @@ import {
   Pencil,
   Eye,
   Sliders,
+  Shield,
+  Trophy,
 } from 'lucide-react';
 
 export interface CardConfig {
@@ -35,6 +36,8 @@ export interface CardConfig {
     | 'Building2'
     | 'Scale'
     | 'Sliders'
+    | 'Shield'
+    | 'Trophy'
     | 'Plus';
   title: string;
   description: string;
@@ -96,52 +99,46 @@ export const PRESET_MPK: CraftStudioConfig = {
   ],
 };
 
-export const PRESET_CRAFT_CLASSIC: CraftStudioConfig = {
-  tab1Name: 'Make my own version',
-  tab2Name: 'Just look inside',
-  headerTitle: "Let's bring an idea to life",
-  headerSubtitle: 'Pick a starting point, describe what you want, and let the agent do the heavy lifting.',
-  step1Title: "Pick what you're making",
-  step2Title: 'Say what you want',
-  promptPlaceholder: 'Describe what you want to build. You can also drag and drop images or documents here...',
+export const PRESET_PANITIA_MPLS: CraftStudioConfig = {
+  tab1Name: 'Kepanitiaan & Pokja',
+  tab2Name: 'Bank Dokumen',
+  headerTitle: 'Pembentukan Panitia & Pokja Khusus Sekolah',
+  headerSubtitle: 'Susun susunan panitia pelaksana, rincian job description 6 divisi operasional, estimasi RAB, dan tata tertib ramah anak berstandar SMK Negeri 13 Bandung.',
+  step1Title: 'Pilih agenda kepanitiaan',
+  step2Title: 'Uraikan susunan tugas & divisi',
+  promptPlaceholder: 'Tuliskan nama ketua pelaksana, koordinator divisi acara/tatib/logistik/humas/medis/konsumsi, pagu anggaran, serta jadwal gladi bersih...',
   cards: [
     {
-      id: 'website',
-      iconName: 'Globe',
-      title: 'A website',
-      description: 'Landing page, web app, or frontend',
+      id: 'panitia-mpls',
+      iconName: 'Users',
+      title: 'Panitia MPLS 2026/2027',
+      description: 'Struktur panitia masa pengenalan lingkungan sekolah, jobdesk divisi, & RAB',
     },
     {
-      id: 'app',
-      iconName: 'Smartphone',
-      title: 'An app',
-      description: 'Mobile, desktop, or CLI tool',
+      id: 'panitia-ldks',
+      iconName: 'Shield',
+      title: 'Panitia LDKS & Kaderisasi',
+      description: 'Latihan dasar kepemimpinan siswa, kurikulum persidangan, & simulasi parlemen',
     },
     {
-      id: 'game',
-      iconName: 'Gamepad2',
-      title: 'A game',
-      description: '2D, 3D, physics, or simulation',
+      id: 'panitia-porseni',
+      iconName: 'Trophy',
+      title: 'Panitia Porseni & Dies Natalis',
+      description: 'Pekan olahraga & seni antarkelas, perizinan sarana prasarana, & jadwal pertandingan',
     },
     {
-      id: 'fresh',
-      iconName: 'Sparkles',
-      title: 'Nothing — start fresh',
-      description: 'Blank slate, anything goes',
-    },
-    {
-      id: 'custom-craft',
+      id: 'panitia-kustom',
       iconName: 'Sliders',
-      title: 'Custom Project',
-      description: 'Define your own custom architecture and deliverables',
+      title: 'Kepanitiaan Terbuka / Ad-Hoc',
+      description: 'Format fleksibel untuk kepanitiaan seminar, bakti sosial, atau proyek kejuruan',
       isCustom: true,
     },
   ],
   ideaPills: [
-    'A personal portfolio with dark mode and project gallery',
-    'A real-time collaborative whiteboard with sync engine',
-    'A physics puzzle mini-game built with Canvas API',
-    'A cross-platform task manager with local storage',
+    'Struktur Panitia Inti & 6 Koordinator Divisi MPLS 2026/2027',
+    'Pengesahan Pagu Rencana Anggaran Biaya (RAB) Operasional MPLS',
+    'Penetapan SOP & Tata Tertib MPLS Ramah Anak Bebas Perpeloncoan',
+    'Jadwal Sosialisasi Bersama Pembina Kesiswaan & Gladi Bersih H-2',
   ],
 };
 
@@ -209,7 +206,7 @@ interface CraftStudioViewProps {
 
 export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession }) => {
   const [config, setConfig] = useState<CraftStudioConfig>(PRESET_MPK);
-  const [activePreset, setActivePreset] = useState<'mpk' | 'craft' | 'organisasi' | 'custom'>('mpk');
+  const [activePreset, setActivePreset] = useState<'mpk' | 'mpls' | 'organisasi' | 'custom'>('mpk');
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [saveStatus, setSaveStatus] = useState<string>('');
 
@@ -241,7 +238,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
   const [selectedEngine, setSelectedEngine] = useState<string>(
     'Tata Naskah Dinas MPK 13 (Standar Utama)'
   );
-  const [folderPath, setFolderPath] = useState<string>('/home/suzirz/Documents/Project/NotulenJMM/notulen');
+  const [folderPath] = useState<string>('/home/suzirz/Documents/Project/NotulenJMM/notulen');
   const [newPillInput, setNewPillInput] = useState<string>('');
   const [showAddPill, setShowAddPill] = useState<boolean>(false);
 
@@ -281,9 +278,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
     }
   };
 
-  const handleApplyPreset = (presetKey: 'mpk' | 'craft' | 'organisasi') => {
+  const handleApplyPreset = (presetKey: 'mpk' | 'mpls' | 'organisasi') => {
     let target = PRESET_MPK;
-    if (presetKey === 'craft') target = PRESET_CRAFT_CLASSIC;
+    if (presetKey === 'mpls') target = PRESET_PANITIA_MPLS;
     if (presetKey === 'organisasi') target = PRESET_ORGANISASI;
 
     setActivePreset(presetKey);
@@ -385,6 +382,10 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
         return <Scale className={className} />;
       case 'Sliders':
         return <Sliders className={className} />;
+      case 'Shield':
+        return <Shield className={className} />;
+      case 'Trophy':
+        return <Trophy className={className} />;
       case 'Plus':
         return <Plus className={className} />;
       case 'Sparkles':
@@ -487,12 +488,12 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               MPK 13
             </button>
             <button
-              onClick={() => handleApplyPreset('craft')}
+              onClick={() => handleApplyPreset('mpls')}
               className={`px-2.5 py-1 rounded-lg transition-all ${
-                activePreset === 'craft' ? 'bg-[#FFD93D] text-black font-black border border-black shadow-[1px_1px_0px_0px_#000]' : 'text-zinc-700 hover:text-black font-bold'
+                activePreset === 'mpls' ? 'bg-[#FFD93D] text-black font-black border border-black shadow-[1px_1px_0px_0px_#000]' : 'text-zinc-700 hover:text-black font-bold'
               }`}
             >
-              Craft Classic
+              Panitia MPLS
             </button>
             <button
               onClick={() => handleApplyPreset('organisasi')}
@@ -1134,26 +1135,11 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 className="w-full sm:w-auto max-w-full bg-white border-2 border-black text-black rounded-xl px-3 py-2 text-xs font-bold shadow-[2px_2px_0px_0px_#000] focus:outline-none cursor-pointer"
               >
                 <option value="Tata Naskah Dinas MPK 13 (Standar Utama)">Tata Naskah Dinas MPK 13 (Standar Utama)</option>
+                <option value="Pembentukan Panitia MPLS & Pokja">Pembentukan Panitia MPLS &amp; Pokja</option>
                 <option value="Risalah Padat & Ketetapan Inti">Risalah Padat &amp; Ketetapan Inti</option>
                 <option value="Fokus Pengesahan Anggaran Kas">Fokus Pengesahan Anggaran Kas</option>
                 <option value="Format Evaluasi & Rekomendasi">Format Evaluasi &amp; Rekomendasi</option>
               </select>
-            </div>
-
-            {/* Saved in Folder Path */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
-              <label htmlFor="craft-target-folder" className="text-black font-black text-xs flex items-center gap-1 shrink-0">
-                <Folder className="w-4 h-4 text-black stroke-[2.5]" /> Target:
-              </label>
-              <input
-                id="craft-target-folder"
-                name="craft-target-folder"
-                aria-label="Target Lokasi Penyimpanan Dokumen"
-                type="text"
-                value={folderPath}
-                onChange={(e) => setFolderPath(e.target.value)}
-                className="w-full sm:w-64 max-w-full bg-white border-2 border-black text-black font-mono text-[11px] rounded-xl px-3 py-2 shadow-[2px_2px_0px_0px_#000] focus:outline-none truncate"
-              />
             </div>
           </div>
 

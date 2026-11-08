@@ -550,6 +550,13 @@ export async function exportMeetingToGoogleDoc(
     ${escape(meeting.executiveSummary) || 'Belum ada ringkasan eksekutif.'}
   </div>
 
+  ${meeting.mostImportant ? `
+  <div style="background-color: #fef08a; border: 2px solid #000000; padding: 10pt 12pt; margin: 10pt 0 14pt; border-radius: 6pt;">
+    <p style="margin: 0; font-size: 9pt; font-weight: bold; text-transform: uppercase; color: #854d0e;">POIN KRITIS / KEPUTUSAN PALING UTAMA (MOST IMPORTANT):</p>
+    <p style="margin: 4pt 0 0; font-size: 11pt; font-weight: bold; color: #000000;">${escape(meeting.mostImportant)}</p>
+  </div>
+  ` : ''}
+
   <h3 style="font-size: 12pt; font-weight: bold; text-transform: uppercase; border-bottom: 1.5pt solid #0f172a; padding-bottom: 3pt; margin-top: 16pt; margin-bottom: 6pt;">
     II. Pokok Bahasan &amp; Agenda Pleno
   </h3>
