@@ -19,13 +19,24 @@ export const metadata: Metadata = {
   authors: [{ name: "Davin Maritza" }],
   creator: "Davin Maritza",
   publisher: "MPK SMK Negeri 13 Bandung",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/logo-mpk.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: ["/favicon.ico"],
+  },
   formatDetection: {
     telephone: false,
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#090d16",
+  themeColor: "#FFE600",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

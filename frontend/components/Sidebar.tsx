@@ -1,6 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React from 'react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Compass,
@@ -72,8 +73,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Top: Institution Emblem & Branding */}
         <div className="p-4 sm:p-5 border-b-2 border-black flex items-center justify-between bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FFD93D] border-2 border-black flex items-center justify-center text-black font-black text-sm tracking-tight shadow-[3px_3px_0px_0px_#000] select-none">
-              NJ
+            <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center p-1 shadow-[3px_3px_0px_0px_#000] select-none overflow-hidden shrink-0">
+              <Image
+                src="/logo-mpk.png"
+                alt="Logo MPK SMK Negeri 13 Bandung"
+                width={36}
+                height={36}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">

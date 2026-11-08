@@ -1,6 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { UserFriendlyWorkflowBar } from './UserFriendlyWorkflowBar';
@@ -58,8 +59,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         {/* Top Mobile Bar (visible only on mobile/tablet) */}
         <header className="lg:hidden sticky top-0 z-30 bg-[#FFFDF5] border-b-2 border-black px-4 py-3 flex items-center justify-between shadow-[0_3px_0_0_#000]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#FFD93D] border-2 border-black flex items-center justify-center text-black font-black text-xs shadow-[2px_2px_0px_0px_#000] select-none">
-              NJ
+            <div className="w-9 h-9 rounded-xl bg-white border-2 border-black flex items-center justify-center p-0.5 shadow-[2px_2px_0px_0px_#000] select-none overflow-hidden shrink-0">
+              <Image
+                src="/logo-mpk.png"
+                alt="Logo MPK SMK Negeri 13 Bandung"
+                width={30}
+                height={30}
+                className="w-full h-full object-contain"
+                priority
+              />
             </div>
             <div>
               <span className="font-black text-xs text-black">NotulenJMM</span>
