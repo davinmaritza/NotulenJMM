@@ -114,7 +114,7 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
       <div className="p-4 sm:p-5 bg-[#12141a] border border-white/[0.07] rounded-2xl space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-white">
+            <label htmlFor="speaker-diarization-notes" className="text-xs font-semibold text-white">
               Catatan Pengarah Notulis / Sekretaris Sidang
             </label>
           </div>
@@ -122,6 +122,9 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
         </div>
 
         <textarea
+          id="speaker-diarization-notes"
+          name="speaker-diarization-notes"
+          aria-label="Catatan Pengarah Notulis / Sekretaris Sidang"
           rows={2}
           value={secretaryNotes}
           onChange={(e) => setSecretaryNotes(e.target.value)}
@@ -161,8 +164,14 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
                 </div>
                 {editingSpeaker === spk ? (
                   <div className="flex items-center gap-1.5">
+                    <label htmlFor={`rename-speaker-${spk}`} className="sr-only">
+                      Ganti nama pembicara {spk}
+                    </label>
                     <input
+                      id={`rename-speaker-${spk}`}
+                      name={`rename-speaker-${spk}`}
                       type="text"
+                      aria-label={`Ganti nama pembicara ${spk}`}
                       value={newSpeakerName}
                       onChange={(e) => setNewSpeakerName(e.target.value)}
                       placeholder="Nama baru..."
@@ -250,7 +259,13 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
 
               {editingSegmentId === seg.id ? (
                 <div className="space-y-2 pt-1">
+                  <label htmlFor={`edit-segment-${seg.id}`} className="sr-only">
+                    Koreksi teks ucapan pembicara
+                  </label>
                   <textarea
+                    id={`edit-segment-${seg.id}`}
+                    name={`edit-segment-${seg.id}`}
+                    aria-label="Koreksi teks ucapan pembicara"
                     rows={2}
                     value={editingSegmentText}
                     onChange={(e) => setEditingSegmentText(e.target.value)}

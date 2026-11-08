@@ -331,6 +331,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           >
             {isEditMode ? (
               <input
+                id="tab1-name-input"
+                name="tab1-name-input"
+                aria-label="Nama Tab 1"
                 type="text"
                 value={config.tab1Name}
                 onClick={(e) => e.stopPropagation()}
@@ -355,6 +358,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           >
             {isEditMode ? (
               <input
+                id="tab2-name-input"
+                name="tab2-name-input"
+                aria-label="Nama Tab 2"
                 type="text"
                 value={config.tab2Name}
                 onClick={(e) => e.stopPropagation()}
@@ -451,6 +457,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 Mode Edit: Judul Utama
               </span>
               <input
+                id="edit-header-title"
+                name="edit-header-title"
+                aria-label="Edit Judul Utama"
                 type="text"
                 value={config.headerTitle}
                 onChange={(e) => {
@@ -460,6 +469,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 className="w-full text-2xl sm:text-3xl font-bold text-white text-center bg-black/60 border border-amber-500/40 rounded-xl px-4 py-2 focus:outline-none"
               />
               <textarea
+                id="edit-header-subtitle"
+                name="edit-header-subtitle"
+                aria-label="Edit Subjudul"
                 value={config.headerSubtitle}
                 rows={2}
                 onChange={(e) => {
@@ -490,6 +502,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               </span>
               {isEditMode ? (
                 <input
+                  id="edit-step1-title"
+                  name="edit-step1-title"
+                  aria-label="Edit Judul Langkah 1"
                   type="text"
                   value={config.step1Title}
                   onChange={(e) => {
@@ -549,6 +564,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                       {/* Icon Selector in Edit Mode */}
                       {isEditMode && (
                         <select
+                          id={`edit-card-icon-${idx}`}
+                          name={`edit-card-icon-${idx}`}
+                          aria-label={`Pilih ikon kartu ${idx + 1}`}
                           value={card.iconName}
                           onChange={(e) =>
                             handleUpdateCard(idx, 'iconName', e.target.value as CardConfig['iconName'])
@@ -571,6 +589,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                     {isEditMode ? (
                       <div className="space-y-1.5 pt-1">
                         <input
+                          id={`edit-card-title-${idx}`}
+                          name={`edit-card-title-${idx}`}
+                          aria-label={`Judul kartu ${idx + 1}`}
                           type="text"
                           value={card.title}
                           onChange={(e) => handleUpdateCard(idx, 'title', e.target.value)}
@@ -578,6 +599,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                           className="w-full text-xs font-semibold text-white bg-black/60 border border-amber-500/40 rounded px-2 py-1 focus:outline-none"
                         />
                         <textarea
+                          id={`edit-card-desc-${idx}`}
+                          name={`edit-card-desc-${idx}`}
+                          aria-label={`Deskripsi kartu ${idx + 1}`}
                           value={card.description}
                           rows={2}
                           onChange={(e) => handleUpdateCard(idx, 'description', e.target.value)}
@@ -609,6 +633,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               </span>
               {isEditMode ? (
                 <input
+                  id="edit-step2-title"
+                  name="edit-step2-title"
+                  aria-label="Edit Judul Langkah 2"
                   type="text"
                   value={config.step2Title}
                   onChange={(e) => {
@@ -636,6 +663,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 <div className="mb-2 pb-2 border-b border-white/[0.06] flex items-center justify-between">
                   <span className="text-[10px] text-amber-400 font-mono">Edit Teks Placeholder:</span>
                   <input
+                    id="edit-prompt-placeholder"
+                    name="edit-prompt-placeholder"
+                    aria-label="Edit Teks Placeholder"
                     type="text"
                     value={config.promptPlaceholder}
                     onChange={(e) => {
@@ -647,7 +677,13 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 </div>
               )}
 
+              <label htmlFor="craft-studio-prompt" className="sr-only">
+                Teks agenda atau uraian musyawarah sidang
+              </label>
               <textarea
+                id="craft-studio-prompt"
+                name="craft-studio-prompt"
+                aria-label="Teks agenda atau uraian musyawarah sidang"
                 value={promptText}
                 onChange={(e) => setPromptText(e.target.value)}
                 placeholder={config.promptPlaceholder}
@@ -689,6 +725,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               {showAddPill && isEditMode && (
                 <div className="flex items-center gap-2 bg-black/70 border border-white/15 p-2 rounded-xl">
                   <input
+                    id="new-pill-input"
+                    name="new-pill-input"
+                    aria-label="Tulis ide agenda baru"
                     type="text"
                     value={newPillInput}
                     onChange={(e) => setNewPillInput(e.target.value)}
@@ -730,6 +769,9 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                     {isEditMode ? (
                       <>
                         <input
+                          id={`edit-pill-${idx}`}
+                          name={`edit-pill-${idx}`}
+                          aria-label={`Edit Inspirasi Ide ${idx + 1}`}
                           type="text"
                           value={pill}
                           onChange={(e) => handleUpdatePill(idx, e.target.value)}
@@ -741,6 +783,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                             handleRemovePill(idx);
                           }}
                           className="text-rose-400 hover:text-rose-300 p-0.5 rounded"
+                          aria-label={`Hapus Inspirasi Ide ${idx + 1}`}
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -763,10 +806,13 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           <div className="flex flex-wrap items-center gap-4 text-xs">
             {/* Standar Naskah Dinas Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
+              <label htmlFor="craft-standard-engine" className="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
                 <FileText className="w-3.5 h-3.5 text-zinc-400" /> Standar Naskah:
-              </span>
+              </label>
               <select
+                id="craft-standard-engine"
+                name="craft-standard-engine"
+                aria-label="Pilih Standar Tata Naskah Dinas"
                 value={selectedEngine}
                 onChange={(e) => setSelectedEngine(e.target.value)}
                 className="bg-[#14161f] border border-white/[0.08] text-zinc-200 rounded-xl px-3 py-1.5 text-xs font-mono focus:outline-none focus:border-white/20 cursor-pointer"
@@ -780,10 +826,13 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
             {/* Saved in Folder Path */}
             <div className="flex items-center gap-2">
-              <span className="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
+              <label htmlFor="craft-target-folder" className="text-zinc-400 font-mono text-[11px] flex items-center gap-1">
                 <Folder className="w-3.5 h-3.5 text-zinc-400" /> Target:
-              </span>
+              </label>
               <input
+                id="craft-target-folder"
+                name="craft-target-folder"
+                aria-label="Target Lokasi Penyimpanan Dokumen"
                 type="text"
                 value={folderPath}
                 onChange={(e) => setFolderPath(e.target.value)}

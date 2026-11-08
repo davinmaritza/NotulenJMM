@@ -1224,14 +1224,26 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
             {/* Quick Add Decision Input */}
             <form onSubmit={handleAddDecision} className="flex flex-col sm:flex-row gap-2 pt-2">
+              <label htmlFor="quick-add-decision-text" className="sr-only">
+                Rumuskan ketetapan keputusan sidang baru
+              </label>
               <input
+                id="quick-add-decision-text"
+                name="quick-add-decision-text"
                 type="text"
                 placeholder="Rumuskan ketetapan keputusan sidang baru..."
+                aria-label="Rumuskan ketetapan keputusan sidang baru"
                 value={newDecisionText}
                 onChange={(e) => setNewDecisionText(e.target.value)}
                 className="flex-1 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
               />
+              <label htmlFor="quick-add-decision-category" className="sr-only">
+                Kategori Keputusan Sidang
+              </label>
               <select
+                id="quick-add-decision-category"
+                name="quick-add-decision-category"
+                aria-label="Kategori Keputusan Sidang"
                 value={newDecisionCategory}
                 onChange={(e) => setNewDecisionCategory(e.target.value as Decision['category'])}
                 className="bg-[#14161d] border border-white/[0.08] text-xs text-zinc-300 rounded-xl px-3 py-2 font-mono focus:outline-none cursor-pointer"
@@ -1276,8 +1288,14 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   }`}
                 >
                   <div className="flex items-center gap-3">
+                    <label htmlFor={`action-status-checkbox-${act.id}`} className="sr-only">
+                      Status penugasan: {act.description}
+                    </label>
                     <input
+                      id={`action-status-checkbox-${act.id}`}
+                      name={`action-status-checkbox-${act.id}`}
                       type="checkbox"
+                      aria-label={`Status penugasan: ${act.description}`}
                       checked={isDone}
                       onChange={() => toggleActionStatus(act.id)}
                       onClick={(e) => e.stopPropagation()}
@@ -1298,22 +1316,40 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
             {/* Quick Add Action Item */}
             <form onSubmit={handleAddActionItem} className="flex flex-col sm:flex-row gap-2 pt-2">
+              <label htmlFor="quick-add-action-task" className="sr-only">
+                Rincian tugas atau komitmen aksi
+              </label>
               <input
+                id="quick-add-action-task"
+                name="quick-add-action-task"
                 type="text"
                 placeholder="Rincian tugas atau komitmen aksi..."
+                aria-label="Rincian tugas atau komitmen aksi"
                 value={newActionTask}
                 onChange={(e) => setNewActionTask(e.target.value)}
                 className="flex-1 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
               />
+              <label htmlFor="quick-add-action-assignee" className="sr-only">
+                Penanggung Jawab (PIC)
+              </label>
               <input
+                id="quick-add-action-assignee"
+                name="quick-add-action-assignee"
                 type="text"
                 placeholder="Penanggung Jawab (PIC)"
+                aria-label="Penanggung Jawab (PIC)"
                 value={newActionAssignee}
                 onChange={(e) => setNewActionAssignee(e.target.value)}
                 className="w-full sm:w-44 bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20"
               />
+              <label htmlFor="quick-add-action-duedate" className="sr-only">
+                Tenggat Waktu Tugas
+              </label>
               <input
+                id="quick-add-action-duedate"
+                name="quick-add-action-duedate"
                 type="date"
+                aria-label="Tenggat Waktu Tugas"
                 value={newActionDueDate}
                 onChange={(e) => setNewActionDueDate(e.target.value)}
                 className="bg-[#14161d] border border-white/[0.08] text-xs text-zinc-300 rounded-xl px-3 py-2 font-mono focus:outline-none cursor-pointer"
@@ -1468,63 +1504,81 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               {/* General Metadata Form */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-400">Judul / Agenda Sidang:</label>
+                  <label htmlFor="edit-modal-title" className="text-[11px] font-semibold text-zinc-400">Judul / Agenda Sidang:</label>
                   <input
+                    id="edit-modal-title"
+                    name="edit-modal-title"
                     type="text"
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
+                    aria-label="Judul atau Agenda Sidang"
                     className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-400">Waktu &amp; Tanggal:</label>
+                  <label htmlFor="edit-modal-date" className="text-[11px] font-semibold text-zinc-400">Waktu &amp; Tanggal:</label>
                   <input
+                    id="edit-modal-date"
+                    name="edit-modal-date"
                     type="text"
                     value={editDate}
                     onChange={(e) => setEditDate(e.target.value)}
+                    aria-label="Waktu dan Tanggal Sidang"
                     className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-400">Ruangan / Tempat:</label>
+                  <label htmlFor="edit-modal-location" className="text-[11px] font-semibold text-zinc-400">Ruangan / Tempat:</label>
                   <input
+                    id="edit-modal-location"
+                    name="edit-modal-location"
                     type="text"
                     value={editLocation}
                     onChange={(e) => setEditLocation(e.target.value)}
+                    aria-label="Ruangan atau Tempat Sidang"
                     className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-400">Penyelenggara:</label>
+                  <label htmlFor="edit-modal-organizer" className="text-[11px] font-semibold text-zinc-400">Penyelenggara:</label>
                   <input
+                    id="edit-modal-organizer"
+                    name="edit-modal-organizer"
                     type="text"
                     value={editOrganizer}
                     onChange={(e) => setEditOrganizer(e.target.value)}
+                    aria-label="Penyelenggara Sidang"
                     className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-400">Pimpinan Sidang (Presidium):</label>
+                  <label htmlFor="edit-modal-leader" className="text-[11px] font-semibold text-zinc-400">Pimpinan Sidang (Presidium):</label>
                   <input
+                    id="edit-modal-leader"
+                    name="edit-modal-leader"
                     type="text"
                     value={editLeaderName}
                     onChange={(e) => setEditLeaderName(e.target.value)}
                     placeholder="Ketua MPK 13"
+                    aria-label="Pimpinan Sidang (Presidium)"
                     className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-zinc-400">Notulis / Sekretaris Sidang:</label>
+                  <label htmlFor="edit-modal-notetaker" className="text-[11px] font-semibold text-zinc-400">Notulis / Sekretaris Sidang:</label>
                   <input
+                    id="edit-modal-notetaker"
+                    name="edit-modal-notetaker"
                     type="text"
                     value={editNoteTakerName}
                     onChange={(e) => setEditNoteTakerName(e.target.value)}
                     placeholder="Davin Maritza"
+                    aria-label="Notulis atau Sekretaris Sidang"
                     className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
                   />
                 </div>
@@ -1532,26 +1586,32 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
               {/* Catatan Pengarah Sekretaris */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-300">
+                <label htmlFor="edit-modal-secretary-notes" className="text-xs font-semibold text-zinc-300">
                   Catatan Pengarah Notulis (Arahan Format &amp; Diksi):
                 </label>
                 <textarea
+                  id="edit-modal-secretary-notes"
+                  name="edit-modal-secretary-notes"
                   value={editSecretaryNotes}
                   onChange={(e) => setEditSecretaryNotes(e.target.value)}
                   rows={2}
+                  aria-label="Catatan Pengarah Notulis"
                   className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 font-sans"
                 />
               </div>
 
               {/* Ringkasan Eksekutif */}
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-zinc-300">
+                <label htmlFor="edit-modal-summary" className="text-xs font-semibold text-zinc-300">
                   Ringkasan Eksekutif Hasil Sidang:
                 </label>
                 <textarea
+                  id="edit-modal-summary"
+                  name="edit-modal-summary"
                   value={editExecutiveSummary}
                   onChange={(e) => setEditExecutiveSummary(e.target.value)}
                   rows={4}
+                  aria-label="Ringkasan Eksekutif Hasil Sidang"
                   className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 font-sans leading-relaxed"
                 />
               </div>
@@ -1576,7 +1636,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                   {editAgendas.map((ag, agIdx) => (
                     <div key={agIdx} className="p-4 bg-black/40 border border-white/[0.06] rounded-2xl space-y-2">
                       <div className="flex items-center justify-between gap-2">
+                        <label htmlFor={`edit-agenda-title-${agIdx}`} className="sr-only">
+                          Judul Agenda {agIdx + 1}
+                        </label>
                         <input
+                          id={`edit-agenda-title-${agIdx}`}
+                          name={`edit-agenda-title-${agIdx}`}
                           type="text"
                           value={ag.title}
                           onChange={(e) => {
@@ -1584,12 +1649,14 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                             updated[agIdx].title = e.target.value;
                             setEditAgendas(updated);
                           }}
+                          aria-label={`Judul Agenda ${agIdx + 1}`}
                           className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold"
                         />
                         <button
                           type="button"
                           onClick={() => handleRemoveAgenda(agIdx)}
                           className="text-zinc-500 hover:text-rose-400 p-1 cursor-pointer"
+                          aria-label="Hapus Agenda"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -1599,7 +1666,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                         {ag.discussionPoints.map((pt, ptIdx) => (
                           <div key={ptIdx} className="flex items-center gap-2">
                             <span className="text-zinc-600 text-xs">•</span>
+                            <label htmlFor={`edit-agenda-point-${agIdx}-${ptIdx}`} className="sr-only">
+                              Poin Bahasan {ptIdx + 1} Agenda {agIdx + 1}
+                            </label>
                             <input
+                              id={`edit-agenda-point-${agIdx}-${ptIdx}`}
+                              name={`edit-agenda-point-${agIdx}-${ptIdx}`}
                               type="text"
                               value={pt}
                               onChange={(e) => {
@@ -1607,12 +1679,14 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                                 updated[agIdx].discussionPoints[ptIdx] = e.target.value;
                                 setEditAgendas(updated);
                               }}
+                              aria-label={`Poin Bahasan ${ptIdx + 1} dari Agenda ${agIdx + 1}`}
                               className="flex-1 bg-black/40 border border-white/[0.06] rounded-lg px-2.5 py-1 text-xs text-zinc-300"
                             />
                             <button
                               type="button"
                               onClick={() => handleRemoveDiscussionPoint(agIdx, ptIdx)}
                               className="text-zinc-600 hover:text-rose-400 p-0.5 cursor-pointer"
+                              aria-label="Hapus Poin Bahasan"
                             >
                               <X className="w-3.5 h-3.5" />
                             </button>
@@ -1651,7 +1725,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 <div className="space-y-2">
                   {editDecisions.map((dec, decIdx) => (
                     <div key={dec.id} className="p-3 bg-black/40 border border-white/[0.06] rounded-xl flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                      <label htmlFor={`edit-decision-number-${dec.id}`} className="sr-only">
+                        Nomor Ketetapan {decIdx + 1}
+                      </label>
                       <input
+                        id={`edit-decision-number-${dec.id}`}
+                        name={`edit-decision-number-${dec.id}`}
                         type="text"
                         value={dec.number}
                         onChange={(e) => {
@@ -1659,9 +1738,15 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           updated[decIdx].number = e.target.value;
                           setEditDecisions(updated);
                         }}
+                        aria-label={`Nomor Ketetapan ${decIdx + 1}`}
                         className="w-full sm:w-36 bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs font-mono text-zinc-300"
                       />
+                      <label htmlFor={`edit-decision-text-${dec.id}`} className="sr-only">
+                        Isi Ketetapan {decIdx + 1}
+                      </label>
                       <input
+                        id={`edit-decision-text-${dec.id}`}
+                        name={`edit-decision-text-${dec.id}`}
                         type="text"
                         value={dec.decisionText}
                         onChange={(e) => {
@@ -1669,15 +1754,22 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           updated[decIdx].decisionText = e.target.value;
                           setEditDecisions(updated);
                         }}
+                        aria-label={`Isi Ketetapan ${decIdx + 1}`}
                         className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1 text-xs text-white"
                       />
+                      <label htmlFor={`edit-decision-status-${dec.id}`} className="sr-only">
+                        Status Ketetapan {decIdx + 1}
+                      </label>
                       <select
+                        id={`edit-decision-status-${dec.id}`}
+                        name={`edit-decision-status-${dec.id}`}
                         value={dec.status}
                         onChange={(e) => {
                           const updated = [...editDecisions];
                           updated[decIdx].status = e.target.value as Decision['status'];
                           setEditDecisions(updated);
                         }}
+                        aria-label={`Status Ketetapan ${decIdx + 1}`}
                         className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
                       >
                         <option value="DISAHKAN">DISAHKAN</option>
@@ -1688,6 +1780,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                         type="button"
                         onClick={() => handleRemoveModalDecision(dec.id)}
                         className="text-zinc-500 hover:text-rose-400 p-1 cursor-pointer shrink-0"
+                        aria-label="Hapus Ketetapan"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1715,7 +1808,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 <div className="space-y-2">
                   {editActionItems.map((act, actIdx) => (
                     <div key={act.id} className="p-3 bg-black/40 border border-white/[0.06] rounded-xl flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                      <label htmlFor={`edit-action-desc-${act.id}`} className="sr-only">
+                        Rincian Tugas {actIdx + 1}
+                      </label>
                       <input
+                        id={`edit-action-desc-${act.id}`}
+                        name={`edit-action-desc-${act.id}`}
                         type="text"
                         value={act.description}
                         onChange={(e) => {
@@ -1724,9 +1822,15 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           setEditActionItems(updated);
                         }}
                         placeholder="Rincian tugas..."
+                        aria-label={`Rincian Tugas ${actIdx + 1}`}
                         className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1 text-xs text-white"
                       />
+                      <label htmlFor={`edit-action-assignee-${act.id}`} className="sr-only">
+                        Penanggung Jawab PIC Tugas {actIdx + 1}
+                      </label>
                       <input
+                        id={`edit-action-assignee-${act.id}`}
+                        name={`edit-action-assignee-${act.id}`}
                         type="text"
                         value={act.assignee}
                         onChange={(e) => {
@@ -1735,9 +1839,15 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           setEditActionItems(updated);
                         }}
                         placeholder="PIC"
+                        aria-label={`Penanggung Jawab PIC Tugas ${actIdx + 1}`}
                         className="w-full sm:w-32 bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
                       />
+                      <label htmlFor={`edit-action-duedate-${act.id}`} className="sr-only">
+                        Tenggat Waktu Tugas {actIdx + 1}
+                      </label>
                       <input
+                        id={`edit-action-duedate-${act.id}`}
+                        name={`edit-action-duedate-${act.id}`}
                         type="date"
                         value={act.dueDate}
                         onChange={(e) => {
@@ -1745,15 +1855,22 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                           updated[actIdx].dueDate = e.target.value;
                           setEditActionItems(updated);
                         }}
+                        aria-label={`Tenggat Waktu Tugas ${actIdx + 1}`}
                         className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
                       />
+                      <label htmlFor={`edit-action-status-${act.id}`} className="sr-only">
+                        Status Tugas {actIdx + 1}
+                      </label>
                       <select
+                        id={`edit-action-status-${act.id}`}
+                        name={`edit-action-status-${act.id}`}
                         value={act.status}
                         onChange={(e) => {
                           const updated = [...editActionItems];
                           updated[actIdx].status = e.target.value as ActionItem['status'];
                           setEditActionItems(updated);
                         }}
+                        aria-label={`Status Tugas ${actIdx + 1}`}
                         className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
                       >
                         <option value="PENDING">PENDING</option>

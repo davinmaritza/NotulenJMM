@@ -185,11 +185,17 @@ export default function ArsipPage() {
           {/* Search Input */}
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <label htmlFor="search-meetings" className="sr-only">
+              Cari judul rapat, kata kunci, pimpinan, atau notulis
+            </label>
             <input
+              id="search-meetings"
+              name="search-meetings"
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Cari judul rapat, kata kunci, pimpinan, atau notulis..."
+              aria-label="Cari judul rapat, kata kunci, pimpinan, atau notulis"
               className="w-full bg-[#12141c] border border-white/[0.08] rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-white/20"
             />
             {searchQuery && (
@@ -197,6 +203,7 @@ export default function ArsipPage() {
                 onClick={() => handleSearchChange('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1"
                 title="Hapus Pencarian"
+                aria-label="Hapus Pencarian"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -242,10 +249,13 @@ export default function ArsipPage() {
 
             {/* Per-Page Selector */}
             <div className="flex items-center gap-1.5 pl-2 border-l border-white/[0.08] text-xs text-zinc-400 font-mono">
-              <span className="text-[11px] hidden md:inline">Baris:</span>
+              <label htmlFor="page-size-select" className="text-[11px] hidden md:inline">Baris:</label>
               <select
+                id="page-size-select"
+                name="page-size-select"
                 value={pageSize}
                 onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                aria-label="Jumlah baris per halaman"
                 className="bg-[#12141c] border border-white/[0.08] text-zinc-300 rounded-lg px-2 py-1 text-xs focus:outline-none cursor-pointer"
               >
                 <option value={5}>5 / hal</option>

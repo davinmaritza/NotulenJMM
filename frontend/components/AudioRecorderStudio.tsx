@@ -540,9 +540,12 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               </span>
             )}
             <input
+              id="audio-file-upload"
+              name="audio-file-upload"
               ref={fileInputRef}
               type="file"
               accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm,.flac,.aac,.opus"
+              aria-label="Unggah Berkas Audio Rekaman"
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) handleFileSelect(file);
@@ -572,10 +575,12 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       {/* COMMON METADATA FORM: TITLE & SECRETARY STEERING NOTES */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-white/[0.06]">
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-zinc-300">
+          <label htmlFor="recording-meeting-title" className="text-xs font-semibold text-zinc-300">
             Agenda / Judul Sesi Sidang:
           </label>
           <input
+            id="recording-meeting-title"
+            name="recording-meeting-title"
             type="text"
             value={meetingTitle}
             onChange={(e) => setMeetingTitle(e.target.value)}
@@ -585,11 +590,13 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-zinc-300 flex items-center justify-between">
+          <label htmlFor="recording-secretary-notes" className="text-xs font-semibold text-zinc-300 flex items-center justify-between">
             <span>Catatan Pengarah Notulis (Arahan Format &amp; Keputusan):</span>
             <span className="text-[10px] font-mono text-zinc-500">Panduan Diksi</span>
           </label>
           <textarea
+            id="recording-secretary-notes"
+            name="recording-secretary-notes"
             value={secretaryNotes}
             onChange={(e) => setSecretaryNotes(e.target.value)}
             rows={3}
