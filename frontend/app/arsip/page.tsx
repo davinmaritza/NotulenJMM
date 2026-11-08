@@ -24,6 +24,7 @@ import {
   X,
   Cloud,
   Archive,
+  RefreshCw,
 } from 'lucide-react';
 
 export default function ArsipPage() {
@@ -37,6 +38,7 @@ export default function ArsipPage() {
     handleArchiveMeeting,
     handleUnarchiveMeeting,
     googleAccount,
+    isAutoSyncing,
   } = useMeetings();
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -196,11 +198,25 @@ export default function ArsipPage() {
             className="flex items-center gap-2 px-3.5 sm:px-4 py-2.5 bg-[#E0F2FE] hover:bg-sky-200 text-black rounded-xl text-xs font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all shrink-0 cursor-pointer"
             title="Cadangkan data ke Google Drive atau pulihkan dari cadangan"
           >
-            <Cloud className="w-4 h-4 stroke-[2.5] text-sky-800" />
-            <span>Cadangan Cloud &amp; Google</span>
-            {googleAccount.connected && (
-              <span className="w-2 h-2 rounded-full bg-emerald-500 border border-black animate-pulse" />
+            {isAutoSyncing ? (
+              <RefreshCw className="w-4 h-4 stroke-[2.5] text-sky-800 animate-spin" />
+            ) : (
+              <Cloud className="w-4 h-4 stroke-[2.5] text-sky-800" />
             )}
+            <span>Cadangan Cloud &amp; Google</span>
+            {googleAccount.connected &&
+              (isAutoSyncing ? (
+                <span className="hidden sm:inline-flex text-[9px] font-mono font-bold bg-[#FEF08A] px-1.5 py-0.5 rounded border border-black shadow-[0.5px_0.5px_0px_0px_#000]">
+                  Menyinkronkan...
+                </span>
+              ) : (
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 border border-black animate-pulse" />
+                  <span className="hidden md:inline-flex text-[9px] font-mono font-bold bg-[#A7F3D0] px-1.5 py-0.5 rounded border border-black shadow-[0.5px_0.5px_0px_0px_#000]">
+                    Auto
+                  </span>
+                </div>
+              ))}
           </button>
 
           <button

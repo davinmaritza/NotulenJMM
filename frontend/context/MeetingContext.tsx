@@ -1,6 +1,6 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { Meeting, AudioSegment, HistoryLog, GoogleDriveAccount } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
 import {
@@ -8,6 +8,9 @@ import {
   saveStoredGoogleAccount,
   getStoredHistoryLogs,
   addHistoryLog,
+  getGoogleClientId,
+  requestGoogleAccessToken,
+  uploadBackupToGoogleDrive,
 } from '../lib/googleDriveBackup';
 
 const STORAGE_KEY = 'notulenjmm_meetings_v2';
@@ -48,10 +51,14 @@ interface MeetingContextType {
   }) => string;
   isRecording: boolean;
   isSynthesizing: boolean;
+  isAutoSyncing: boolean;
+  lastAutoSyncStatus: 'idle' | 'syncing' | 'synced' | 'error';
   historyLogs: HistoryLog[];
   googleAccount: GoogleDriveAccount;
   setGoogleAccount: (acc: GoogleDriveAccount) => void;
   refreshHistoryLogs: () => void;
+  handleToggleAutoSync: (enabled: boolean) => void;
+  handleTriggerManualSync: () => Promise<void>;
 }
 
 const MeetingContext = createContext<MeetingContextType | undefined>(undefined);
@@ -66,6 +73,15 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const [historyLogs, setHistoryLogs] = useState<HistoryLog[]>([]);
   const [googleAccount, setGoogleAccountState] = useState<GoogleDriveAccount>({ connected: false });
+  const [isAutoSyncing, setIsAutoSyncing] = useState<boolean>(false);
+  const [lastAutoSyncStatus, setLastAutoSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
+
+  const autoSyncTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const meetingsRef = useRef<Meeting[]>(meetings);
+
+  useEffect(() => {
+    meetingsRef.current = meetings;
+  }, [meetings]);
 
   const setGoogleAccount = (acc: GoogleDriveAccount) => {
     setGoogleAccountState(acc);
@@ -75,6 +91,63 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const refreshHistoryLogs = useCallback(() => {
     setHistoryLogs(getStoredHistoryLogs());
   }, []);
+
+  // Background Google Drive Auto-Sync executor
+  const performDriveSync = useCallback(
+    async (meetingsToSync: Meeting[], silentAuth = true) => {
+      const storedAccount = getStoredGoogleAccount();
+      if (!storedAccount.connected) return;
+
+      const clientId = getGoogleClientId();
+      if (!clientId) return;
+
+      let token = storedAccount.accessToken;
+      const isTokenExpired =
+        !token || !storedAccount.tokenExpiresAt || Date.now() >= storedAccount.tokenExpiresAt - 60000;
+
+      if (isTokenExpired) {
+        try {
+          token = await requestGoogleAccessToken(clientId, silentAuth);
+          const updatedAcc: GoogleDriveAccount = {
+            ...storedAccount,
+            accessToken: token,
+            tokenExpiresAt: Date.now() + 3500 * 1000,
+          };
+          setGoogleAccountState(updatedAcc);
+          saveStoredGoogleAccount(updatedAcc);
+        } catch (authErr) {
+          console.warn('Silent auto-sync token refresh failed:', authErr);
+          setLastAutoSyncStatus('error');
+          return;
+        }
+      }
+
+      if (!token) return;
+
+      setIsAutoSyncing(true);
+      setLastAutoSyncStatus('syncing');
+
+      try {
+        const res = await uploadBackupToGoogleDrive(token, meetingsToSync);
+        const nowIso = res.modifiedTime || new Date().toISOString();
+        const updatedAcc: GoogleDriveAccount = {
+          ...storedAccount,
+          accessToken: token,
+          lastSyncTime: nowIso,
+        };
+        setGoogleAccountState(updatedAcc);
+        saveStoredGoogleAccount(updatedAcc);
+        setLastAutoSyncStatus('synced');
+        setHistoryLogs(getStoredHistoryLogs());
+      } catch (uploadErr) {
+        console.warn('Auto-sync to Google Drive failed:', uploadErr);
+        setLastAutoSyncStatus('error');
+      } finally {
+        setIsAutoSyncing(false);
+      }
+    },
+    []
+  );
 
   // Hydrate from localStorage once on client mount
   useEffect(() => {
@@ -112,6 +185,54 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       console.warn('Failed to store meetings in localStorage:', e);
     }
   }, [meetings, isHydrated]);
+
+  // Debounced Auto-Sync triggered whenever meetings change
+  useEffect(() => {
+    if (!isHydrated || meetings.length === 0) return;
+    if (!googleAccount.connected || googleAccount.autoSyncEnabled === false) return;
+
+    if (autoSyncTimerRef.current) {
+      clearTimeout(autoSyncTimerRef.current);
+    }
+
+    autoSyncTimerRef.current = setTimeout(() => {
+      performDriveSync(meetingsRef.current, true);
+    }, 4000);
+
+    return () => {
+      if (autoSyncTimerRef.current) {
+        clearTimeout(autoSyncTimerRef.current);
+      }
+    };
+  }, [meetings, isHydrated, googleAccount.connected, googleAccount.autoSyncEnabled, performDriveSync]);
+
+  // Periodic heartbeat sync every 5 minutes if account is connected
+  useEffect(() => {
+    if (!isHydrated) return;
+    const interval = setInterval(() => {
+      const acc = getStoredGoogleAccount();
+      if (acc.connected && acc.autoSyncEnabled !== false && meetingsRef.current.length > 0) {
+        performDriveSync(meetingsRef.current, true);
+      }
+    }, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [isHydrated, performDriveSync]);
+
+  const handleToggleAutoSync = (enabled: boolean) => {
+    const updated: GoogleDriveAccount = {
+      ...googleAccount,
+      autoSyncEnabled: enabled,
+    };
+    setGoogleAccountState(updated);
+    saveStoredGoogleAccount(updated);
+    if (enabled && googleAccount.connected) {
+      performDriveSync(meetingsRef.current, false);
+    }
+  };
+
+  const handleTriggerManualSync = async () => {
+    await performDriveSync(meetingsRef.current, false);
+  };
 
   const activeMeeting =
     meetings.find((m) => m.id === activeMeetingId) || (meetings.length > 0 ? meetings[0] : null);
@@ -472,10 +593,14 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         handleStartCraftSession,
         isRecording,
         isSynthesizing,
+        isAutoSyncing,
+        lastAutoSyncStatus,
         historyLogs,
         googleAccount,
         setGoogleAccount,
         refreshHistoryLogs,
+        handleToggleAutoSync,
+        handleTriggerManualSync,
       }}
     >
       {children}

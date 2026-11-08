@@ -16,6 +16,7 @@ import {
   ExternalLink,
   Settings,
   Archive,
+  Zap,
 } from 'lucide-react';
 import { useMeetings } from '../context/MeetingContext';
 import {
@@ -43,6 +44,9 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
     setGoogleAccount,
     handleRestoreBackup,
     refreshHistoryLogs,
+    isAutoSyncing,
+    handleToggleAutoSync,
+    handleTriggerManualSync,
   } = useMeetings();
 
   const [activeTab, setActiveTab] = useState<'google' | 'file' | 'history'>('google');
@@ -72,7 +76,7 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
       }
       setGoogleClientId(activeClientId);
 
-      const token = await requestGoogleAccessToken(activeClientId);
+      const token = await requestGoogleAccessToken(activeClientId, false);
       const profile = await fetchGoogleUserProfile(token);
 
       const newAccount = {
@@ -81,11 +85,24 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
         name: profile.name,
         photoUrl: profile.picture,
         lastSyncTime: new Date().toISOString(),
+        accessToken: token,
+        tokenExpiresAt: Date.now() + 3500 * 1000,
+        autoSyncEnabled: true,
       };
       setGoogleAccount(newAccount);
+
+      // Perform initial backup immediately
+      try {
+        const res = await uploadBackupToGoogleDrive(token, meetings);
+        newAccount.lastSyncTime = res.modifiedTime;
+        setGoogleAccount(newAccount);
+      } catch (uploadErr) {
+        console.warn('Initial backup after connect failed:', uploadErr);
+      }
+
       setStatusMessage({
         type: 'success',
-        text: `Berhasil terhubung ke akun Google: ${profile.email}`,
+        text: `Berhasil terhubung ke akun Google: ${profile.email}. Auto-Backup Otomatis telah AKTIF!`,
       });
     } catch (err) {
       setStatusMessage({
@@ -113,12 +130,14 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
         setShowConfigClientId(true);
         throw new Error('Silakan masukkan Google Client ID Anda terlebih dahulu.');
       }
-      const token = await requestGoogleAccessToken(activeClientId);
+      const token = await requestGoogleAccessToken(activeClientId, false);
       const res = await uploadBackupToGoogleDrive(token, meetings);
 
       setGoogleAccount({
         ...googleAccount,
         connected: true,
+        accessToken: token,
+        tokenExpiresAt: Date.now() + 3500 * 1000,
         lastSyncTime: res.modifiedTime,
       });
       refreshHistoryLogs();
@@ -382,6 +401,85 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
                   )}
                 </div>
               </div>
+
+              {/* Auto-Backup Otomatis Card */}
+              {googleAccount.connected && (
+                <div className="p-4 rounded-xl border-2 border-black bg-[#FEF08A] shadow-[3px_3px_0px_0px_#000] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-black text-[#FEF08A] border-2 border-black flex items-center justify-center font-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                        <Zap className="w-5 h-5 fill-[#FEF08A] stroke-[2.5]" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-xs font-black text-black">Auto-Backup Otomatis Cloud</h4>
+                          <span
+                            className={`text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded border border-black ${
+                              googleAccount.autoSyncEnabled !== false
+                                ? 'bg-[#A7F3D0] text-black shadow-[1px_1px_0px_0px_#000]'
+                                : 'bg-zinc-200 text-zinc-700'
+                            }`}
+                          >
+                            {googleAccount.autoSyncEnabled !== false ? 'AKTIF (OTOMATIS)' : 'NONAKTIF'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-900 font-medium leading-snug mt-0.5">
+                          Setiap penulisan notulensi, draf, dan pengesahan arsip otomatis disinkronkan ke Google Drive tanpa klik manual.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Toggle Button */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleAutoSync(googleAccount.autoSyncEnabled === false)}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-black transition-colors duration-200 ease-in-out focus:outline-none ${
+                        googleAccount.autoSyncEnabled !== false ? 'bg-black' : 'bg-zinc-300'
+                      }`}
+                      aria-label="Toggle Auto-Backup Otomatis"
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white border border-black shadow transition duration-200 ease-in-out mt-0.5 ${
+                          googleAccount.autoSyncEnabled !== false ? 'translate-x-5' : 'translate-x-0.5'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="pt-2.5 border-t border-black/15 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+                    <div className="flex items-center gap-2 font-bold text-zinc-900">
+                      {isAutoSyncing ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin text-black stroke-[3]" />
+                          <span className="font-mono text-[10px] uppercase font-black text-black">
+                            Sedang mencadangkan otomatis ke Google Drive...
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-black shadow-[0.5px_0.5px_0px_0px_#000]" />
+                          <span>
+                            {googleAccount.lastSyncTime
+                              ? `Tersinkronisasi otomatis: ${new Date(googleAccount.lastSyncTime).toLocaleTimeString('id-ID', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })} WIB (${new Date(googleAccount.lastSyncTime).toLocaleDateString('id-ID')})`
+                              : 'Siap melakukan pencadangan otomatis.'}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleTriggerManualSync}
+                      disabled={isAutoSyncing || isLoading}
+                      className="text-[10px] font-black underline hover:text-black uppercase cursor-pointer"
+                    >
+                      Sinkronkan Sekarang
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Action Buttons: Cadangkan & Pulihkan */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -83,5 +83,8 @@ export interface GoogleDriveAccount {
   name?: string;
   photoUrl?: string;
   lastSyncTime?: string;
+  accessToken?: string;
+  tokenExpiresAt?: number;
+  autoSyncEnabled?: boolean;
 }
 

@@ -215,7 +215,10 @@ export function loadGoogleScript(): Promise<void> {
 }
 
 // Request Google OAuth 2.0 access token via Google Identity Services Token Client
-export async function requestGoogleAccessToken(clientId: string): Promise<string> {
+export async function requestGoogleAccessToken(
+  clientId: string,
+  silent = false
+): Promise<string> {
   await loadGoogleScript();
   return new Promise((resolve, reject) => {
     try {
@@ -228,7 +231,7 @@ export async function requestGoogleAccessToken(clientId: string): Promise<string
                 scope: string;
                 callback: (response: { access_token?: string; error?: string }) => void;
                 error_callback?: (err: unknown) => void;
-              }) => { requestAccessToken: () => void };
+              }) => { requestAccessToken: (opts?: { prompt?: string }) => void };
             };
           };
         };
@@ -251,7 +254,11 @@ export async function requestGoogleAccessToken(clientId: string): Promise<string
         },
       });
 
-      client.requestAccessToken();
+      if (silent) {
+        client.requestAccessToken({ prompt: '' });
+      } else {
+        client.requestAccessToken();
+      }
     } catch (e) {
       reject(e);
     }

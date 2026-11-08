@@ -25,9 +25,11 @@ import {
   RefreshCw,
   CheckCircle2,
   Archive,
+  Cloud,
 } from 'lucide-react';
 import { Meeting, Decision, ActionItem, MeetingAgenda, MeetingFormatStandard } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
+import { useMeetings } from '../context/MeetingContext';
 
 interface NotulenEditorProps {
   meeting?: Meeting | null;
@@ -46,6 +48,7 @@ const escapeHtml = (text: string | null | undefined): string => {
 };
 
 export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateMeeting }) => {
+  const { googleAccount, isAutoSyncing } = useMeetings();
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedWa, setCopiedWa] = useState(false);
   const [showWaModal, setShowWaModal] = useState(false);
@@ -1033,6 +1036,30 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 <span className="text-[10px] font-mono font-black text-black bg-[#FEF08A] border-2 border-black px-2.5 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000] flex items-center gap-1">
                   <Archive className="w-3 h-3 stroke-[2.5]" />
                   <span>{meeting.archiveNumber || 'ARSIP RESMI'}</span>
+                </span>
+              )}
+              {googleAccount.connected && (
+                <span
+                  className={`text-[10px] font-mono font-black border-2 border-black px-2.5 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000] flex items-center gap-1 ${
+                    isAutoSyncing ? 'bg-[#FEF08A] text-black animate-pulse' : 'bg-[#E0F2FE] text-sky-950'
+                  }`}
+                  title={
+                    isAutoSyncing
+                      ? 'Sedang mencadangkan otomatis ke Google Drive...'
+                      : `Tercadangkan otomatis ke Google Drive (${googleAccount.email || 'Cloud'})`
+                  }
+                >
+                  {isAutoSyncing ? (
+                    <>
+                      <RefreshCw className="w-3 h-3 stroke-[2.5] animate-spin" />
+                      <span>CLOUD SYNCING...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Cloud className="w-3 h-3 stroke-[2.5] text-sky-700" />
+                      <span>CLOUD AUTO-SAVED</span>
+                    </>
+                  )}
                 </span>
               )}
             </div>
