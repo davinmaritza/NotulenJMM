@@ -24,6 +24,8 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
   const { handleLoginGoogle, handleLoginWithEmail } = useMeetings();
   const [emailInput, setEmailInput] = useState<string>('');
   const [rememberedEmail, setRememberedEmail] = useState<string | null>(null);
+  const [rememberedName, setRememberedName] = useState<string | null>(null);
+  const [rememberedPhoto, setRememberedPhoto] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showConfig, setShowConfig] = useState<boolean>(false);
@@ -34,6 +36,8 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
       const stored = getStoredGoogleAccount();
       if (stored && stored.email) {
         setRememberedEmail(stored.email);
+        setRememberedName(stored.name || null);
+        setRememberedPhoto(stored.photoUrl || null);
       }
     }
   }, []);
@@ -181,12 +185,26 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
               </div>
               <button
                 type="button"
-                onClick={() => handleDirectLogin(rememberedEmail)}
+                onClick={() => handleDirectLogin(rememberedEmail, rememberedName || undefined)}
                 className="w-full p-2.5 sm:p-3 rounded-xl border-2 border-black text-left bg-[#FEF9C3] hover:bg-[#FFE600] transition-all shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-between group cursor-pointer"
               >
-                <div className="min-w-0 pr-2">
-                  <span className="text-xs font-black text-black truncate block">{rememberedEmail}</span>
-                  <p className="text-[10px] text-zinc-700 font-medium truncate mt-0.5">Klik untuk melanjutkan sesi sebelumnya</p>
+                <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-black flex items-center justify-center font-black text-xs text-black shrink-0 overflow-hidden shadow-[1px_1px_0px_0px_#000]">
+                    {rememberedPhoto ? (
+                      <img
+                        src={rememberedPhoto}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      rememberedEmail.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-xs font-black text-black truncate block">{rememberedName || rememberedEmail}</span>
+                    <p className="text-[10px] text-zinc-700 font-medium truncate mt-0.5">{rememberedEmail}</p>
+                  </div>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-black opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0" />
               </button>

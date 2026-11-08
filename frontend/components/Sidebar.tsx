@@ -242,16 +242,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="p-3 border-t-2 border-black bg-[#FFFDF5]">
             <div className="flex items-center justify-between gap-2 bg-white p-2 rounded-xl border-2 border-black shadow-[2px_2px_0px_0px_#000]">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="w-7 h-7 rounded-lg bg-[#FFE600] border border-black flex items-center justify-center font-black text-xs text-black shrink-0 shadow-[1px_1px_0px_0px_#000]">
-                  {googleAccount.email.charAt(0).toUpperCase()}
+                <div className="w-8 h-8 rounded-lg bg-[#FFE600] border border-black flex items-center justify-center font-black text-xs text-black shrink-0 shadow-[1px_1px_0px_0px_#000] overflow-hidden relative">
+                  {googleAccount.photoUrl ? (
+                    <img
+                      src={googleAccount.photoUrl}
+                      alt={googleAccount.name || googleAccount.email}
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span>{googleAccount.email.charAt(0).toUpperCase()}</span>
+                  )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-black text-black truncate max-w-[130px]" title={googleAccount.email}>
-                    {googleAccount.email}
+                  <p className="text-[11px] font-black text-black truncate max-w-[125px]" title={googleAccount.name ? `${googleAccount.name} (${googleAccount.email})` : googleAccount.email}>
+                    {googleAccount.name || googleAccount.email}
                   </p>
                   <div className="flex items-center gap-1 text-[9px] font-mono font-bold text-sky-800">
-                    <Cloud className="w-2.5 h-2.5 text-sky-700" />
-                    <span>Auto-Backup Aktif</span>
+                    <Cloud className="w-2.5 h-2.5 text-sky-700 shrink-0" />
+                    <span className="truncate">Auto-Backup Aktif</span>
                   </div>
                 </div>
               </div>

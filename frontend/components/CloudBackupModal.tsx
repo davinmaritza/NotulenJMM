@@ -350,12 +350,21 @@ export const CloudBackupModal: React.FC<CloudBackupModalProps> = ({ isOpen, onCl
               {/* Account Connection Status Box */}
               <div className="p-4 rounded-xl border-2 border-black bg-white shadow-[3px_3px_0px_0px_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#E0F2FE] border-2 border-black flex items-center justify-center font-black text-black shadow-[1.5px_1.5px_0px_0px_#000]">
-                    <Cloud className="w-5 h-5 text-sky-700" />
+                  <div className="w-10 h-10 rounded-xl bg-[#E0F2FE] border-2 border-black flex items-center justify-center font-black text-black shadow-[1.5px_1.5px_0px_0px_#000] overflow-hidden">
+                    {googleAccount.connected && googleAccount.photoUrl ? (
+                      <img
+                        src={googleAccount.photoUrl}
+                        alt={googleAccount.name || googleAccount.email}
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <Cloud className="w-5 h-5 text-sky-700" />
+                    )}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-black">Google Drive Cloud</span>
+                      <span className="text-xs font-black text-black">{googleAccount.name || 'Google Drive Cloud'}</span>
                       <span
                         className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border border-black ${
                           googleAccount.connected
