@@ -33,6 +33,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+import { AppProviders } from '../components/AppProviders';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,8 +45,8 @@ export default function RootLayout({
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white pb-safe">
-        {children}
+      <body className="min-h-full flex flex-col bg-[#07080a] text-slate-100 font-sans selection:bg-white/10 selection:text-white pb-safe">
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

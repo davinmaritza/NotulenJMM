@@ -1,6 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Compass,
   FileText,
@@ -15,9 +16,9 @@ import {
 import { Meeting } from '../lib/types';
 
 interface SidebarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-  isRecording: boolean;
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
+  isRecording?: boolean;
   totalMeetingsCount: number;
   activeMeeting?: Meeting | null;
   isOpenMobile: boolean;
@@ -28,16 +29,34 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   setActiveTab,
-  isRecording,
+  isRecording = false,
   totalMeetingsCount,
   activeMeeting,
   isOpenMobile,
   setIsOpenMobile,
   onOpenGuide,
 }) => {
-  const handleSelectTab = (tab: string) => {
-    setActiveTab(tab);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const currentTab =
+    activeTab ||
+    (pathname === '/arsip'
+      ? 'dashboard'
+      : pathname === '/record'
+      ? 'record'
+      : pathname === '/notulen'
+      ? 'notulen'
+      : pathname === '/tasks'
+      ? 'actions'
+      : pathname === '/status'
+      ? 'status'
+      : 'craft');
+
+  const handleSelectTab = (tab: string, route: string) => {
+    if (setActiveTab) setActiveTab(tab);
     setIsOpenMobile(false);
+    router.push(route);
   };
 
   return (
@@ -93,9 +112,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </span>
 
             <button
-              onClick={() => handleSelectTab('craft')}
+              onClick={() => handleSelectTab('craft', '/')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
-                activeTab === 'craft'
+                currentTab === 'craft'
                   ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
@@ -108,9 +127,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
 
             <button
-              onClick={() => handleSelectTab('dashboard')}
+              onClick={() => handleSelectTab('dashboard', '/arsip')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
-                activeTab === 'dashboard'
+                currentTab === 'dashboard'
                   ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
@@ -132,9 +151,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </span>
 
             <button
-              onClick={() => handleSelectTab('record')}
+              onClick={() => handleSelectTab('record', '/record')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
-                activeTab === 'record'
+                currentTab === 'record'
                   ? 'bg-rose-950/60 text-rose-200 border border-rose-500/30 font-semibold shadow-sm'
                   : isRecording
                   ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
@@ -153,9 +172,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
 
             <button
-              onClick={() => handleSelectTab('notulen')}
+              onClick={() => handleSelectTab('notulen', '/notulen')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
-                activeTab === 'notulen'
+                currentTab === 'notulen'
                   ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
@@ -175,9 +194,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </span>
 
             <button
-              onClick={() => handleSelectTab('actions')}
+              onClick={() => handleSelectTab('actions', '/tasks')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
-                activeTab === 'actions'
+                currentTab === 'actions'
                   ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
@@ -190,9 +209,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
 
             <button
-              onClick={() => handleSelectTab('status')}
+              onClick={() => handleSelectTab('status', '/status')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-[0.985] cursor-pointer ${
-                activeTab === 'status'
+                currentTab === 'status'
                   ? 'bg-zinc-800 text-white font-semibold border border-white/10 shadow-sm'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
@@ -209,7 +228,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {activeMeeting && (
             <div className="pt-2">
               <div
-                onClick={() => handleSelectTab('notulen')}
+                onClick={() => handleSelectTab('notulen', '/notulen')}
                 className="p-3 bg-[#12141c] hover:bg-[#161924] border border-white/[0.07] rounded-2xl space-y-1.5 transition-all cursor-pointer group"
               >
                 <div className="flex items-center justify-between">
