@@ -38,6 +38,12 @@ export interface MeetingAgenda {
   discussionPoints: string[];
 }
 
+export type MeetingFormatStandard =
+  | 'TATA_NASKAH_DINAS'
+  | 'RISALAH_PADAT'
+  | 'RAPAT_KERJA_ANGGARAN'
+  | 'LPJ_EVALUASI';
+
 export interface Meeting {
   id: string;
   title: string;
@@ -53,4 +59,9 @@ export interface Meeting {
   decisions: Decision[];
   actionItems: ActionItem[];
   secretaryNotes?: string;
+  formatStandard?: MeetingFormatStandard;
+  lastSavedAt?: string;
+  leaderName?: string;
+  noteTakerName?: string;
+  audioUrl?: string;
 }

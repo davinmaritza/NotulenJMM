@@ -12,13 +12,21 @@ import {
   Download,
   Share2,
   X,
-  ExternalLink,
   FileCode,
   MapPin,
   Clock,
   Sparkles,
+  FileSpreadsheet,
+  SlidersHorizontal,
+  Save,
+  Trash2,
+  Send,
+  Plus,
+  RefreshCw,
+  CheckCircle2,
 } from 'lucide-react';
-import { Meeting, Decision, ActionItem } from '../lib/types';
+import { Meeting, Decision, ActionItem, MeetingAgenda, MeetingFormatStandard } from '../lib/types';
+import { synthesizeNotulenApi } from '../lib/api';
 
 interface NotulenEditorProps {
   meeting?: Meeting | null;
@@ -40,11 +48,56 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedWa, setCopiedWa] = useState(false);
   const [showWaModal, setShowWaModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Quick Inline Adders
   const [newDecisionText, setNewDecisionText] = useState('');
   const [newDecisionCategory, setNewDecisionCategory] = useState<Decision['category']>('Program Kerja');
   const [newActionTask, setNewActionTask] = useState('');
   const [newActionAssignee, setNewActionAssignee] = useState('');
   const [newActionDueDate, setNewActionDueDate] = useState('');
+
+  // Modification Drawer / Modal State
+  const [isModifying, setIsModifying] = useState(false);
+  const [isAiReformatting, setIsAiReformatting] = useState(false);
+
+  // Temporary Edit State for Modification Modal
+  const [editTitle, setEditTitle] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [editLocation, setEditLocation] = useState('');
+  const [editOrganizer, setEditOrganizer] = useState('');
+  const [editLeaderName, setEditLeaderName] = useState('');
+  const [editNoteTakerName, setEditNoteTakerName] = useState('');
+  const [editFormatStandard, setEditFormatStandard] = useState<MeetingFormatStandard>('TATA_NASKAH_DINAS');
+  const [editSecretaryNotes, setEditSecretaryNotes] = useState('');
+  const [editExecutiveSummary, setEditExecutiveSummary] = useState('');
+  const [editAgendas, setEditAgendas] = useState<MeetingAgenda[]>([]);
+  const [editDecisions, setEditDecisions] = useState<Decision[]>([]);
+  const [editActionItems, setEditActionItems] = useState<ActionItem[]>([]);
+
+  // Initialize edit form when user opens the modification modal
+  const openModificationModal = () => {
+    if (meeting) {
+      setEditTitle(meeting.title || '');
+      setEditDate(meeting.date || '');
+      setEditLocation(meeting.location || '');
+      setEditOrganizer(meeting.organizer || 'MPK SMK Negeri 13 Bandung');
+      setEditLeaderName(meeting.leaderName || 'Presidium Sidang MPK 13');
+      setEditNoteTakerName(meeting.noteTakerName || 'Davin Maritza • Notulis Sidang');
+      setEditFormatStandard(meeting.formatStandard || 'TATA_NASKAH_DINAS');
+      setEditSecretaryNotes(meeting.secretaryNotes || '');
+      setEditExecutiveSummary(meeting.executiveSummary || '');
+      setEditAgendas(JSON.parse(JSON.stringify(meeting.agendas || [])));
+      setEditDecisions(JSON.parse(JSON.stringify(meeting.decisions || [])));
+      setEditActionItems(JSON.parse(JSON.stringify(meeting.actionItems || [])));
+    }
+    setIsModifying(true);
+  };
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   if (!meeting) {
     return (
@@ -55,7 +108,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
         <div className="space-y-1.5 max-w-md mx-auto">
           <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">Belum Ada Sesi Sidang Terpilih</h2>
           <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-            Pilih sesi dari arsip sidang atau mulai perekaman audio sekretaris untuk menyusun risalah dan keputusan resmi.
+            Pilih sesi dari arsip sidang atau mulai perekaman audio/voice note sekretaris untuk menyusun risalah dan keputusan resmi.
           </p>
         </div>
       </div>
@@ -76,7 +129,20 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       return item;
     });
 
-    onUpdateMeeting({ ...meeting, actionItems: updatedActions });
+    onUpdateMeeting({
+      ...meeting,
+      actionItems: updatedActions,
+      lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+    });
+  };
+
+  const handleManualSaveDraft = () => {
+    const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    onUpdateMeeting({
+      ...meeting,
+      lastSavedAt: timestamp,
+    });
+    showToast(`Draf sidang "${meeting.title}" berhasil disimpan secara online (${timestamp})`);
   };
 
   const handleAddDecision = (e: React.FormEvent) => {
@@ -96,8 +162,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     onUpdateMeeting({
       ...meeting,
       decisions: [...meeting.decisions, newDecision],
+      lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
     });
     setNewDecisionText('');
+    showToast('Ketetapan keputusan sidang baru berhasil disahkan!');
   };
 
   const handleAddActionItem = (e: React.FormEvent) => {
@@ -115,10 +183,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     onUpdateMeeting({
       ...meeting,
       actionItems: [...meeting.actionItems, newItem],
+      lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
     });
     setNewActionTask('');
     setNewActionAssignee('');
     setNewActionDueDate('');
+    showToast('Penugasan komisi baru berhasil ditambahkan!');
   };
 
   // 1. Export Markdown (Clipboard)
@@ -129,7 +199,8 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     md += `**Waktu & Tanggal:** ${meeting.date}\n`;
     md += `**Tempat Sidang:** ${meeting.location}\n`;
     md += `**Penyelenggara:** ${meeting.organizer}\n`;
-    md += `**Notulis Sidang:** Davin Maritza • MPK SMK Negeri 13 Bandung\n\n`;
+    md += `**Pimpinan Sidang:** ${meeting.leaderName || 'Presidium Sidang MPK 13'}\n`;
+    md += `**Notulis Sidang:** ${meeting.noteTakerName || 'Davin Maritza • MPK SMK Negeri 13 Bandung'}\n\n`;
 
     if (meeting.secretaryNotes) {
       md += `**Arahan Notulis:**\n> ${meeting.secretaryNotes}\n\n`;
@@ -288,7 +359,8 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           <tr><td class="lbl">Hari / Tanggal</td><td>: ${escapeHtml(meeting.date)}</td></tr>
           <tr><td class="lbl">Tempat Sidang</td><td>: ${escapeHtml(meeting.location)}</td></tr>
           <tr><td class="lbl">Penyelenggara</td><td>: ${escapeHtml(meeting.organizer)}</td></tr>
-          <tr><td class="lbl">Notulis Sidang</td><td>: Davin Maritza • MPK SMK Negeri 13 Bandung</td></tr>
+          <tr><td class="lbl">Pimpinan Sidang</td><td>: ${escapeHtml(meeting.leaderName || 'Presidium Sidang MPK 13')}</td></tr>
+          <tr><td class="lbl">Notulis Sidang</td><td>: ${escapeHtml(meeting.noteTakerName || 'Davin Maritza • Notulis Sidang')}</td></tr>
           ${
             meeting.secretaryNotes
               ? `<tr><td class="lbl">Catatan Pengarah</td><td>: <em>${escapeHtml(meeting.secretaryNotes)}</em></td></tr>`
@@ -316,14 +388,14 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               Mengetahui,<br>
               <strong>Ketua MPK SMK Negeri 13 Bandung</strong>
               <br><br><br><br>
-              <u>(.......................................................)</u><br>
+              <u>(${escapeHtml(meeting.leaderName || 'Presidium Sidang')})</u><br>
               NIS. MPK-13/2026
             </td>
             <td>
               Bandung, ${dateFormatted}<br>
               <strong>Notulis / Sekretaris Sidang</strong>
               <br><br><br><br>
-              <u><strong>Davin Maritza</strong></u><br>
+              <u><strong>${escapeHtml(meeting.noteTakerName || 'Davin Maritza')}</strong></u><br>
               Notulis Pleno Majelis
             </td>
           </tr>
@@ -341,9 +413,140 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    showToast('Dokumen Microsoft Word (.DOC) berhasil diunduh!');
   };
 
-  // 3. Export Plain Text (.txt)
+  // 3. Export Excel Spreadsheet (.xls)
+  const exportExcel = () => {
+    const cleanTitle = meeting.title.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
+    const dateFormatted = new Date().toISOString().split('T')[0];
+
+    const excelContent = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">
+        <style>
+          table { border-collapse: collapse; width: 100%; font-family: Calibri, Arial, sans-serif; font-size: 11pt; }
+          th { background-color: #1e293b; color: #ffffff; font-weight: bold; border: 1px solid #94a3b8; padding: 8px; text-align: left; }
+          td { border: 1px solid #cbd5e1; padding: 6px 8px; vertical-align: top; }
+          .header-title { font-size: 15pt; font-weight: bold; text-align: center; color: #000000; }
+          .header-sub { font-size: 10pt; text-align: center; color: #475569; }
+          .section-banner { background-color: #334155; color: #ffffff; font-weight: bold; font-size: 11.5pt; padding: 7px 10px; }
+          .meta-label { font-weight: bold; background-color: #f1f5f9; width: 160px; }
+          .status-disahkan { color: #15803d; font-weight: bold; }
+          .status-pending { color: #b45309; }
+          .status-completed { color: #15803d; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <table>
+          <tr><td colspan="5" class="header-title">MAJELIS PERWAKILAN KELAS (MPK) SMK NEGERI 13 BANDUNG</td></tr>
+          <tr><td colspan="5" class="header-sub">REKAPITULASI RISALAH, KETETAPAN &amp; PENUGASAN SIDANG PLENO</td></tr>
+          <tr><td colspan="5" style="border: none; height: 8px;"></td></tr>
+          <tr><td class="meta-label">Agenda / Judul Sidang</td><td colspan="4"><b>${escapeHtml(meeting.title)}</b></td></tr>
+          <tr><td class="meta-label">Hari / Tanggal</td><td colspan="4">${escapeHtml(meeting.date)}</td></tr>
+          <tr><td class="meta-label">Tempat Sidang</td><td colspan="4">${escapeHtml(meeting.location)}</td></tr>
+          <tr><td class="meta-label">Penyelenggara</td><td colspan="4">${escapeHtml(meeting.organizer)}</td></tr>
+          <tr><td class="meta-label">Pimpinan Sidang</td><td colspan="4">${escapeHtml(meeting.leaderName || 'Presidium Sidang MPK 13')}</td></tr>
+          <tr><td class="meta-label">Notulis Sidang</td><td colspan="4">${escapeHtml(meeting.noteTakerName || 'Davin Maritza • Notulis Sidang')}</td></tr>
+          <tr><td class="meta-label">Standar Format</td><td colspan="4">${escapeHtml(meeting.formatStandard || 'TATA_NASKAH_DINAS')}</td></tr>
+          <tr><td colspan="5" style="border: none; height: 12px;"></td></tr>
+
+          <!-- Section 1: Ringkasan Eksekutif -->
+          <tr><td colspan="5" class="section-banner">I. RINGKASAN EKSEKUTIF</td></tr>
+          <tr><td colspan="5" style="background-color: #f8fafc; padding: 10px;">${escapeHtml(meeting.executiveSummary || 'Belum ada ringkasan eksekutif.')}</td></tr>
+          <tr><td colspan="5" style="border: none; height: 12px;"></td></tr>
+
+          <!-- Section 2: Pokok Bahasan & Agenda -->
+          <tr><td colspan="5" class="section-banner">II. POKOK BAHASAN &amp; AGENDA PLENO</td></tr>
+          <tr>
+            <th style="width: 45px; text-align: center;">No</th>
+            <th colspan="2" style="width: 250px;">Pokok Bahasan / Topik</th>
+            <th colspan="2">Poin-Poin Pembahasan &amp; Fakta Persidangan</th>
+          </tr>
+          ${meeting.agendas
+            .map(
+              (ag, idx) => `
+            <tr>
+              <td style="text-align: center; font-weight: bold;">${idx + 1}</td>
+              <td colspan="2"><b>${escapeHtml(ag.title)}</b></td>
+              <td colspan="2">${ag.discussionPoints.map((p) => `• ${escapeHtml(p)}`).join('<br>')}</td>
+            </tr>
+          `
+            )
+            .join('')}
+          <tr><td colspan="5" style="border: none; height: 12px;"></td></tr>
+
+          <!-- Section 3: Ketetapan & Keputusan -->
+          <tr><td colspan="5" class="section-banner">III. KETETAPAN &amp; KEPUTUSAN RESMI MAJELIS</td></tr>
+          <tr>
+            <th style="width: 140px;">Nomor Ketetapan</th>
+            <th style="width: 120px;">Kategori</th>
+            <th colspan="2">Isi Ketetapan / Keputusan</th>
+            <th style="width: 110px; text-align: center;">Status</th>
+          </tr>
+          ${
+            meeting.decisions.length === 0
+              ? `<tr><td colspan="5" style="text-align: center; font-style: italic; color: #64748b;">(Belum ada ketetapan resmi)</td></tr>`
+              : meeting.decisions
+                  .map(
+                    (d) => `
+            <tr>
+              <td style="font-family: monospace;">${escapeHtml(d.number)}</td>
+              <td>${escapeHtml(d.category)}</td>
+              <td colspan="2"><b>${escapeHtml(d.decisionText)}</b><br><small style="color: #64748b;">Pertimbangan: ${escapeHtml(d.rationale)}</small></td>
+              <td style="text-align: center;" class="status-disahkan">${escapeHtml(d.status)}</td>
+            </tr>
+          `
+                  )
+                  .join('')
+          }
+          <tr><td colspan="5" style="border: none; height: 12px;"></td></tr>
+
+          <!-- Section 4: Action Items / Penugasan -->
+          <tr><td colspan="5" class="section-banner">IV. TINDAK LANJUT &amp; PENUGASAN (ACTION ITEMS)</td></tr>
+          <tr>
+            <th style="width: 45px; text-align: center;">No</th>
+            <th colspan="2">Uraian Tugas / Komitmen</th>
+            <th style="width: 150px;">Penanggung Jawab (PIC)</th>
+            <th style="width: 110px; text-align: center;">Batas Waktu</th>
+            <th style="width: 100px; text-align: center;">Status</th>
+          </tr>
+          ${
+            meeting.actionItems.length === 0
+              ? `<tr><td colspan="5" style="text-align: center; font-style: italic; color: #64748b;">(Belum ada penugasan)</td></tr>`
+              : meeting.actionItems
+                  .map(
+                    (act, idx) => `
+            <tr>
+              <td style="text-align: center; font-weight: bold;">${idx + 1}</td>
+              <td colspan="2"><b>${escapeHtml(act.description)}</b></td>
+              <td>${escapeHtml(act.assignee)}</td>
+              <td style="text-align: center;">${escapeHtml(act.dueDate)}</td>
+              <td style="text-align: center;" class="${act.status === 'COMPLETED' ? 'status-completed' : 'status-pending'}">${escapeHtml(act.status)}</td>
+            </tr>
+          `
+                  )
+                  .join('')
+          }
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([excelContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Risalah_${cleanTitle}_${dateFormatted}.xls`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('Tabel Rekapitulasi Sidang Excel (.XLS) berhasil diunduh!');
+  };
+
+  // 4. Export Plain Text (.txt)
   const exportTxt = () => {
     const cleanTitle = meeting.title.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
     const dateFormatted = new Date().toISOString().split('T')[0];
@@ -358,8 +561,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     txt += `Waktu/Tanggal : ${meeting.date}\n`;
     txt += `Tempat Sidang : ${meeting.location}\n`;
     txt += `Penyelenggara : ${meeting.organizer}\n`;
+    txt += `Pimpinan      : ${meeting.leaderName || 'Presidium Sidang MPK 13'}\n`;
+    txt += `Notulis Sidang: ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}\n`;
     txt += `Durasi Rekam  : ${Math.floor(meeting.durationSeconds / 60)} Menit Audio\n`;
-    txt += `Notulis Sidang: Davin Maritza • MPK SMK Negeri 13 Bandung\n`;
     if (meeting.secretaryNotes) {
       txt += `Arahan Notulis: ${meeting.secretaryNotes}\n`;
     }
@@ -421,9 +625,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    showToast('Naskah Plain Text (.TXT) berhasil diunduh!');
   };
 
-  // 4. Generate WhatsApp Formatted Text
+  // 5. Generate WhatsApp Formatted Text
   const generateWhatsAppText = () => {
     let wa = `*🏛️ RISALAH & NOTULENSI RESMI SIDANG*\n`;
     wa += `*MAJELIS PERWAKILAN KELAS (MPK) SMK NEGERI 13 BANDUNG*\n`;
@@ -432,8 +637,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     wa += `🗓️ *Hari/Tanggal:* ${meeting.date}\n`;
     wa += `📍 *Tempat:* ${meeting.location}\n`;
     wa += `👥 *Penyelenggara:* ${meeting.organizer}\n`;
+    wa += `👑 *Pimpinan:* ${meeting.leaderName || 'Presidium Sidang MPK 13'}\n`;
+    wa += `✍️ *Notulis:* ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}\n`;
     if (meeting.secretaryNotes) {
-      wa += `✍️ *Catatan Pengarah:* _${meeting.secretaryNotes}_\n`;
+      wa += `📝 *Catatan Pengarah:* _${meeting.secretaryNotes}_\n`;
     }
     wa += `\n`;
 
@@ -471,7 +678,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     }
 
     wa += `━━━━━━━━━━━━━━━━━━━━━\n`;
-    wa += `_Diverifikasi resmi oleh Davin Maritza • Notulis Sidang_\n`;
+    wa += `_Diverifikasi resmi oleh ${meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}_\n`;
     wa += `_MPK SMK Negeri 13 Bandung_`;
 
     return wa;
@@ -482,16 +689,151 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
     navigator.clipboard.writeText(waText);
     setCopiedWa(true);
     setTimeout(() => setCopiedWa(false), 2000);
+    showToast('Teks pesan WhatsApp berhasil disalin ke clipboard!');
   };
 
-  const openWhatsAppWeb = () => {
+  const shareToWhatsAppDirect = () => {
     const waText = generateWhatsAppText();
-    const url = `https://web.whatsapp.com/send?text=${encodeURIComponent(waText)}`;
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(waText)}`;
     window.open(url, '_blank');
+  };
+
+  // Modification Modal Handlers
+  const handleApplyModifications = () => {
+    const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    const updated: Meeting = {
+      ...meeting,
+      title: editTitle.trim() || meeting.title,
+      date: editDate.trim() || meeting.date,
+      location: editLocation.trim() || meeting.location,
+      organizer: editOrganizer.trim() || meeting.organizer,
+      leaderName: editLeaderName.trim(),
+      noteTakerName: editNoteTakerName.trim(),
+      formatStandard: editFormatStandard,
+      secretaryNotes: editSecretaryNotes,
+      executiveSummary: editExecutiveSummary,
+      agendas: editAgendas,
+      decisions: editDecisions,
+      actionItems: editActionItems,
+      lastSavedAt: timestamp,
+    };
+
+    onUpdateMeeting(updated);
+    setIsModifying(false);
+    showToast(`Format naskah & modifikasi risalah sidang berhasil diterapkan secara online (${timestamp})!`);
+  };
+
+  const handleAiReformat = async () => {
+    if (!meeting.transcript || meeting.transcript.length === 0) {
+      showToast('Tidak ada transkrip audio untuk dianalisis ulang oleh AI.');
+      return;
+    }
+
+    setIsAiReformatting(true);
+    try {
+      const formatPrompts: Record<MeetingFormatStandard, string> = {
+        TATA_NASKAH_DINAS:
+          'Tata Naskah Dinas Resmi MPK 13. Susun konsiderans hukum, pasal ketetapan pleno, dan bahasa yuridis resmi.',
+        RISALAH_PADAT:
+          'Format Risalah Padat & Ketetapan Inti. Ringkasan maksimal 2 paragraf tajam, langsung ke inti keputusan rapat dan PIC tanpa basa-basi.',
+        RAPAT_KERJA_ANGGARAN:
+          'Format Rapat Kerja & Anggaran Kas. Fokuskan secara mendalam pada alokasi pos anggaran kas, rincian biaya pengadaan, dan verifikasi bendahara.',
+        LPJ_EVALUASI:
+          'Format Laporan Pertanggungjawaban (LPJ) & Evaluasi. Fokuskan pada persentase ketercapaian program kerja, kendala lapangan, serta rekomendasi komisi.',
+      };
+
+      const steeringPrompt = `${formatPrompts[editFormatStandard]}\n${editSecretaryNotes}`;
+      const res = await synthesizeNotulenApi(
+        editTitle || meeting.title,
+        meeting.transcript,
+        editOrganizer || meeting.organizer,
+        steeringPrompt
+      );
+
+      setEditExecutiveSummary(res.executiveSummary);
+      setEditAgendas(res.agendas);
+      setEditDecisions(res.decisions);
+      setEditActionItems(res.actionItems);
+      showToast('Risalah berhasil diformat ulang otomatis oleh AI sesuai format pilihan!');
+    } catch (err) {
+      console.error('AI Reformat failed:', err);
+      showToast('Gagal memformat ulang via AI. Silakan periksa koneksi server.');
+    } finally {
+      setIsAiReformatting(false);
+    }
+  };
+
+  // Agenda list mutation helpers
+  const handleAddAgenda = () => {
+    setEditAgendas([
+      ...editAgendas,
+      {
+        title: `Pokok Bahasan ${editAgendas.length + 1}`,
+        discussionPoints: ['Poin pembahasan baru...'],
+      },
+    ]);
+  };
+
+  const handleRemoveAgenda = (idx: number) => {
+    setEditAgendas(editAgendas.filter((_, i) => i !== idx));
+  };
+
+  const handleAddDiscussionPoint = (agendaIdx: number) => {
+    const updated = [...editAgendas];
+    updated[agendaIdx].discussionPoints.push('Poin pembahasan...');
+    setEditAgendas(updated);
+  };
+
+  const handleRemoveDiscussionPoint = (agendaIdx: number, ptIdx: number) => {
+    const updated = [...editAgendas];
+    updated[agendaIdx].discussionPoints = updated[agendaIdx].discussionPoints.filter((_, i) => i !== ptIdx);
+    setEditAgendas(updated);
+  };
+
+  // Decision mutation helpers
+  const handleAddModalDecision = () => {
+    const newDec: Decision = {
+      id: `dec-${Date.now()}`,
+      number: `KEP/${String(editDecisions.length + 1).padStart(3, '0')}/MPK-13/XI/2026`,
+      decisionText: 'Rumusan ketetapan baru...',
+      rationale: 'Hasil musyawarah forum.',
+      category: 'Program Kerja',
+      status: 'DISAHKAN',
+      date: new Date().toISOString().split('T')[0],
+    };
+    setEditDecisions([...editDecisions, newDec]);
+  };
+
+  const handleRemoveModalDecision = (id: string) => {
+    setEditDecisions(editDecisions.filter((d) => d.id !== id));
+  };
+
+  // Action item mutation helpers
+  const handleAddModalActionItem = () => {
+    const newItem: ActionItem = {
+      id: `act-${Date.now()}`,
+      description: 'Penugasan baru...',
+      assignee: 'Koordinator Komisi',
+      dueDate: new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
+      status: 'PENDING',
+    };
+    setEditActionItems([...editActionItems, newItem]);
+  };
+
+  const handleRemoveModalActionItem = (id: string) => {
+    setEditActionItems(editActionItems.filter((a) => a.id !== id));
   };
 
   return (
     <div className="space-y-6">
+      {/* Toast Notification Alert */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 p-4 bg-emerald-950/90 border border-emerald-500/40 text-emerald-200 rounded-2xl shadow-2xl flex items-center gap-3 text-xs animate-in slide-in-from-bottom-3 backdrop-blur-md">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Official Print Letterhead Layout (@media print) */}
       <div className="print-only hidden p-8 bg-white text-black font-sans leading-relaxed">
         <div className="text-center border-b-4 border-double border-black pb-4 mb-6">
@@ -531,8 +873,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <td className="py-1">: {meeting.organizer}</td>
             </tr>
             <tr>
-              <td className="font-bold py-1 text-zinc-800">Notulis / Penyusun</td>
-              <td className="py-1">: Davin Maritza • MPK SMK Negeri 13 Bandung</td>
+              <td className="font-bold py-1 text-zinc-800">Pimpinan Sidang</td>
+              <td className="py-1">: {meeting.leaderName || 'Presidium Sidang MPK 13'}</td>
+            </tr>
+            <tr>
+              <td className="font-bold py-1 text-zinc-800">Notulis / Sekretaris</td>
+              <td className="py-1">: {meeting.noteTakerName || 'Davin Maritza • Notulis Sidang'}</td>
             </tr>
           </tbody>
         </table>
@@ -622,14 +968,14 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               <p>Mengetahui,</p>
               <p className="font-bold">Ketua MPK SMK Negeri 13 Bandung</p>
               <div className="h-16"></div>
-              <p className="underline font-bold">(.......................................................)</p>
+              <p className="underline font-bold">({meeting.leaderName || 'Presidium Sidang'})</p>
               <p className="text-[10px] text-zinc-600">NIS. MPK-13/2026</p>
             </div>
             <div>
               <p>Bandung, {new Date().toISOString().split('T')[0]}</p>
               <p className="font-bold">Notulis / Sekretaris Sidang</p>
               <div className="h-16"></div>
-              <p className="underline font-bold">Davin Maritza</p>
+              <p className="underline font-bold">{meeting.noteTakerName || 'Davin Maritza'}</p>
               <p className="text-[10px] text-zinc-600">Notulis Pleno Majelis</p>
             </div>
           </div>
@@ -638,15 +984,33 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
 
       {/* Screen View: Executive Document Surface */}
       <div className="bg-[#0e0f14] border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-7">
+        {/* Header & Control Actions */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 border-b border-white/[0.06] pb-6">
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-mono uppercase tracking-[0.15em] px-2.5 py-0.5 rounded-full bg-white/[0.05] text-zinc-300 border border-white/[0.08]">
                 DOKUMEN SIDANG RESMI
               </span>
-              <span className="text-[11px] font-mono text-zinc-500">TATA NASKAH DINAS MPK 13</span>
+              <span className="text-[11px] font-mono text-zinc-400 px-2 py-0.5 rounded bg-zinc-900 border border-white/[0.06]">
+                {meeting.formatStandard === 'RISALAH_PADAT'
+                  ? 'Risalah Padat & Ketetapan Inti'
+                  : meeting.formatStandard === 'RAPAT_KERJA_ANGGARAN'
+                  ? 'Format Anggaran Kas & Belanja'
+                  : meeting.formatStandard === 'LPJ_EVALUASI'
+                  ? 'Format Evaluasi LPJ'
+                  : 'Tata Naskah Dinas MPK 13'}
+              </span>
+              {meeting.lastSavedAt && (
+                <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                  Draf Tersimpan: {meeting.lastSavedAt}
+                </span>
+              )}
             </div>
-            <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight leading-snug">{meeting.title}</h1>
+
+            <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight leading-snug">
+              {meeting.title}
+            </h1>
+
             <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400 font-mono text-[11px] pt-0.5">
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-zinc-500" />
@@ -667,57 +1031,94 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             </div>
           </div>
 
-          {/* 4 Multi-Format Export Actions */}
+          {/* Primary Action Toolbar */}
           <div className="flex flex-wrap items-center gap-2">
-            {/* Format 1: Cetak PDF */}
+            {/* Action 1: Modifikasi Naskah & Format */}
+            <button
+              onClick={openModificationModal}
+              title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#1b1e2a] hover:bg-[#232738] text-white font-semibold rounded-xl text-xs border border-white/15 shadow-sm active:scale-[0.985] transition-all cursor-pointer"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-sky-400" />
+              <span>Modifikasi Format</span>
+            </button>
+
+            {/* Action 2: Simpan Draf Online */}
+            <button
+              onClick={handleManualSaveDraft}
+              title="Simpan status draf saat ini secara online ke penyimpanan lokal"
+              className="flex items-center gap-1.5 px-3 py-2 bg-[#14161f] hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+            >
+              <Save className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Simpan Draf</span>
+            </button>
+
+            {/* Export 1: Cetak PDF */}
             <button
               onClick={() => window.print()}
               title="Cetak langsung atau simpan dokumen PDF resmi ber-kop sekolah"
               className="flex items-center gap-1.5 px-3.5 py-2 bg-white text-zinc-950 font-semibold rounded-xl text-xs shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Cetak PDF</span>
+              <span>PDF</span>
             </button>
 
-            {/* Format 2: Unduh Dokumen Word (.doc) */}
+            {/* Export 2: Unduh Word (.doc) */}
             <button
               onClick={exportWord}
               title="Unduh dokumen Microsoft Word (.doc) lengkap dengan kop dan tabel keputusan"
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#161922] hover:bg-[#1e2330] text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 bg-[#161922] hover:bg-[#1e2330] text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-sky-400" />
-              <span>Unduh Word</span>
-              <span className="text-[10px] px-1 py-0.2 rounded bg-sky-500/20 text-sky-300 font-mono">.DOC</span>
+              <span>Word</span>
             </button>
 
-            {/* Format 3: Unduh Dokumen Plain Text (.txt) */}
+            {/* Export 3: Unduh Excel (.xls) */}
+            <button
+              onClick={exportExcel}
+              title="Unduh tabel rekapitulasi keputusan dan penugasan sidang dalam format Excel (.xls)"
+              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Excel</span>
+            </button>
+
+            {/* Export 4: Unduh TXT */}
             <button
               onClick={exportTxt}
               title="Unduh format teks polos terstruktur (.txt)"
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#14161d] hover:bg-zinc-800 text-zinc-300 border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-2 bg-[#14161d] hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-white/[0.08] rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
             >
-              <FileCode className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Unduh TXT</span>
+              <FileCode className="w-3.5 h-3.5" />
+              <span>TXT</span>
             </button>
 
-            {/* Format 4: Pesan Versi WhatsApp (WA) */}
+            {/* Export 5: Kirim ke WhatsApp Langsung */}
+            <button
+              onClick={shareToWhatsAppDirect}
+              title="Kirim naskah risalah langsung ke aplikasi WhatsApp / WhatsApp Web"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#0d2a1d] hover:bg-[#133d2a] text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+            >
+              <Send className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Kirim ke WA</span>
+            </button>
+
+            {/* Pratinjau Pesan WA */}
             <button
               onClick={() => setShowWaModal(true)}
-              title="Buka pratinjau pesan teks format WhatsApp dengan tombol 1-klik salin"
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-semibold active:scale-[0.985] transition-all cursor-pointer"
+              title="Buka pratinjau pesan teks format WhatsApp"
+              className="p-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-white border border-white/[0.08] rounded-xl text-xs transition-all cursor-pointer"
             >
               <Share2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Pesan Versi WA</span>
             </button>
 
-            {/* Salin Markdown Cepat */}
+            {/* Salin MD */}
             <button
               onClick={exportMarkdown}
-              title="Salin naskah Markdown ke clipboard"
-              className="flex items-center gap-1.5 px-3 py-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-white/[0.06] rounded-xl text-xs font-mono active:scale-[0.985] transition-all cursor-pointer"
+              title="Salin naskah Markdown"
+              className="p-2 bg-black/40 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-white/[0.06] rounded-xl text-xs transition-all cursor-pointer"
             >
               {copiedMd ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedMd ? 'Disalin' : 'MD'}</span>
             </button>
           </div>
         </div>
@@ -746,7 +1147,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
           <div className="p-5 bg-black/40 border border-white/[0.06] rounded-2xl">
             <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-sans">
               {meeting.executiveSummary ||
-                'Belum ada ringkasan eksekutif. Tekan "Rumuskan Risalah Sidang" pada tab transkripsi untuk merumuskan risalah otomatis.'}
+                'Belum ada ringkasan eksekutif. Anda dapat menambahkannya melalui tombol "Modifikasi Format" atau memproses transkrip audio.'}
             </p>
           </div>
         </div>
@@ -805,6 +1206,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm font-medium text-white">{dec.decisionText}</p>
+                  {dec.rationale && (
+                    <p className="text-[11px] text-zinc-400 italic">Pertimbangan: {dec.rationale}</p>
+                  )}
                 </div>
                 <span className="text-[10px] text-zinc-500 font-mono shrink-0">{dec.date}</span>
               </div>
@@ -918,9 +1322,9 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
         </div>
       </div>
 
-      {/* MODAL: Pratinjau Format Pesan WhatsApp */}
+      {/* MODAL 1: Pratinjau Pesan WhatsApp */}
       {showWaModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
           <div className="bg-[#101217] border border-white/15 rounded-3xl max-w-2xl w-full p-6 sm:p-7 shadow-2xl space-y-5 flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
               <div className="flex items-center gap-2.5">
@@ -953,7 +1357,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             {/* Modal Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
               <span className="text-[11px] text-zinc-500 font-mono">
-                Format otomatis: bold (*), bullet (▪️/•), icon status
+                Format otomatis: bold (*), bullet (▪️/•), status icon
               </span>
 
               <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -966,11 +1370,437 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 </button>
 
                 <button
-                  onClick={openWhatsAppWeb}
+                  onClick={shareToWhatsAppDirect}
                   className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-semibold border border-white/10 transition-all cursor-pointer active:scale-[0.985]"
                 >
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
-                  <span>Buka WA Web</span>
+                  <Send className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Kirim Langsung</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: MODIFIKASI FORMAT & NASKAH SIDANG LENGKAP */}
+      {isModifying && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in overflow-y-auto">
+          <div className="bg-[#0f1015] border border-white/15 rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl space-y-6 max-h-[92vh] flex flex-col my-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                  <SlidersHorizontal className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
+                    Modifikasi Format &amp; Naskah Risalah Sidang
+                  </h3>
+                  <p className="text-xs text-zinc-400 font-sans">
+                    Sesuaikan standar tata naskah dinas, ubah rincian agenda, keputusan pleno, dan komitmen penugasan
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsModifying(false)}
+                className="text-zinc-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body: Scrollable Form */}
+            <div className="flex-1 overflow-y-auto space-y-6 pr-1">
+              {/* Standar Format Selector */}
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-zinc-300 block">
+                  Pilih Standar Format Tata Naskah:
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                  {[
+                    {
+                      key: 'TATA_NASKAH_DINAS' as MeetingFormatStandard,
+                      title: 'Tata Naskah Dinas MPK 13',
+                      desc: 'Format Berita Acara & SK Resmi lengkap',
+                    },
+                    {
+                      key: 'RISALAH_PADAT' as MeetingFormatStandard,
+                      title: 'Risalah Padat & Ketetapan',
+                      desc: 'Format ringkas fokus keputusan cepat',
+                    },
+                    {
+                      key: 'RAPAT_KERJA_ANGGARAN' as MeetingFormatStandard,
+                      title: 'Rapat Kerja & Anggaran Kas',
+                      desc: 'Fokus alokasi dana dan belanja',
+                    },
+                    {
+                      key: 'LPJ_EVALUASI' as MeetingFormatStandard,
+                      title: 'Evaluasi & Pertanggungjawaban',
+                      desc: 'Fokus capaian dan kendala komisi',
+                    },
+                  ].map((fmt) => (
+                    <button
+                      key={fmt.key}
+                      type="button"
+                      onClick={() => setEditFormatStandard(fmt.key)}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                        editFormatStandard === fmt.key
+                          ? 'bg-sky-950/40 border-sky-500/60 ring-1 ring-sky-500/30'
+                          : 'bg-[#14161f] border-white/[0.06] hover:border-white/15'
+                      }`}
+                    >
+                      <p className="text-xs font-semibold text-white">{fmt.title}</p>
+                      <p className="text-[10px] text-zinc-400 mt-1">{fmt.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* General Metadata Form */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-zinc-400">Judul / Agenda Sidang:</label>
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-zinc-400">Waktu &amp; Tanggal:</label>
+                  <input
+                    type="text"
+                    value={editDate}
+                    onChange={(e) => setEditDate(e.target.value)}
+                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-zinc-400">Ruangan / Tempat:</label>
+                  <input
+                    type="text"
+                    value={editLocation}
+                    onChange={(e) => setEditLocation(e.target.value)}
+                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-zinc-400">Penyelenggara:</label>
+                  <input
+                    type="text"
+                    value={editOrganizer}
+                    onChange={(e) => setEditOrganizer(e.target.value)}
+                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-zinc-400">Pimpinan Sidang (Presidium):</label>
+                  <input
+                    type="text"
+                    value={editLeaderName}
+                    onChange={(e) => setEditLeaderName(e.target.value)}
+                    placeholder="Ketua MPK 13"
+                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-zinc-400">Notulis / Sekretaris Sidang:</label>
+                  <input
+                    type="text"
+                    value={editNoteTakerName}
+                    onChange={(e) => setEditNoteTakerName(e.target.value)}
+                    placeholder="Davin Maritza"
+                    className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20"
+                  />
+                </div>
+              </div>
+
+              {/* Catatan Pengarah Sekretaris */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-zinc-300">
+                  Catatan Pengarah Notulis (Arahan Format &amp; Diksi):
+                </label>
+                <textarea
+                  value={editSecretaryNotes}
+                  onChange={(e) => setEditSecretaryNotes(e.target.value)}
+                  rows={2}
+                  className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 font-sans"
+                />
+              </div>
+
+              {/* Ringkasan Eksekutif */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-zinc-300">
+                  Ringkasan Eksekutif Hasil Sidang:
+                </label>
+                <textarea
+                  value={editExecutiveSummary}
+                  onChange={(e) => setEditExecutiveSummary(e.target.value)}
+                  rows={4}
+                  className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/20 font-sans leading-relaxed"
+                />
+              </div>
+
+              {/* Agendas Editor */}
+              <div className="space-y-3 border-t border-white/[0.06] pt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-zinc-300">
+                    Pokok Bahasan &amp; Agenda Pleno ({editAgendas.length})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddAgenda}
+                    className="flex items-center gap-1 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold rounded-lg border border-white/10 transition-all cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Tambah Agenda</span>
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {editAgendas.map((ag, agIdx) => (
+                    <div key={agIdx} className="p-4 bg-black/40 border border-white/[0.06] rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <input
+                          type="text"
+                          value={ag.title}
+                          onChange={(e) => {
+                            const updated = [...editAgendas];
+                            updated[agIdx].title = e.target.value;
+                            setEditAgendas(updated);
+                          }}
+                          className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1.5 text-xs text-white font-semibold"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveAgenda(agIdx)}
+                          className="text-zinc-500 hover:text-rose-400 p-1 cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      <div className="space-y-1.5 pl-2">
+                        {ag.discussionPoints.map((pt, ptIdx) => (
+                          <div key={ptIdx} className="flex items-center gap-2">
+                            <span className="text-zinc-600 text-xs">•</span>
+                            <input
+                              type="text"
+                              value={pt}
+                              onChange={(e) => {
+                                const updated = [...editAgendas];
+                                updated[agIdx].discussionPoints[ptIdx] = e.target.value;
+                                setEditAgendas(updated);
+                              }}
+                              className="flex-1 bg-black/40 border border-white/[0.06] rounded-lg px-2.5 py-1 text-xs text-zinc-300"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveDiscussionPoint(agIdx, ptIdx)}
+                              className="text-zinc-600 hover:text-rose-400 p-0.5 cursor-pointer"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => handleAddDiscussionPoint(agIdx)}
+                          className="text-[10px] text-sky-400 hover:underline flex items-center gap-1 pt-1 cursor-pointer"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Tambah Poin Pembahasan</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Decisions Editor */}
+              <div className="space-y-3 border-t border-white/[0.06] pt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-zinc-300">
+                    Ketetapan &amp; Keputusan Resmi Majelis ({editDecisions.length})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddModalDecision}
+                    className="flex items-center gap-1 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold rounded-lg border border-white/10 transition-all cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Tambah Ketetapan</span>
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {editDecisions.map((dec, decIdx) => (
+                    <div key={dec.id} className="p-3 bg-black/40 border border-white/[0.06] rounded-xl flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                      <input
+                        type="text"
+                        value={dec.number}
+                        onChange={(e) => {
+                          const updated = [...editDecisions];
+                          updated[decIdx].number = e.target.value;
+                          setEditDecisions(updated);
+                        }}
+                        className="w-full sm:w-36 bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs font-mono text-zinc-300"
+                      />
+                      <input
+                        type="text"
+                        value={dec.decisionText}
+                        onChange={(e) => {
+                          const updated = [...editDecisions];
+                          updated[decIdx].decisionText = e.target.value;
+                          setEditDecisions(updated);
+                        }}
+                        className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1 text-xs text-white"
+                      />
+                      <select
+                        value={dec.status}
+                        onChange={(e) => {
+                          const updated = [...editDecisions];
+                          updated[decIdx].status = e.target.value as Decision['status'];
+                          setEditDecisions(updated);
+                        }}
+                        className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
+                      >
+                        <option value="DISAHKAN">DISAHKAN</option>
+                        <option value="DITUNDA">DITUNDA</option>
+                        <option value="DITOLAK">DITOLAK</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveModalDecision(dec.id)}
+                        className="text-zinc-500 hover:text-rose-400 p-1 cursor-pointer shrink-0"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Items Editor */}
+              <div className="space-y-3 border-t border-white/[0.06] pt-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-zinc-300">
+                    Tindak Lanjut &amp; Penugasan Komisi ({editActionItems.length})
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleAddModalActionItem}
+                    className="flex items-center gap-1 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[11px] font-semibold rounded-lg border border-white/10 transition-all cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Tambah Tugas</span>
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {editActionItems.map((act, actIdx) => (
+                    <div key={act.id} className="p-3 bg-black/40 border border-white/[0.06] rounded-xl flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                      <input
+                        type="text"
+                        value={act.description}
+                        onChange={(e) => {
+                          const updated = [...editActionItems];
+                          updated[actIdx].description = e.target.value;
+                          setEditActionItems(updated);
+                        }}
+                        placeholder="Rincian tugas..."
+                        className="flex-1 bg-black/60 border border-white/[0.08] rounded-lg px-2.5 py-1 text-xs text-white"
+                      />
+                      <input
+                        type="text"
+                        value={act.assignee}
+                        onChange={(e) => {
+                          const updated = [...editActionItems];
+                          updated[actIdx].assignee = e.target.value;
+                          setEditActionItems(updated);
+                        }}
+                        placeholder="PIC"
+                        className="w-full sm:w-32 bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
+                      />
+                      <input
+                        type="date"
+                        value={act.dueDate}
+                        onChange={(e) => {
+                          const updated = [...editActionItems];
+                          updated[actIdx].dueDate = e.target.value;
+                          setEditActionItems(updated);
+                        }}
+                        className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
+                      />
+                      <select
+                        value={act.status}
+                        onChange={(e) => {
+                          const updated = [...editActionItems];
+                          updated[actIdx].status = e.target.value as ActionItem['status'];
+                          setEditActionItems(updated);
+                        }}
+                        className="bg-black/60 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-zinc-300 font-mono"
+                      >
+                        <option value="PENDING">PENDING</option>
+                        <option value="IN_PROGRESS">PROSES</option>
+                        <option value="COMPLETED">SELESAI</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveModalActionItem(act.id)}
+                        className="text-zinc-500 hover:text-rose-400 p-1 cursor-pointer shrink-0"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/[0.08] pt-4">
+              <button
+                type="button"
+                onClick={handleAiReformat}
+                disabled={isAiReformatting || !meeting.transcript || meeting.transcript.length === 0}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-950/40 hover:bg-sky-900/50 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-semibold transition-all disabled:opacity-40 cursor-pointer"
+              >
+                {isAiReformatting ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>AI Sedang Menyusun Ulang Sesuai Format...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Format Ulang Otomatis via AI</span>
+                  </>
+                )}
+              </button>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setIsModifying(false)}
+                  className="flex-1 sm:flex-none px-4 py-2.5 bg-transparent hover:bg-white/[0.05] text-zinc-400 hover:text-white rounded-xl text-xs font-medium transition-all cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleApplyModifications}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-white text-zinc-950 hover:bg-zinc-200 font-bold rounded-xl text-xs shadow-md transition-all cursor-pointer active:scale-[0.985]"
+                >
+                  <Save className="w-3.5 h-3.5 text-zinc-950" />
+                  <span>Terapkan Perubahan Format &amp; Naskah</span>
                 </button>
               </div>
             </div>

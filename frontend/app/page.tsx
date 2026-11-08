@@ -22,6 +22,7 @@ import {
   Upload,
   Compass,
   FileCheck,
+  Trash2,
 } from 'lucide-react';
 
 const STORAGE_KEY = 'notulenjmm_meetings_v2';
@@ -75,14 +76,73 @@ export default function Home() {
     setMeetings((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
   };
 
+  const handleDeleteMeeting = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMeetings((prev) => prev.filter((m) => m.id !== id));
+    if (activeMeetingId === id) {
+      const remaining = meetings.filter((m) => m.id !== id);
+      setActiveMeetingId(remaining.length > 0 ? remaining[0].id : null);
+    }
+  };
+
+  // Save Voice Note / Meeting as Online Draft
+  const handleSaveDraft = (draft: {
+    title: string;
+    secretaryNotes: string;
+    durationSeconds: number;
+    audioBlob?: Blob | null;
+    audioUrl?: string | null;
+  }) => {
+    const draftId = `draft-${Date.now()}`;
+    const timestamp =
+      new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+    const newDraft: Meeting = {
+      id: draftId,
+      title: draft.title,
+      date: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) + ' WIB',
+      location: 'Ruang Sidang Majelis / Multimedia SMK Negeri 13 Bandung',
+      organizer: 'MPK SMK Negeri 13 Bandung',
+      status: 'DRAFT',
+      durationSeconds: draft.durationSeconds,
+      secretaryNotes: draft.secretaryNotes,
+      formatStandard: 'TATA_NASKAH_DINAS',
+      lastSavedAt: timestamp,
+      audioUrl: draft.audioUrl || undefined,
+      attendees: [
+        { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
+        { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
+      ],
+      transcript: [],
+      agendas: [
+        {
+          title: 'Draf Agenda Rapat',
+          discussionPoints: [
+            'Draf rekaman suara voice note tersimpan secara online.',
+            `Catatan pengarah: ${draft.secretaryNotes.slice(0, 80)}...`,
+          ],
+        },
+      ],
+      decisions: [],
+      actionItems: [],
+    };
+
+    setMeetings((prev) => [newDraft, ...prev]);
+    setActiveMeetingId(draftId);
+    setActiveTab('notulen');
+  };
+
   const handleDiarizationComplete = async (
     segments: AudioSegment[],
     duration: number,
     meetingTitle?: string,
-    secretaryNotes?: string
+    secretaryNotes?: string,
+    audioUrl?: string
   ) => {
     const title = meetingTitle?.trim() || 'Sidang Pleno MPK SMK Negeri 13 Bandung';
     const newMeetId = `meet-${Date.now()}`;
+    const timestamp =
+      new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
 
     const newMeet: Meeting = {
       id: newMeetId,
@@ -93,6 +153,9 @@ export default function Home() {
       status: 'TRANSCRIBING',
       durationSeconds: duration,
       secretaryNotes: secretaryNotes,
+      formatStandard: 'TATA_NASKAH_DINAS',
+      lastSavedAt: timestamp,
+      audioUrl: audioUrl,
       attendees: [
         { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
         { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
@@ -132,6 +195,7 @@ export default function Home() {
           agendas: result.agendas.length > 0 ? result.agendas : newMeet.agendas,
           decisions: result.decisions,
           actionItems: result.actionItems,
+          lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
         };
 
         setMeetings((prev) => prev.map((m) => (m.id === newMeetId ? finalizedMeet : m)));
@@ -164,6 +228,7 @@ export default function Home() {
         agendas: result.agendas.length > 0 ? result.agendas : activeMeeting.agendas,
         decisions: result.decisions.length > 0 ? result.decisions : activeMeeting.decisions,
         actionItems: result.actionItems.length > 0 ? result.actionItems : activeMeeting.actionItems,
+        lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
       };
 
       handleUpdateActiveMeeting(updatedMeeting);
@@ -185,6 +250,8 @@ export default function Home() {
       durationSeconds: 0,
       secretaryNotes:
         'Susun kata-kata secara formal dan lugas berstandar MPK SMK Negeri 13 Bandung. Tonjolkan keputusan resmi, alokasi anggaran dana jika ada, serta daftar penugasan PIC dan batas waktu.',
+      formatStandard: 'TATA_NASKAH_DINAS',
+      lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
       attendees: [
         { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
         { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
@@ -222,6 +289,8 @@ export default function Home() {
       status: 'DRAFT',
       durationSeconds: 0,
       secretaryNotes: session.prompt || 'Susunan formal risalah sidang.',
+      formatStandard: 'TATA_NASKAH_DINAS',
+      lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
       attendees: [
         { id: 'att-1', name: 'Davin Maritza', role: 'Leader', present: true },
         { id: 'att-2', name: 'Notulis Sidang', role: 'Note Taker', present: true },
@@ -322,9 +391,9 @@ export default function Home() {
             {/* Meeting List Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
               <div>
-                <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">Arsip Notulen &amp; Risalah Sidang</h2>
+                <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">Arsip Notulen &amp; Draf Sidang</h2>
                 <p className="text-xs text-zinc-400 mt-0.5 font-sans">
-                  Dokumen resmi persidangan Majelis Perwakilan Kelas SMK Negeri 13 Bandung
+                  Dokumen resmi persidangan &amp; draf aktif Majelis Perwakilan Kelas SMK Negeri 13 Bandung
                 </p>
               </div>
 
@@ -346,7 +415,7 @@ export default function Home() {
                 <div className="space-y-2 max-w-md mx-auto">
                   <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">Belum Ada Sesi Sidang Tersimpan</h3>
                   <p className="text-xs text-zinc-400 leading-relaxed font-sans">
-                    Sistem siap mencatat dan merumuskan risalah sidang pleno majelis. Silakan unggah berkas audio sekretaris atau susun format agenda di Studio.
+                    Sistem siap merekam voice note sekretaris dan merumuskan risalah sidang. Silakan rekam suara sidang atau unggah berkas audio di Studio.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -354,8 +423,8 @@ export default function Home() {
                     onClick={() => setActiveTab('record')}
                     className="flex items-center gap-2 px-4 py-2.5 bg-white text-zinc-950 rounded-xl text-xs font-bold shadow-md hover:bg-zinc-200 active:scale-[0.985] transition-all cursor-pointer"
                   >
-                    <Upload className="w-4 h-4" />
-                    <span>Unggah Berkas Audio</span>
+                    <Mic className="w-4 h-4 text-rose-500" />
+                    <span>Rekam Voice Note Sidang</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('craft')}
@@ -388,14 +457,21 @@ export default function Home() {
                             className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full border ${
                               meet.status === 'FINALIZED'
                                 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                : meet.status === 'DRAFT'
+                                ? 'bg-amber-500/10 text-amber-300 border-amber-500/25 font-semibold'
                                 : meet.status === 'TRANSCRIBING'
                                 ? 'bg-sky-500/10 text-sky-400 border-sky-500/20'
                                 : 'bg-zinc-900 text-zinc-400 border-white/[0.06]'
                             }`}
                           >
-                            {meet.status}
+                            {meet.status === 'DRAFT' ? 'DRAF ONLINE' : meet.status}
                           </span>
-                          <span className="text-[11px] text-zinc-500 font-mono">ID: {meet.id}</span>
+                          {meet.lastSavedAt && (
+                            <span className="text-[10px] font-mono text-zinc-400">
+                              Disimpan: {meet.lastSavedAt}
+                            </span>
+                          )}
+                          <span className="text-[11px] text-zinc-600 font-mono">ID: {meet.id}</span>
                         </div>
 
                         <h3 className="text-sm font-semibold text-white tracking-tight">{meet.title}</h3>
@@ -429,8 +505,15 @@ export default function Home() {
                           Rekam
                         </button>
                         <button className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border border-white/10 cursor-pointer">
-                          <span>Buka Risalah</span>
+                          <span>{meet.status === 'DRAFT' ? 'Lanjutkan Draf' : 'Buka Risalah'}</span>
                           <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={(e) => handleDeleteMeeting(meet.id, e)}
+                          title="Hapus Sesi / Draf Sidang"
+                          className="p-2 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -441,10 +524,13 @@ export default function Home() {
           </div>
         )}
 
-        {/* TAB 2: STUDIO REKAM */}
+        {/* TAB 2: STUDIO REKAM VOICE NOTE */}
         {activeTab === 'record' && (
           <div className="space-y-6">
-            <AudioRecorderStudio onDiarizationComplete={handleDiarizationComplete} />
+            <AudioRecorderStudio
+              onDiarizationComplete={handleDiarizationComplete}
+              onSaveDraft={handleSaveDraft}
+            />
           </div>
         )}
 
