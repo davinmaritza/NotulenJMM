@@ -1,6 +1,6 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Globe,
   Smartphone,
@@ -245,15 +245,39 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
   const [newPillInput, setNewPillInput] = useState<string>('');
   const [showAddPill, setShowAddPill] = useState<boolean>(false);
 
-  // Save to localStorage
-  const saveConfig = (newConfig: CraftStudioConfig) => {
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clean up debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Save to localStorage with debounce for fast typing without lag
+  const saveConfig = (newConfig: CraftStudioConfig, immediate: boolean = false) => {
     setConfig(newConfig);
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newConfig));
-      setSaveStatus('Tersimpan');
-      setTimeout(() => setSaveStatus(''), 2000);
-    } catch (e) {
-      console.warn('Failed to save to localStorage', e);
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+
+    const persist = () => {
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newConfig));
+        setSaveStatus('Tersimpan');
+        setTimeout(() => setSaveStatus(''), 1500);
+      } catch (e) {
+        console.warn('Failed to save to localStorage', e);
+      }
+    };
+
+    if (immediate) {
+      persist();
+    } else {
+      debounceTimerRef.current = setTimeout(persist, 350);
     }
   };
 
@@ -265,27 +289,31 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
     setActivePreset(presetKey);
     setSelectedCardId(target.cards[0].id);
     setEditingCardIndex(null);
-    saveConfig(target);
+    saveConfig(target, true);
   };
 
   const handleResetToPreset = () => {
     handleApplyPreset(activePreset === 'custom' ? 'mpk' : activePreset);
   };
 
-  // Card update handler
+  // Card update handler (debounced persistence for typing smoothness)
   const handleUpdateCard = (index: number, field: 'title' | 'description' | 'iconName', value: string) => {
     const updatedCards = [...config.cards];
     updatedCards[index] = {
       ...updatedCards[index],
       [field]: value,
     };
-    saveConfig({ ...config, cards: updatedCards });
+    saveConfig({ ...config, cards: updatedCards }, field === 'iconName');
     setActivePreset('custom');
   };
 
-  // Add new custom card handler
+  const customIdSeedRef = useRef(1);
+
+  // Add new custom card handler (immediate persistence)
   const handleAddNewCustomCard = () => {
-    const newId = `custom-${Date.now()}`;
+    const nextSeed = customIdSeedRef.current + 1;
+    customIdSeedRef.current = nextSeed;
+    const newId = `custom-agenda-${nextSeed}-${config.cards.length + 1}`;
     const newCard: CardConfig = {
       id: newId,
       iconName: 'Sliders',
@@ -294,18 +322,18 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
       isCustom: true,
     };
     const updatedCards = [...config.cards, newCard];
-    saveConfig({ ...config, cards: updatedCards });
+    saveConfig({ ...config, cards: updatedCards }, true);
     setSelectedCardId(newId);
     setEditingCardIndex(updatedCards.length - 1);
     setActivePreset('custom');
   };
 
-  // Delete card handler
+  // Delete card handler (immediate persistence)
   const handleDeleteCard = (indexToDelete: number) => {
     if (config.cards.length <= 1) return;
     const cardToDelete = config.cards[indexToDelete];
     const updatedCards = config.cards.filter((_, idx) => idx !== indexToDelete);
-    saveConfig({ ...config, cards: updatedCards });
+    saveConfig({ ...config, cards: updatedCards }, true);
     if (selectedCardId === cardToDelete.id) {
       setSelectedCardId(updatedCards[0]?.id || '');
     }
@@ -511,7 +539,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
       </div>
 
       {/* Main Studio Frame (Double-Bezel Hardware Architecture) */}
-      <div className="bg-white border-[2.5px] border-black rounded-2xl p-6 sm:p-9 relative space-y-8 shadow-[6px_6px_0px_0px_#000]">
+      <div className="bg-white border-[2.5px] border-black rounded-2xl p-3.5 sm:p-7 md:p-9 relative space-y-5 sm:space-y-8 shadow-[4px_4px_0px_0px_#000] sm:shadow-[6px_6px_0px_0px_#000]">
         {/* Hero Header */}
         <div className="text-center space-y-2 max-w-2xl mx-auto">
           {isEditMode ? (
@@ -603,7 +631,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           </div>
 
           {/* Cards Grid - Responsive Neo-Brutalist Pop-Art Colors */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5">
             {config.cards.map((card, idx) => {
               const isSelected = card.id === selectedCardId;
               const cardColors = [
@@ -620,25 +648,25 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 <div
                   key={card.id}
                   onClick={() => !isEditMode && setSelectedCardId(card.id)}
-                  className={`relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between min-h-[160px] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 ${
+                  className={`relative p-3.5 sm:p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between min-h-[125px] sm:min-h-[160px] sm:hover:-translate-x-0.5 sm:hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 touch-manipulation select-none ${
                     isSelected
-                      ? `${theme.bg} border-[2.5px] border-black shadow-[5px_5px_0px_0px_#000]`
-                      : 'bg-[#FFFDF5] border-2 border-black/80 hover:border-black hover:bg-white shadow-[2.5px_2.5px_0px_0px_#000] hover:shadow-[4px_4px_0px_0px_#000]'
+                      ? `${theme.bg} border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] sm:shadow-[5px_5px_0px_0px_#000]`
+                      : 'bg-[#FFFDF5] border-2 border-black/80 hover:border-black hover:bg-white shadow-[2px_2px_0px_0px_#000] sm:shadow-[2.5px_2.5px_0px_0px_#000] sm:hover:shadow-[4px_4px_0px_0px_#000]'
                   }`}
                 >
                   {/* Top: Icon & Action Badges */}
-                  <div className="space-y-3">
+                  <div className="space-y-2.5 sm:space-y-3">
                     <div className="flex items-start justify-between gap-2">
                       <div
-                        className={`w-11 h-11 rounded-xl flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_#000] ${
+                        className={`w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] shrink-0 ${
                           isSelected ? `${theme.iconBg} text-black` : 'bg-white text-black'
                         }`}
                       >
-                        {renderIcon(card.iconName, 'w-5 h-5 stroke-[2.2]')}
+                        {renderIcon(card.iconName, 'w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]')}
                       </div>
 
                       {/* Right Top Actions: Custom Badge, Edit Button & Selection Checkmark */}
-                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                      <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap justify-end shrink-0">
                         {(card.isCustom || card.id.includes('kustom') || card.id.includes('custom')) && (
                           <span className="text-[9px] font-black uppercase tracking-wider bg-black text-[#FFE600] px-1.5 py-0.5 rounded border border-black shadow-[1px_1px_0px_0px_#000]">
                             Kustom
@@ -653,7 +681,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                             setEditingCardIndex(editingCardIndex === idx ? null : idx);
                           }}
                           title="Kustomisasi judul, rincian, dan ikon kartu ini"
-                          className={`flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-lg border-2 border-black transition-all shadow-[1.5px_1.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 cursor-pointer ${
+                          className={`flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-lg border-2 border-black transition-all shadow-[1.5px_1.5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shrink-0 ${
                             editingCardIndex === idx
                               ? 'bg-[#FF6B6B] text-black'
                               : 'bg-white hover:bg-[#FFD93D] text-black'
@@ -664,8 +692,8 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                         </button>
 
                         {isSelected && (
-                          <div className="w-6 h-6 rounded-lg bg-black text-white flex items-center justify-center border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
-                            <Check className="w-3.5 h-3.5 stroke-[3]" />
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-black text-white flex items-center justify-center border-2 border-black shadow-[1px_1px_0px_0px_#000] sm:shadow-[1.5px_1.5px_0px_0px_#000] shrink-0">
+                            <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3]" />
                           </div>
                         )}
                       </div>
@@ -722,8 +750,8 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                       </div>
                     ) : (
                       <div>
-                        <h3 className="text-sm font-black text-black tracking-tight">{card.title}</h3>
-                        <p className="text-xs text-zinc-800 font-medium mt-1 leading-snug line-clamp-2">
+                        <h3 className="text-xs sm:text-sm font-black text-black tracking-tight">{card.title}</h3>
+                        <p className="text-[11px] sm:text-xs text-zinc-800 font-medium mt-1 leading-snug line-clamp-2">
                           {card.description}
                         </p>
                       </div>
@@ -737,19 +765,19 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
             <button
               type="button"
               onClick={handleAddNewCustomCard}
-              className="p-5 rounded-2xl border-2 border-dashed border-black/80 hover:border-black bg-[#FFFDF5] hover:bg-[#FEF08A]/40 text-black flex flex-col justify-between min-h-[160px] shadow-[2.5px_2.5px_0px_0px_#000] hover:shadow-[4.5px_4.5px_0px_0px_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 group cursor-pointer text-left"
+              className="p-3.5 sm:p-5 rounded-2xl border-2 border-dashed border-black/80 hover:border-black bg-[#FFFDF5] hover:bg-[#FEF08A]/40 text-black flex flex-col justify-between min-h-[125px] sm:min-h-[160px] shadow-[2px_2px_0px_0px_#000] sm:shadow-[2.5px_2.5px_0px_0px_#000] transition-all sm:hover:-translate-x-0.5 sm:hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 group cursor-pointer text-left touch-manipulation"
             >
               <div className="flex items-center justify-between w-full">
-                <div className="w-11 h-11 rounded-xl bg-white group-hover:bg-[#FFD93D] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] transition-colors">
-                  <Plus className="w-5 h-5 stroke-[3] text-black" />
+                <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl bg-white group-hover:bg-[#FFD93D] border-2 border-black flex items-center justify-center shadow-[1.5px_1.5px_0px_0px_#000] sm:shadow-[2px_2px_0px_0px_#000] transition-colors shrink-0">
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3] text-black" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-wider bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">
+                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">
                   + Baru
                 </span>
               </div>
-              <div className="mt-3">
-                <h3 className="text-sm font-black text-black tracking-tight">+ Opsi Custom Card</h3>
-                <p className="text-xs text-zinc-700 font-medium mt-1 leading-snug">
+              <div className="mt-2 sm:mt-3">
+                <h3 className="text-xs sm:text-sm font-black text-black tracking-tight">+ Opsi Custom Card</h3>
+                <p className="text-[11px] sm:text-xs text-zinc-700 font-medium mt-0.5 sm:mt-1 leading-snug">
                   Buat format agenda baru sesuai kebutuhan musyawarah Anda
                 </p>
               </div>
@@ -758,41 +786,41 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
           {/* Card Inline Customization Panel (Hardware Drawer) */}
           {editingCardIndex !== null && config.cards[editingCardIndex] && (
-            <div className="bg-[#FFFDF5] border-[2.5px] border-black rounded-2xl p-4 sm:p-5 shadow-[5px_5px_0px_0px_#000] space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black/15 pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-xl bg-[#FFD93D] border-2 border-black flex items-center justify-center font-black text-xs shadow-[1.5px_1.5px_0px_0px_#000]">
+            <div className="bg-[#FFFDF5] border-[2.5px] border-black rounded-2xl p-3.5 sm:p-5 shadow-[4px_4px_0px_0px_#000] sm:shadow-[5px_5px_0px_0px_#000] space-y-3.5 sm:space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b-2 border-black/15 pb-3">
+                <div className="flex items-start sm:items-center gap-2">
+                  <span className="w-7 h-7 rounded-xl bg-[#FFD93D] border-2 border-black flex items-center justify-center font-black text-xs shadow-[1.5px_1.5px_0px_0px_#000] shrink-0 mt-0.5 sm:mt-0">
                     <Sliders className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
-                  <div>
-                    <h4 className="text-xs sm:text-sm font-black text-black flex items-center gap-2">
-                      Opsi Custom Kartu:
-                      <span className="bg-[#FEF08A] px-2 py-0.5 rounded-lg border border-black shadow-[1px_1px_0px_0px_#000]">
+                  <div className="min-w-0">
+                    <h4 className="text-xs sm:text-sm font-black text-black flex items-center gap-1.5 flex-wrap">
+                      <span>Opsi Custom Kartu:</span>
+                      <span className="bg-[#FEF08A] px-2 py-0.5 rounded-lg border border-black shadow-[1px_1px_0px_0px_#000] truncate max-w-[220px]">
                         {config.cards[editingCardIndex].title || 'Tanpa Judul'}
                       </span>
                     </h4>
-                    <p className="text-[11px] text-zinc-600 font-medium">
+                    <p className="text-[10px] sm:text-[11px] text-zinc-600 font-medium">
                       Sesuaikan judul agenda, uraian pokok materi sidang, dan ikon kartu ini.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                   {config.cards.length > 2 && (
                     <button
                       type="button"
                       onClick={() => handleDeleteCard(editingCardIndex)}
-                      className="text-xs font-black text-rose-700 hover:text-black bg-rose-100 hover:bg-rose-200 border-2 border-black px-3 py-1.5 rounded-xl shadow-[2px_2px_0px_0px_#000] flex items-center gap-1.5 transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
+                      className="text-xs font-black text-rose-700 hover:text-black bg-rose-100 hover:bg-rose-200 border-2 border-black px-2.5 sm:px-3 py-1.5 rounded-xl shadow-[2px_2px_0px_0px_#000] flex items-center gap-1.5 transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
                       title="Hapus kartu ini dari daftar agenda"
                     >
                       <Trash2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                      <span>Hapus Kartu</span>
+                      <span>Hapus</span>
                     </button>
                   )}
                   <button
                     type="button"
                     onClick={() => setEditingCardIndex(null)}
-                    className="text-xs font-black text-black bg-[#A7F3D0] hover:bg-emerald-300 border-2 border-black px-4 py-1.5 rounded-xl shadow-[2px_2px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer flex items-center gap-1"
+                    className="text-xs font-black text-black bg-[#A7F3D0] hover:bg-emerald-300 border-2 border-black px-3.5 sm:px-4 py-1.5 rounded-xl shadow-[2px_2px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer flex items-center gap-1"
                   >
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                     <span>Selesai</span>
@@ -800,7 +828,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
                 {/* Input Judul Kartu */}
                 <div className="space-y-1.5 md:col-span-1">
                   <label
@@ -845,7 +873,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 <label className="text-[11px] font-black text-black uppercase tracking-wider block">
                   Pilih Ikon Kartu:
                 </label>
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {[
                     { name: 'Sliders', label: 'Custom / Opsi' },
                     { name: 'Sparkles', label: 'Aspirasi / Kustom' },
@@ -864,13 +892,13 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                         key={ico.name}
                         type="button"
                         onClick={() => handleUpdateCard(editingCardIndex, 'iconName', ico.name as CardConfig['iconName'])}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black text-xs font-black transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer ${
+                        className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border-2 border-black text-[11px] sm:text-xs font-black transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer touch-manipulation ${
                           isCurrent
                             ? 'bg-[#FFD93D] text-black shadow-[2px_2px_0px_0px_#000]'
                             : 'bg-white hover:bg-[#FEF08A] text-zinc-800 shadow-[1.5px_1.5px_0px_0px_#000]'
                         }`}
                       >
-                        {renderIcon(ico.name as CardConfig['iconName'], 'w-3.5 h-3.5 stroke-[2.5]')}
+                        {renderIcon(ico.name as CardConfig['iconName'], 'w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2.5]')}
                         <span>{ico.label}</span>
                       </button>
                     );
@@ -949,12 +977,12 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               />
 
               {/* Bottom indicator inside textarea */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t-2 border-black/10 text-[11px] text-zinc-700">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t-2 border-black/10 text-[11px] text-zinc-700">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <span className="flex items-center gap-1.5 font-black text-[10px]">
-                    <Sliders className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+                    <Sliders className="w-3.5 h-3.5 text-black stroke-[2.5] shrink-0" />
                     Format terpilih:{' '}
-                    <strong className="text-black bg-[#FFD93D] border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">
+                    <strong className="text-black bg-[#FFD93D] border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000] truncate max-w-[170px] sm:max-w-none inline-block">
                       {selectedCard ? selectedCard.title : ''}
                     </strong>
                   </span>
@@ -964,7 +992,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                       const idx = config.cards.findIndex((c) => c.id === selectedCardId);
                       if (idx !== -1) setEditingCardIndex(idx);
                     }}
-                    className="font-black text-[10px] text-black bg-[#FEF08A] hover:bg-[#FFD93D] border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000] flex items-center gap-1 cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5"
+                    className="font-black text-[10px] text-black bg-[#FEF08A] hover:bg-[#FFD93D] border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000] flex items-center gap-1 cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 shrink-0"
                     title="Kustomisasi kartu format terpilih ini"
                   >
                     <Pencil className="w-3 h-3 stroke-[2.5]" /> Opsi Custom Card
@@ -1030,7 +1058,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                     className={`inline-flex items-center gap-1.5 rounded-xl border-2 border-black text-xs transition-all active:scale-[0.98] ${
                       isEditMode
                         ? 'bg-white px-2 py-1 shadow-[2px_2px_0px_0px_#000]'
-                        : 'bg-[#FFFDF5] hover:bg-yellow-100 text-black font-bold px-3 py-1.5 cursor-pointer shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5'
+                        : 'bg-[#FFFDF5] hover:bg-yellow-100 text-black font-bold px-3 py-1.5 cursor-pointer shadow-[2px_2px_0px_0px_#000] hover:shadow-[3px_3px_0px_0px_#000] sm:hover:-translate-x-0.5 sm:hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 touch-manipulation'
                     }`}
                     onClick={() => {
                       if (!isEditMode) {
@@ -1074,11 +1102,11 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
         </div>
 
         {/* BOTTOM BAR: Built by, Saved in, and Start button */}
-        <div className="pt-5 border-t-2 border-black/15 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-4 text-xs">
+        <div className="pt-4 sm:pt-5 border-t-2 border-black/15 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-4 text-xs w-full md:w-auto">
             {/* Standar Naskah Dinas Selector */}
-            <div className="flex items-center gap-2">
-              <label htmlFor="craft-standard-engine" className="text-black font-black text-xs flex items-center gap-1">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <label htmlFor="craft-standard-engine" className="text-black font-black text-xs flex items-center gap-1 shrink-0">
                 <FileText className="w-4 h-4 text-black stroke-[2.5]" /> Standar Naskah:
               </label>
               <select
@@ -1087,7 +1115,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 aria-label="Pilih Standar Tata Naskah Dinas"
                 value={selectedEngine}
                 onChange={(e) => setSelectedEngine(e.target.value)}
-                className="bg-white border-2 border-black text-black rounded-xl px-3 py-2 text-xs font-bold shadow-[2px_2px_0px_0px_#000] focus:outline-none cursor-pointer"
+                className="w-full sm:w-auto max-w-full bg-white border-2 border-black text-black rounded-xl px-3 py-2 text-xs font-bold shadow-[2px_2px_0px_0px_#000] focus:outline-none cursor-pointer"
               >
                 <option value="Tata Naskah Dinas MPK 13 (Standar Utama)">Tata Naskah Dinas MPK 13 (Standar Utama)</option>
                 <option value="Risalah Padat & Ketetapan Inti">Risalah Padat &amp; Ketetapan Inti</option>
@@ -1097,8 +1125,8 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
             </div>
 
             {/* Saved in Folder Path */}
-            <div className="flex items-center gap-2">
-              <label htmlFor="craft-target-folder" className="text-black font-black text-xs flex items-center gap-1">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <label htmlFor="craft-target-folder" className="text-black font-black text-xs flex items-center gap-1 shrink-0">
                 <Folder className="w-4 h-4 text-black stroke-[2.5]" /> Target:
               </label>
               <input
@@ -1108,7 +1136,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 type="text"
                 value={folderPath}
                 onChange={(e) => setFolderPath(e.target.value)}
-                className="bg-white border-2 border-black text-black font-mono text-[11px] rounded-xl px-3 py-2 w-56 sm:w-64 shadow-[2px_2px_0px_0px_#000] focus:outline-none truncate"
+                className="w-full sm:w-64 max-w-full bg-white border-2 border-black text-black font-mono text-[11px] rounded-xl px-3 py-2 shadow-[2px_2px_0px_0px_#000] focus:outline-none truncate"
               />
             </div>
           </div>
@@ -1116,7 +1144,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
           {/* Start Action Button (Neo-Brutalist Hard Shadow & Mechanical Press) */}
           <button
             onClick={handleStart}
-            className="group flex items-center justify-center gap-3 px-6 py-3 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black text-xs sm:text-sm rounded-xl border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all self-stretch md:self-auto cursor-pointer"
+            className="group flex items-center justify-center gap-3 px-6 py-3 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black text-xs sm:text-sm rounded-xl border-[2.5px] border-black shadow-[4px_4px_0px_0px_#000] sm:hover:-translate-x-0.5 sm:hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all self-stretch md:self-auto cursor-pointer touch-manipulation"
           >
             <span>Mulai Sesi Rapat</span>
             <div className="w-6 h-6 rounded-lg bg-black text-white flex items-center justify-center group-hover:translate-x-0.5 transition-transform">

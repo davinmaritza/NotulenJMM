@@ -90,7 +90,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         </header>
 
         {/* Content Body */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+        <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 md:px-8 py-3.5 sm:py-8 space-y-3.5 sm:space-y-6">
           {/* Friendly 3-Step Workflow & Secretary Greeting Hub */}
           <UserFriendlyWorkflowBar
             activeTab={currentTab}
@@ -102,13 +102,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           {children}
         </main>
 
-        {/* Neo-Brutalist Institutional Footer (Fixed from dark mode) */}
+        {/* Neo-Brutalist Institutional Footer */}
         <footer className="mt-auto border-t-2 border-black bg-[#FFFDF5] py-4 text-center text-xs text-black">
-          <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] font-mono font-bold text-black">
-            <p>
+          <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 text-[11px] font-mono font-bold text-black text-center sm:text-left">
+            <p className="leading-relaxed">
               NotulenJMM • Hak Cipta &copy; 2026 <strong className="font-black text-black">MPK SMK Negeri 13 Bandung</strong>. Karya <strong className="font-black text-black">Davin Maritza</strong>.
             </p>
-            <div className="flex items-center gap-3 font-black text-black">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 font-black text-black text-[10px] sm:text-[11px]">
               <span>Tata Naskah Dinas Digital</span>
               <span>•</span>
               <span>Web &amp; Android APK</span>

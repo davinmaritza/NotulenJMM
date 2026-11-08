@@ -1283,10 +1283,10 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                 <div
                   key={act.id}
                   onClick={() => toggleActionStatus(act.id)}
-                  className={`p-3.5 rounded-2xl border-2 border-black transition-all cursor-pointer flex items-center justify-between gap-3 select-none ${
+                  className={`p-3 sm:p-3.5 rounded-2xl border-2 border-black transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 select-none touch-manipulation ${
                     isDone
                       ? 'bg-zinc-100 text-zinc-500 line-through shadow-[1.5px_1.5px_0px_0px_#000]'
-                      : 'bg-[#FFFDF5] hover:bg-white text-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5'
+                      : 'bg-[#FFFDF5] hover:bg-white text-black shadow-[2.5px_2.5px_0px_0px_#000] sm:shadow-[3px_3px_0px_0px_#000] sm:hover:-translate-x-0.5 sm:hover:-translate-y-0.5'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -1301,12 +1301,12 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                       checked={isDone}
                       onChange={() => toggleActionStatus(act.id)}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-4 h-4 rounded border-2 border-black accent-black cursor-pointer"
+                      className="w-4 h-4 rounded border-2 border-black accent-black cursor-pointer shrink-0"
                     />
                     <span className="text-xs sm:text-sm font-black">{act.description}</span>
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-zinc-800 font-bold text-[11px] shrink-0">
+                  <div className="flex items-center gap-2.5 text-xs text-zinc-800 font-bold text-[11px] shrink-0 self-end sm:self-auto">
                     <span className="px-2 py-0.5 rounded bg-white border border-black font-black shadow-[1px_1px_0px_0px_#000]">
                       PJ: {act.assignee}
                     </span>
