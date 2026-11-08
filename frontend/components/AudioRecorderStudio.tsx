@@ -60,6 +60,9 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
   const [seconds, setSeconds] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+  const [audioDevices, setAudioDevices] = useState<{ deviceId: string; label: string }[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>('default');
+  const [audioLevel, setAudioLevel] = useState<number>(0);
 
   // Processing & Toast State
   const [isProcessing, setIsProcessing] = useState(false);
@@ -76,6 +79,24 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Enumerate input devices on mount
+  useEffect(() => {
+    if (typeof navigator !== 'undefined' && navigator.mediaDevices?.enumerateDevices) {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+          const inputs = devices
+            .filter((d) => d.kind === 'audioinput')
+            .map((d) => ({
+              deviceId: d.deviceId,
+              label: d.label || 'Mikrofon Perangkat',
+            }));
+          setAudioDevices(inputs);
+        })
+        .catch((e) => console.warn('Could not enumerate audio devices:', e));
+    }
+  }, []);
+
   // Timer effect for live recording
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -89,7 +110,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     };
   }, [isRecording, isPaused]);
 
-  // Waveform oscilloscope loop
+  // Waveform oscilloscope loop & VU Level calculation
   const drawWaveform = () => {
     const canvas = canvasRef.current;
     if (!canvas || !analyserRef.current) return;
@@ -100,6 +121,16 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     const bufferLength = analyserRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
     analyserRef.current.getByteTimeDomainData(dataArray);
+
+    // Calculate real-time RMS audio level for VU meter
+    let sumSquares = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      const normalized = (dataArray[i] - 128) / 128;
+      sumSquares += normalized * normalized;
+    }
+    const rms = Math.sqrt(sumSquares / bufferLength);
+    const calculatedLevel = Math.min(100, Math.round(rms * 400));
+    setAudioLevel(calculatedLevel);
 
     ctx.fillStyle = '#FFFDF5';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -136,13 +167,38 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     setSeconds(0);
     setAudioUrl(null);
     setRecordedBlob(null);
+    setAudioLevel(0);
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const constraints: MediaStreamConstraints = {
+        audio: {
+          deviceId: selectedDeviceId !== 'default' ? { exact: selectedDeviceId } : undefined,
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
+
+      // Update audio devices with labels once permission is granted
+      if (navigator.mediaDevices?.enumerateDevices) {
+        navigator.mediaDevices.enumerateDevices().then((devices) => {
+          const inputs = devices
+            .filter((d) => d.kind === 'audioinput')
+            .map((d) => ({
+              deviceId: d.deviceId,
+              label: d.label || 'Mikrofon Perangkat',
+            }));
+          setAudioDevices(inputs);
+        });
+      }
 
       const audioCtx = new (window.AudioContext ||
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
       const analyser = audioCtx.createAnalyser();
       const source = audioCtx.createMediaStreamSource(stream);
       source.connect(analyser);
@@ -151,7 +207,18 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       audioContextRef.current = audioCtx;
       analyserRef.current = analyser;
 
-      const mediaRecorder = new MediaRecorder(stream);
+      let options: MediaRecorderOptions = {};
+      if (typeof MediaRecorder !== 'undefined') {
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+          options = { mimeType: 'audio/webm;codecs=opus' };
+        } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+          options = { mimeType: 'audio/webm' };
+        } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          options = { mimeType: 'audio/mp4' };
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, options);
       mediaRecorderRef.current = mediaRecorder;
 
       mediaRecorder.ondataavailable = (event) => {
@@ -161,10 +228,12 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const mimeType = mediaRecorder.mimeType || options.mimeType || 'audio/webm';
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
         const url = URL.createObjectURL(audioBlob);
         setAudioUrl(url);
         setRecordedBlob(audioBlob);
+        setAudioLevel(0);
 
         if (streamRef.current) {
           streamRef.current.getTracks().forEach((track) => track.stop());
@@ -429,7 +498,63 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
 
       {/* MODE 1: REKAM VOICE NOTE LIVE (DENGAN PAUSE/RESUME & OSCILLOSCOPE) */}
       {studioMode === 'record' && (
-        <div className="space-y-5">
+        <div className="space-y-4">
+          {/* Microphone Selector & Live VU Meter */}
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000]">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <Mic className="w-4 h-4 text-black shrink-0 stroke-[2.5]" />
+              <label htmlFor="mic-device-select" className="text-xs font-black text-black shrink-0">
+                Pilih Input Mikrofon:
+              </label>
+              <select
+                id="mic-device-select"
+                value={selectedDeviceId}
+                onChange={(e) => setSelectedDeviceId(e.target.value)}
+                disabled={isRecording}
+                className="bg-[#FFFDF5] border border-black rounded-lg px-2.5 py-1 text-xs font-bold text-black focus:outline-none focus:ring-2 focus:ring-[#FFE600] truncate max-w-[200px] sm:max-w-[260px]"
+              >
+                <option value="default">Default Sistem ({audioDevices[0]?.label || 'Mikrofon'})</option>
+                {audioDevices.filter(d => d.deviceId !== 'default').map((d, idx) => (
+                  <option key={d.deviceId || idx} value={d.deviceId}>
+                    {d.label || `Mikrofon ${idx + 1}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Live Volume / VU Level Bar */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-[10px] font-mono font-bold text-zinc-600">Sinyal Suara:</span>
+              <div className="w-24 sm:w-32 h-3 bg-zinc-200 border border-black rounded-full overflow-hidden p-0.5">
+                <div
+                  className={`h-full rounded-full transition-all duration-75 ${
+                    audioLevel > 50 ? 'bg-amber-500' : audioLevel > 5 ? 'bg-emerald-500' : 'bg-zinc-400'
+                  }`}
+                  style={{ width: `${isRecording && !isPaused ? Math.max(audioLevel, 6) : 0}%` }}
+                />
+              </div>
+              <span
+                className={`text-[9px] font-mono font-black px-1.5 py-0.5 rounded border border-black ${
+                  isRecording && !isPaused && audioLevel > 5
+                    ? 'bg-[#A7F3D0] text-black'
+                    : 'bg-zinc-100 text-zinc-600'
+                }`}
+              >
+                {isRecording && !isPaused ? (audioLevel > 5 ? 'AKTIF' : 'HENING') : 'STANDBY'}
+              </span>
+            </div>
+          </div>
+
+          {/* Silence Warning Notice */}
+          {isRecording && !isPaused && seconds > 3 && audioLevel < 2 && (
+            <div className="p-3 bg-amber-50 border-2 border-black rounded-xl text-xs font-bold text-black flex items-center gap-2 shadow-[2px_2px_0px_0px_#000] animate-in fade-in">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 stroke-[2.5]" />
+              <span>
+                Sinyal mikrofon hening / sangat kecil. Jika tidak ada suara, coba pilih sumber mikrofon lain di menu atas atau periksa volume mic di pengaturan suara.
+              </span>
+            </div>
+          )}
+
           {/* Oscilloscope Canvas & Live Telemetry */}
           <div className="relative border-[2.5px] border-black rounded-2xl bg-[#FFFDF5] overflow-hidden shadow-[4px_4px_0px_0px_#000]">
             <canvas ref={canvasRef} width={800} height={120} className="w-full h-32 block" />
