@@ -82,9 +82,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-black text-sm tracking-tight text-black">NotulenJMM</span>
-                <span className="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-[#C4B5FD] text-black border border-black font-bold shadow-[1.5px_1.5px_0px_0px_#000] select-none">
-                  MPK 13
-                </span>
               </div>
               <p className="text-[11px] text-zinc-600 font-sans font-medium truncate max-w-[140px]">
                 SMK Negeri 13 Bandung

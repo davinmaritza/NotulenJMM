@@ -70,9 +70,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
             </div>
             <div>
               <span className="font-black text-xs text-black">NotulenJMM</span>
-              <span className="text-[10px] font-mono ml-1.5 px-1.5 py-0.5 rounded bg-[#C4B5FD] text-black border border-black font-bold">
-                MPK 13
-              </span>
             </div>
           </div>
 
