@@ -24,9 +24,21 @@ import {
 
 export interface CardConfig {
   id: string;
-  iconName: 'Globe' | 'Smartphone' | 'Gamepad2' | 'Sparkles' | 'FileText' | 'Users' | 'Briefcase' | 'Building2' | 'Scale';
+  iconName:
+    | 'Globe'
+    | 'Smartphone'
+    | 'Gamepad2'
+    | 'Sparkles'
+    | 'FileText'
+    | 'Users'
+    | 'Briefcase'
+    | 'Building2'
+    | 'Scale'
+    | 'Sliders'
+    | 'Plus';
   title: string;
   description: string;
+  isCustom?: boolean;
 }
 
 export interface CraftStudioConfig {
@@ -70,9 +82,10 @@ export const PRESET_MPK: CraftStudioConfig = {
     },
     {
       id: 'kustom',
-      iconName: 'Sparkles',
-      title: 'Sesi Bebas / Kustom',
-      description: 'Format terbuka untuk koordinasi darurat atau brainstorming santai',
+      iconName: 'Sliders',
+      title: 'Agenda Kustom',
+      description: 'Format terbuka untuk koordinasi darurat, komisi khusus, atau ide bebas',
+      isCustom: true,
     },
   ],
   ideaPills: [
@@ -116,6 +129,13 @@ export const PRESET_CRAFT_CLASSIC: CraftStudioConfig = {
       title: 'Nothing — start fresh',
       description: 'Blank slate, anything goes',
     },
+    {
+      id: 'custom-craft',
+      iconName: 'Sliders',
+      title: 'Custom Project',
+      description: 'Define your own custom architecture and deliverables',
+      isCustom: true,
+    },
   ],
   ideaPills: [
     'A personal portfolio with dark mode and project gallery',
@@ -158,6 +178,13 @@ export const PRESET_ORGANISASI: CraftStudioConfig = {
       title: 'Forum Aspirasi',
       description: 'Rembug terbuka siswa untuk menjaring ide inovasi sekolah',
     },
+    {
+      id: 'kustom-organisasi',
+      iconName: 'Sliders',
+      title: 'Agenda Kustom',
+      description: 'Format terbuka untuk koordinasi darurat atau agenda khusus kepengurusan',
+      isCustom: true,
+    },
   ],
   ideaPills: [
     'Revisi Tata Tertib Pemilihan Ketua OSIS',
@@ -189,6 +216,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
   // Interactive selection states
   const [activeTabMode, setActiveTabMode] = useState<'tab1' | 'tab2'>('tab1');
   const [selectedCardId, setSelectedCardId] = useState<string>('pleno');
+  const [editingCardIndex, setEditingCardIndex] = useState<number | null>(null);
 
   // Hydrate custom config from localStorage once on client mount
   useEffect(() => {
@@ -236,6 +264,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
     setActivePreset(presetKey);
     setSelectedCardId(target.cards[0].id);
+    setEditingCardIndex(null);
     saveConfig(target);
   };
 
@@ -251,6 +280,36 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
       [field]: value,
     };
     saveConfig({ ...config, cards: updatedCards });
+    setActivePreset('custom');
+  };
+
+  // Add new custom card handler
+  const handleAddNewCustomCard = () => {
+    const newId = `custom-${Date.now()}`;
+    const newCard: CardConfig = {
+      id: newId,
+      iconName: 'Sliders',
+      title: 'Agenda Kustom Baru',
+      description: 'Tentukan agenda sidang atau musyawarah sesuai kebutuhan Anda',
+      isCustom: true,
+    };
+    const updatedCards = [...config.cards, newCard];
+    saveConfig({ ...config, cards: updatedCards });
+    setSelectedCardId(newId);
+    setEditingCardIndex(updatedCards.length - 1);
+    setActivePreset('custom');
+  };
+
+  // Delete card handler
+  const handleDeleteCard = (indexToDelete: number) => {
+    if (config.cards.length <= 1) return;
+    const cardToDelete = config.cards[indexToDelete];
+    const updatedCards = config.cards.filter((_, idx) => idx !== indexToDelete);
+    saveConfig({ ...config, cards: updatedCards });
+    if (selectedCardId === cardToDelete.id) {
+      setSelectedCardId(updatedCards[0]?.id || '');
+    }
+    setEditingCardIndex(null);
     setActivePreset('custom');
   };
 
@@ -296,6 +355,10 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
         return <Building2 className={className} />;
       case 'Scale':
         return <Scale className={className} />;
+      case 'Sliders':
+        return <Sliders className={className} />;
+      case 'Plus':
+        return <Plus className={className} />;
       case 'Sparkles':
       default:
         return <Sparkles className={className} />;
@@ -495,7 +558,7 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
 
         {/* STEP 1: PICK WHAT YOU'RE MAKING */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <span className="w-7 h-7 rounded-xl bg-[#FFD93D] border-2 border-black text-black font-black text-xs flex items-center justify-center shadow-[1.5px_1.5px_0px_0px_#000]">
                 1
@@ -520,15 +583,27 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               )}
             </div>
 
-            {isEditMode && (
-              <span className="text-[11px] text-black font-black bg-amber-100 border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">
-                Klik kartu untuk mengubah teks & deskripsi
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleAddNewCustomCard}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black text-black bg-[#A7F3D0] hover:bg-[#86efac] border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                title="Tambah opsi kartu kustom baru ke daftar agenda"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[3]" />
+                <span>Tambah Kartu Kustom</span>
+              </button>
+
+              {isEditMode && (
+                <span className="text-[11px] text-black font-black bg-amber-100 border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">
+                  Klik kartu untuk mengubah teks & deskripsi
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* 4 Cards Grid - Refined Neo-Brutalist Pop-Art Colors */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {/* Cards Grid - Responsive Neo-Brutalist Pop-Art Colors */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
             {config.cards.map((card, idx) => {
               const isSelected = card.id === selectedCardId;
               const cardColors = [
@@ -536,6 +611,8 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 { bg: 'bg-[#FECDD3]', iconBg: 'bg-[#FF6B6B]' },
                 { bg: 'bg-[#A7F3D0]', iconBg: 'bg-[#4ECDC4]' },
                 { bg: 'bg-[#DDD6FE]', iconBg: 'bg-[#C4B5FD]' },
+                { bg: 'bg-[#BAE6FD]', iconBg: 'bg-[#38BDF8]' },
+                { bg: 'bg-[#FED7AA]', iconBg: 'bg-[#FB923C]' },
               ];
               const theme = cardColors[idx % cardColors.length];
 
@@ -543,28 +620,54 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 <div
                   key={card.id}
                   onClick={() => !isEditMode && setSelectedCardId(card.id)}
-                  className={`relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between min-h-[152px] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 ${
+                  className={`relative p-5 rounded-2xl transition-all cursor-pointer flex flex-col justify-between min-h-[160px] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 ${
                     isSelected
                       ? `${theme.bg} border-[2.5px] border-black shadow-[5px_5px_0px_0px_#000]`
                       : 'bg-[#FFFDF5] border-2 border-black/80 hover:border-black hover:bg-white shadow-[2.5px_2.5px_0px_0px_#000] hover:shadow-[4px_4px_0px_0px_#000]'
                   }`}
                 >
-                  {/* Selected Checkmark Badge */}
-                  {isSelected && (
-                    <div className="absolute top-3.5 right-3.5 w-6 h-6 rounded-lg bg-black text-white flex items-center justify-center border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
-                      <Check className="w-3.5 h-3.5 stroke-[3]" />
-                    </div>
-                  )}
-
-                  {/* Top: Icon & Content */}
+                  {/* Top: Icon & Action Badges */}
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-start justify-between gap-2">
                       <div
                         className={`w-11 h-11 rounded-xl flex items-center justify-center border-2 border-black shadow-[2px_2px_0px_0px_#000] ${
                           isSelected ? `${theme.iconBg} text-black` : 'bg-white text-black'
                         }`}
                       >
                         {renderIcon(card.iconName, 'w-5 h-5 stroke-[2.2]')}
+                      </div>
+
+                      {/* Right Top Actions: Custom Badge, Edit Button & Selection Checkmark */}
+                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                        {(card.isCustom || card.id.includes('kustom') || card.id.includes('custom')) && (
+                          <span className="text-[9px] font-black uppercase tracking-wider bg-black text-[#FFE600] px-1.5 py-0.5 rounded border border-black shadow-[1px_1px_0px_0px_#000]">
+                            Kustom
+                          </span>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedCardId(card.id);
+                            setEditingCardIndex(editingCardIndex === idx ? null : idx);
+                          }}
+                          title="Kustomisasi judul, rincian, dan ikon kartu ini"
+                          className={`flex items-center gap-1 px-2 py-0.5 text-[10px] font-black rounded-lg border-2 border-black transition-all shadow-[1.5px_1.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 cursor-pointer ${
+                            editingCardIndex === idx
+                              ? 'bg-[#FF6B6B] text-black'
+                              : 'bg-white hover:bg-[#FFD93D] text-black'
+                          }`}
+                        >
+                          <Sliders className="w-3 h-3 stroke-[2.5]" />
+                          <span>{editingCardIndex === idx ? 'Tutup' : 'Custom'}</span>
+                        </button>
+
+                        {isSelected && (
+                          <div className="w-6 h-6 rounded-lg bg-black text-white flex items-center justify-center border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                            <Check className="w-3.5 h-3.5 stroke-[3]" />
+                          </div>
+                        )}
                       </div>
 
                       {/* Icon Selector in Edit Mode */}
@@ -588,6 +691,8 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                           <option value="Gamepad2">Gamepad (Game)</option>
                           <option value="Building2">Building (Lembaga)</option>
                           <option value="Briefcase">Briefcase (Kerja)</option>
+                          <option value="Sliders">Sliders (Custom)</option>
+                          <option value="Plus">Plus (Tambah)</option>
                         </select>
                       )}
                     </div>
@@ -627,7 +732,153 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
                 </div>
               );
             })}
+
+            {/* Dedicated "+ Tambah Opsi Custom" Card */}
+            <button
+              type="button"
+              onClick={handleAddNewCustomCard}
+              className="p-5 rounded-2xl border-2 border-dashed border-black/80 hover:border-black bg-[#FFFDF5] hover:bg-[#FEF08A]/40 text-black flex flex-col justify-between min-h-[160px] shadow-[2.5px_2.5px_0px_0px_#000] hover:shadow-[4.5px_4.5px_0px_0px_#000] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 group cursor-pointer text-left"
+            >
+              <div className="flex items-center justify-between w-full">
+                <div className="w-11 h-11 rounded-xl bg-white group-hover:bg-[#FFD93D] border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_0px_#000] transition-colors">
+                  <Plus className="w-5 h-5 stroke-[3] text-black" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-[#FFD93D] border border-black px-1.5 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">
+                  + Baru
+                </span>
+              </div>
+              <div className="mt-3">
+                <h3 className="text-sm font-black text-black tracking-tight">+ Opsi Custom Card</h3>
+                <p className="text-xs text-zinc-700 font-medium mt-1 leading-snug">
+                  Buat format agenda baru sesuai kebutuhan musyawarah Anda
+                </p>
+              </div>
+            </button>
           </div>
+
+          {/* Card Inline Customization Panel (Hardware Drawer) */}
+          {editingCardIndex !== null && config.cards[editingCardIndex] && (
+            <div className="bg-[#FFFDF5] border-[2.5px] border-black rounded-2xl p-4 sm:p-5 shadow-[5px_5px_0px_0px_#000] space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black/15 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-xl bg-[#FFD93D] border-2 border-black flex items-center justify-center font-black text-xs shadow-[1.5px_1.5px_0px_0px_#000]">
+                    <Sliders className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </span>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-black text-black flex items-center gap-2">
+                      Opsi Custom Kartu:
+                      <span className="bg-[#FEF08A] px-2 py-0.5 rounded-lg border border-black shadow-[1px_1px_0px_0px_#000]">
+                        {config.cards[editingCardIndex].title || 'Tanpa Judul'}
+                      </span>
+                    </h4>
+                    <p className="text-[11px] text-zinc-600 font-medium">
+                      Sesuaikan judul agenda, uraian pokok materi sidang, dan ikon kartu ini.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {config.cards.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCard(editingCardIndex)}
+                      className="text-xs font-black text-rose-700 hover:text-black bg-rose-100 hover:bg-rose-200 border-2 border-black px-3 py-1.5 rounded-xl shadow-[2px_2px_0px_0px_#000] flex items-center gap-1.5 transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
+                      title="Hapus kartu ini dari daftar agenda"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                      <span>Hapus Kartu</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setEditingCardIndex(null)}
+                    className="text-xs font-black text-black bg-[#A7F3D0] hover:bg-emerald-300 border-2 border-black px-4 py-1.5 rounded-xl shadow-[2px_2px_0px_0px_#000] transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer flex items-center gap-1"
+                  >
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                    <span>Selesai</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* Input Judul Kartu */}
+                <div className="space-y-1.5 md:col-span-1">
+                  <label
+                    htmlFor="custom-card-title-input"
+                    className="text-[11px] font-black text-black uppercase tracking-wider flex items-center gap-1"
+                  >
+                    Judul Agenda Musyawarah:
+                  </label>
+                  <input
+                    id="custom-card-title-input"
+                    name="custom-card-title-input"
+                    type="text"
+                    value={config.cards[editingCardIndex].title}
+                    onChange={(e) => handleUpdateCard(editingCardIndex, 'title', e.target.value)}
+                    placeholder="Contoh: Rapat Pleno Bantara Pramuka"
+                    className="w-full bg-white border-2 border-black rounded-xl px-3 py-2 text-xs font-black text-black focus:outline-none shadow-[2px_2px_0px_0px_#000]"
+                  />
+                </div>
+
+                {/* Input Deskripsi Kartu */}
+                <div className="space-y-1.5 md:col-span-2">
+                  <label
+                    htmlFor="custom-card-desc-input"
+                    className="text-[11px] font-black text-black uppercase tracking-wider flex items-center gap-1"
+                  >
+                    Uraian / Deskripsi Pokok Bahasan:
+                  </label>
+                  <input
+                    id="custom-card-desc-input"
+                    name="custom-card-desc-input"
+                    type="text"
+                    value={config.cards[editingCardIndex].description}
+                    onChange={(e) => handleUpdateCard(editingCardIndex, 'description', e.target.value)}
+                    placeholder="Contoh: Evaluasi kesiapan seksi perlengkapan, konsumsi, dan tata tertib"
+                    className="w-full bg-white border-2 border-black rounded-xl px-3 py-2 text-xs font-medium text-black focus:outline-none shadow-[2px_2px_0px_0px_#000]"
+                  />
+                </div>
+              </div>
+
+              {/* Pilihan Ikon */}
+              <div className="space-y-2 pt-1">
+                <label className="text-[11px] font-black text-black uppercase tracking-wider block">
+                  Pilih Ikon Kartu:
+                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  {[
+                    { name: 'Sliders', label: 'Custom / Opsi' },
+                    { name: 'Sparkles', label: 'Aspirasi / Kustom' },
+                    { name: 'Scale', label: 'Timbangan / Sidang' },
+                    { name: 'Building2', label: 'Lembaga / MUBES' },
+                    { name: 'Briefcase', label: 'Koordinasi / Kerja' },
+                    { name: 'Users', label: 'Pengurus / Panitia' },
+                    { name: 'FileText', label: 'Dokumen / Risalah' },
+                    { name: 'Globe', label: 'Publikasi / Umum' },
+                    { name: 'Smartphone', label: 'Media / Aplikasi' },
+                    { name: 'Gamepad2', label: 'Simulasi / Game' },
+                  ].map((ico) => {
+                    const isCurrent = config.cards[editingCardIndex].iconName === ico.name;
+                    return (
+                      <button
+                        key={ico.name}
+                        type="button"
+                        onClick={() => handleUpdateCard(editingCardIndex, 'iconName', ico.name as CardConfig['iconName'])}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black text-xs font-black transition-all active:translate-x-0.5 active:translate-y-0.5 cursor-pointer ${
+                          isCurrent
+                            ? 'bg-[#FFD93D] text-black shadow-[2px_2px_0px_0px_#000]'
+                            : 'bg-white hover:bg-[#FEF08A] text-zinc-800 shadow-[1.5px_1.5px_0px_0px_#000]'
+                        }`}
+                      >
+                        {renderIcon(ico.name as CardConfig['iconName'], 'w-3.5 h-3.5 stroke-[2.5]')}
+                        <span>{ico.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* STEP 2: SAY WHAT YOU WANT */}
@@ -698,14 +949,27 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               />
 
               {/* Bottom indicator inside textarea */}
-              <div className="flex items-center justify-between pt-2 border-t-2 border-black/10 text-[11px] text-zinc-700">
-                <span className="flex items-center gap-1.5 font-black text-[10px]">
-                  <Sliders className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                  Format terpilih:{' '}
-                  <strong className="text-black bg-[#FFD93D] border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">
-                    {selectedCard ? selectedCard.title : ''}
-                  </strong>
-                </span>
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t-2 border-black/10 text-[11px] text-zinc-700">
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1.5 font-black text-[10px]">
+                    <Sliders className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+                    Format terpilih:{' '}
+                    <strong className="text-black bg-[#FFD93D] border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000]">
+                      {selectedCard ? selectedCard.title : ''}
+                    </strong>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const idx = config.cards.findIndex((c) => c.id === selectedCardId);
+                      if (idx !== -1) setEditingCardIndex(idx);
+                    }}
+                    className="font-black text-[10px] text-black bg-[#FEF08A] hover:bg-[#FFD93D] border border-black px-2 py-0.5 rounded shadow-[1px_1px_0px_0px_#000] flex items-center gap-1 cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5"
+                    title="Kustomisasi kartu format terpilih ini"
+                  >
+                    <Pencil className="w-3 h-3 stroke-[2.5]" /> Opsi Custom Card
+                  </button>
+                </div>
                 <span className="hidden sm:inline font-bold text-[10px] text-zinc-700">
                   Standar Risalah MPK SMK Negeri 13 Bandung
                 </span>
