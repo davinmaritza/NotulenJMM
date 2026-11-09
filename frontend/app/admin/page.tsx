@@ -382,7 +382,7 @@ export default function AdminPage() {
               onClick={() => router.push('/')}
               className="w-full py-2.5 px-4 rounded-xl bg-white text-black font-bold text-xs border-2 border-black hover:bg-zinc-100 transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5"
             >
-              Buka Studio Agenda
+              Buka Studio Musyawarah
             </button>
             {googleAccount.connected && (
               <button

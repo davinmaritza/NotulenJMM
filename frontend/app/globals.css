@@ -1,34 +1,94 @@
 @import "tailwindcss";
 
+/* 
+ * ==============================================================================
+ * DESIGN SYSTEM TOKENS — NOTULENJMM • MPK SMK NEGERI 13 BANDUNG
+ * Three-Layer Token Architecture: Primitive → Semantic → Component
+ * Style Family: Institutional Neo-Brutalist Minimalism
+ * ==============================================================================
+ */
+
 :root {
-  --background: #FFFDF5;
-  --foreground: #000000;
-  --surface-card: #FFFFFF;
-  --neo-ink: #000000;
-  --neo-yellow: #FFD93D;
-  --neo-coral: #FF6B6B;
-  --neo-mint: #4ECDC4;
-  --neo-lavender: #C4B5FD;
-  --neo-pink: #FFD1DC;
-  --neo-sky: #38BDF8;
-  --neo-lime: #86EFAC;
+  /* --------------------------------------------------------------------------
+   * 1. PRIMITIVE TOKENS (Raw values)
+   * -------------------------------------------------------------------------- */
+  --primitive-yellow-400: #FFE600;
+  --primitive-yellow-500: #FFD93D;
+  --primitive-coral-400:  #FF6B6B;
+  --primitive-coral-500:  #F43F5E;
+  --primitive-mint-400:   #4ECDC4;
+  --primitive-mint-500:   #10B981;
+  --primitive-sky-400:    #38BDF8;
+  --primitive-sky-500:    #0284C7;
+  --primitive-lavender-400: #C4B5FD;
+  --primitive-lavender-500: #8B5CF6;
+  --primitive-emerald-100: #DCFCE7;
+  --primitive-emerald-500: #22C55E;
+  --primitive-amber-100:  #FEF3C7;
+  --primitive-amber-400:  #F59E0B;
+  --primitive-rose-100:   #FFE4E6;
+  --primitive-rose-500:   #E11D48;
+
+  --primitive-paper:      #FFFDF5;
+  --primitive-white:      #FFFFFF;
+  --primitive-ink-950:    #000000;
+  --primitive-ink-900:    #0F172A;
+  --primitive-ink-700:    #334155;
+  --primitive-ink-500:    #64748B;
+  --primitive-ink-200:    #E2E8F0;
+
+  /* --------------------------------------------------------------------------
+   * 2. SEMANTIC TOKENS (Purpose-based aliases)
+   * -------------------------------------------------------------------------- */
+  --bg-canvas:            var(--primitive-paper);
+  --bg-surface:           var(--primitive-white);
+  --bg-surface-elevated:  var(--primitive-paper);
+  --text-primary:         var(--primitive-ink-950);
+  --text-secondary:       var(--primitive-ink-700);
+  --text-muted:           var(--primitive-ink-500);
+
+  --color-primary:        var(--primitive-yellow-400);
+  --color-primary-hover:  var(--primitive-yellow-500);
+  --color-accent-sky:     var(--primitive-sky-400);
+  --color-accent-mint:    var(--primitive-mint-400);
+  --color-accent-coral:   var(--primitive-coral-400);
+  --color-accent-lavender: var(--primitive-lavender-400);
+
+  --border-bold:          var(--primitive-ink-950);
+  --border-subtle:        rgba(0, 0, 0, 0.15);
+  --border-muted:         rgba(0, 0, 0, 0.08);
+
+  /* Tactile Neo-Brutalist Shadow Tokens */
+  --shadow-neo-xs:        1.5px 1.5px 0px 0px #000000;
+  --shadow-neo-sm:        2.5px 2.5px 0px 0px #000000;
+  --shadow-neo-md:        4px 4px 0px 0px #000000;
+  --shadow-neo-lg:        6px 6px 0px 0px #000000;
+  --shadow-neo-xl:        8px 8px 0px 0px #000000;
+
+  /* Animation & Physics */
+  --transition-tactile:   all 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-badge:         9999px;
+  --radius-card:          1rem;
+  --radius-card-lg:       1.5rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg-canvas);
+  --color-foreground: var(--text-primary);
   --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+/* Base Body Styles */
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
 
 /* Neo-Brutalist Hardware Scrollbar */
@@ -37,87 +97,117 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #FFFDF5;
+  background: var(--bg-canvas);
   border-left: 2px solid #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: #FFD93D;
+  background: var(--primitive-yellow-500);
   border: 2px solid #000000;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #FFE600;
+  background: var(--primitive-yellow-400);
 }
 
-/* Neo-Brutalist Core Component Styles */
+/* --------------------------------------------------------------------------
+ * 3. COMPONENT TOKENS & UTILITIES
+ * -------------------------------------------------------------------------- */
+
 .neo-card {
-  background-color: #FFFFFF;
-  border: 2.5px solid #000000;
-  box-shadow: 4px 4px 0px 0px #000000;
-  border-radius: 1rem;
+  background-color: var(--bg-surface);
+  border: 2.5px solid var(--border-bold);
+  box-shadow: var(--shadow-neo-md);
+  border-radius: var(--radius-card);
 }
 
 .neo-card-sm {
-  background-color: #FFFFFF;
-  border: 2px solid #000000;
-  box-shadow: 3px 3px 0px 0px #000000;
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border-bold);
+  box-shadow: var(--shadow-neo-sm);
   border-radius: 0.75rem;
 }
 
 .neo-card-lg {
-  background-color: #FFFFFF;
-  border: 3px solid #000000;
-  box-shadow: 6px 6px 0px 0px #000000;
-  border-radius: 1.25rem;
+  background-color: var(--bg-surface);
+  border: 3px solid var(--border-bold);
+  box-shadow: var(--shadow-neo-lg);
+  border-radius: var(--radius-card-lg);
 }
 
+/* Tactile Interactive Buttons */
 .neo-btn {
-  border: 2px solid #000000;
-  box-shadow: 3px 3px 0px 0px #000000;
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
-  font-weight: 700;
+  border: 2px solid var(--border-bold);
+  box-shadow: var(--shadow-neo-sm);
+  transition: var(--transition-tactile);
+  font-weight: 800;
   cursor: pointer;
   touch-action: manipulation;
+  user-select: none;
 }
 @media (hover: hover) and (pointer: fine) {
   .neo-btn:hover {
     transform: translate(-1.5px, -1.5px);
-    box-shadow: 4.5px 4.5px 0px 0px #000000;
+    box-shadow: var(--shadow-neo-md);
   }
 }
 .neo-btn:active {
   transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px 0px #000000;
+  box-shadow: var(--shadow-neo-xs);
 }
 
+.neo-btn-primary {
+  background-color: var(--color-primary);
+  color: #000000;
+}
+.neo-btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.neo-btn-secondary {
+  background-color: var(--bg-surface);
+  color: #000000;
+}
+.neo-btn-secondary:hover {
+  background-color: #F8FAFC;
+}
+
+/* Tactile Badges */
 .neo-badge {
-  border: 2px solid #000000;
-  box-shadow: 2px 2px 0px 0px #000000;
-  font-weight: 700;
-  border-radius: 9999px;
+  border: 1.5px solid var(--border-bold);
+  box-shadow: var(--shadow-neo-xs);
+  font-weight: 800;
+  border-radius: var(--radius-badge);
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
 }
 
+/* Form Inputs */
 .neo-input {
-  background-color: #FFFFFF;
-  border: 2px solid #000000;
-  box-shadow: 2.5px 2.5px 0px 0px #000000;
-  color: #000000;
-  font-weight: 500;
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border-bold);
+  box-shadow: var(--shadow-neo-sm);
+  color: var(--text-primary);
+  font-weight: 600;
   border-radius: 0.75rem;
-  transition: all 0.12s ease;
+  transition: var(--transition-tactile);
 }
 .neo-input:focus {
   outline: none;
-  box-shadow: 4px 4px 0px 0px #000000;
+  box-shadow: var(--shadow-neo-md);
 }
 
 /* Safe area padding for mobile notch/home indicator */
 .pb-safe {
   padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
 }
-.pt-safe {
-  padding-top: max(1.25rem, env(safe-area-inset-top, 1.25rem));
+
+/* Reduced motion preference respect */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

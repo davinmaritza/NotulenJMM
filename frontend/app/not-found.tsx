@@ -67,7 +67,7 @@ export default function NotFoundPage() {
             className="flex items-center gap-2 px-5 py-2.5 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
           >
             <Home className="w-4 h-4 stroke-[2.5]" />
-            <span>Ke Beranda (Studio Agenda)</span>
+            <span>Ke Beranda (Studio Musyawarah)</span>
           </Link>
 
           <button
@@ -95,7 +95,7 @@ export default function NotFoundPage() {
                 <Compass className="w-3.5 h-3.5 stroke-[2.5]" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black text-black group-hover:underline">Studio Agenda</p>
+                <p className="text-xs font-black text-black group-hover:underline">Studio Musyawarah</p>
                 <p className="text-[10px] text-zinc-600 font-medium truncate">Pilih format &amp; agenda</p>
               </div>
             </Link>
@@ -134,8 +134,8 @@ export default function NotFoundPage() {
                 <CheckSquare className="w-3.5 h-3.5 stroke-[2.5]" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black text-black group-hover:underline">Ketetapan &amp; PIC</p>
-                <p className="text-[10px] text-zinc-600 font-medium truncate">Daftar tugas tindak lanjut</p>
+                <p className="text-xs font-black text-black group-hover:underline">Ketetapan TAP &amp; Komisi</p>
+                <p className="text-[10px] text-zinc-600 font-medium truncate">Matriks penugasan sidang</p>
               </div>
             </Link>
           </div>

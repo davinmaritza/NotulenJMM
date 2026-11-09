@@ -37,7 +37,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
 
   return (
-    <div className="bg-white border-[2.5px] border-black rounded-2xl p-3.5 sm:p-5 sm:p-6 space-y-3 sm:space-y-4 shadow-[4px_4px_0px_0px_#000] sm:shadow-[5px_5px_0px_0px_#000] transition-all">
+    <div className="bg-white border-2 border-black rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4 shadow-[4px_4px_0px_0px_#000] transition-all">
       {/* Top Banner Row */}
       <div className="flex items-center justify-between gap-2">
         <div className="space-y-0.5 min-w-0">
@@ -55,7 +55,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
             </button>
           </div>
           <p className="hidden sm:block text-xs text-zinc-700 font-medium leading-relaxed">
-            Alur kerja pencatatan sidang MPK SMK Negeri 13 Bandung: Rekam suara, rumuskan keputusan resmi, dan bagikan dalam hitungan detik.
+            Alur kerja resmi notulis MPK SMK Negeri 13 Bandung: Mulai musyawarah, rekam suara sidang, lalu sahkan naskah dinas dan ketetapan TAP.
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
                   <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 fill-emerald-100" />
                 )}
               </div>
-              <h4 className="text-xs font-black text-black truncate pt-0.5">Studio Agenda &amp; Format</h4>
+              <h4 className="text-xs font-black text-black truncate pt-0.5">Studio Musyawarah &amp; Format</h4>
               <p className="hidden sm:block text-[11px] text-zinc-700 font-medium line-clamp-1">
                 Pilih format dinas atau buat sesi sidang baru
               </p>

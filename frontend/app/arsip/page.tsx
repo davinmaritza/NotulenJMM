@@ -347,7 +347,7 @@ export default function ArsipPage() {
               className="flex items-center gap-2 px-5 py-2.5 bg-[#38BDF8] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
             >
               <Compass className="w-4 h-4 text-black stroke-[2.5]" />
-              <span>Buka Studio Agenda</span>
+              <span>Buka Studio Musyawarah</span>
             </button>
           </div>
         </div>

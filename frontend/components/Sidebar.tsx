@@ -306,19 +306,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         ) : (
           <div className="p-3 border-t-2 border-black bg-[#FFFDF5]">
-            <div className="p-2.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-zinc-600">
-                <span>Mode Tamu</span>
-              </div>
+            <div className="p-3 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-2 text-center">
+              <p className="text-[11px] font-bold text-zinc-700">
+                Otentikasi Pengurus
+              </p>
               <button
                 type="button"
                 onClick={() => {
                   if (typeof window !== 'undefined') {
-                    sessionStorage.removeItem('notulenjmm_guest_mode');
-                    window.location.reload();
+                    window.location.href = '/login';
                   }
                 }}
-                className="w-full py-1.5 px-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-lg text-xs font-black flex items-center justify-center gap-1.5 shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
+                className="w-full py-2 px-3 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-[2px_2px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
                 title="Masuk dengan Akun Google"
               >
                 <span>Masuk Akun Google</span>

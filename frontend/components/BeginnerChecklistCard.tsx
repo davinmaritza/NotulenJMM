@@ -35,7 +35,7 @@ export const BeginnerChecklistCard: React.FC<BeginnerChecklistCardProps> = ({
       id: 'agenda',
       title: 'Agenda & Format Sidang Terpilih',
       passed: Boolean(meeting.title && meeting.agendas && meeting.agendas.length > 0),
-      hint: 'Pilih format sidang di Studio Agenda.',
+      hint: 'Pilih format sidang di Studio Musyawarah.',
     },
     {
       id: 'datetime',

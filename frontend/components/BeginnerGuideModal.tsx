@@ -146,7 +146,7 @@ export const BeginnerGuideModal: React.FC<BeginnerGuideModalProps> = ({ isOpen, 
                 <div className="space-y-1 min-w-0 flex-1">
                   <div className="flex items-center justify-between">
                     <h5 className="text-xs sm:text-sm font-black text-black">
-                      Pilih Format Rapat di Studio Agenda
+                      Pilih Format di Studio Musyawarah
                     </h5>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-100 border border-black font-bold">
                       Menu Utama
