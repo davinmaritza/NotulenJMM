@@ -128,6 +128,7 @@ export default function AdminPage() {
     handleLogoutGoogle,
     handleLoginWithEmail,
     isAdmin,
+    isHydrated,
   } = useMeetings();
 
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'commissions' | 'decisions' | 'audit' | 'system'>('overview');
@@ -144,6 +145,7 @@ export default function AdminPage() {
   const [filterUserStatus, setFilterUserStatus] = useState<'ALL' | 'ACTIVE' | 'SUSPENDED'>('ALL');
   const [filterUserRole, setFilterUserRole] = useState<'ALL' | ManagedUserRole>('ALL');
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState<boolean>(false);
+  const [userToDelete, setUserToDelete] = useState<ManagedUser | null>(null);
   const [newEmail, setNewEmail] = useState<string>('');
   const [newName, setNewName] = useState<string>('');
   const [newRole, setNewRole] = useState<ManagedUserRole>('NOTULIS');
@@ -192,14 +194,13 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteUser = (user: ManagedUser) => {
-    if (!window.confirm(`Hapus akun ${user.email} dari daftar pengguna NotulenJMM?`)) {
-      return;
-    }
+  const handleConfirmDeleteUser = () => {
+    if (!userToDelete) return;
     try {
-      deleteManagedUser(user.id);
-      showNotice(`Akun ${user.email} berhasil dihapus dari sistem.`);
+      deleteManagedUser(userToDelete.id);
+      showNotice(`Akun ${userToDelete.email} berhasil dihapus dari sistem.`);
       setManagedUsers(getManagedUsers());
+      setUserToDelete(null);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       showNotice(`Gagal: ${msg}`);
@@ -324,6 +325,74 @@ export default function AdminPage() {
     reader.readAsText(file);
     e.target.value = '';
   };
+
+  // Strictly restrict access so ONLY alfarrezald@gmail.com can open the Administrator Panel
+  const isSuperAdmin =
+    googleAccount.connected &&
+    googleAccount.email?.trim().toLowerCase() === 'alfarrezald@gmail.com';
+
+  if (!isHydrated) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-black select-none">
+        <div className="w-12 h-12 rounded-2xl bg-[#FFE600] border-2 border-black flex items-center justify-center mb-3 shadow-[3px_3px_0px_0px_#000] animate-pulse">
+          <Shield className="w-6 h-6 text-black stroke-[2.5]" />
+        </div>
+        <p className="text-xs font-mono font-bold text-zinc-700 animate-pulse">
+          Memverifikasi Otoritas Administrator...
+        </p>
+      </div>
+    );
+  }
+
+  if (!isSuperAdmin) {
+    return (
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-4 sm:p-6 text-black select-none">
+        <div className="w-full max-w-md bg-white border-[3px] border-black rounded-3xl p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000] text-center space-y-5 animate-in fade-in zoom-in-95">
+          <div className="w-16 h-16 rounded-2xl bg-[#FF6B6B] border-2 border-black flex items-center justify-center mx-auto shadow-[3px_3px_0px_0px_#000]">
+            <Lock className="w-8 h-8 text-black stroke-[2.5]" />
+          </div>
+          <div className="space-y-2">
+            <span className="px-3 py-1 bg-red-100 text-red-900 border border-red-500 rounded-full text-[10px] font-mono font-black uppercase tracking-wider inline-block">
+              Akses Dibatasi
+            </span>
+            <h1 className="text-xl font-black text-black tracking-tight">
+              Khusus Administrator Utama
+            </h1>
+            <p className="text-xs text-zinc-600 font-sans font-medium leading-relaxed">
+              Panel Administrator Majelis NotulenJMM hanya dapat diakses oleh akun resmi{' '}
+              <span className="font-mono font-bold text-black bg-yellow-100 px-1.5 py-0.5 rounded border border-black/20">
+                alfarrezald@gmail.com
+              </span>
+              . Akun Anda ({googleAccount.connected && googleAccount.email ? googleAccount.email : 'Mode Tamu / Belum Login'}) tidak memiliki wewenang administrator untuk membuka tata kelola ini.
+            </p>
+          </div>
+
+          <div className="pt-2 flex flex-col gap-2.5">
+            <button
+              onClick={() => router.push('/arsip')}
+              className="w-full py-2.5 px-4 rounded-xl bg-[#FFE600] text-black font-black text-xs border-2 border-black hover:bg-[#ebd300] transition-all shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
+            >
+              Kembali ke Arsip Sidang
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="w-full py-2.5 px-4 rounded-xl bg-white text-black font-bold text-xs border-2 border-black hover:bg-zinc-100 transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5"
+            >
+              Buka Studio Agenda
+            </button>
+            {googleAccount.connected && (
+              <button
+                onClick={() => handleLogoutGoogle()}
+                className="w-full py-2 px-4 text-xs font-bold text-zinc-500 hover:text-black cursor-pointer transition-colors"
+              >
+                Keluar / Ganti Akun Google
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 sm:space-y-8 pb-12 max-w-7xl mx-auto">
@@ -1011,7 +1080,7 @@ export default function AdminPage() {
                                   </button>
 
                                   <button
-                                    onClick={() => handleDeleteUser(user)}
+                                    onClick={() => setUserToDelete(user)}
                                     title="Hapus akun dari daftar pengguna"
                                     className="p-1.5 rounded-xl border border-black/30 hover:border-black hover:bg-red-100 text-zinc-700 hover:text-red-700 transition-colors cursor-pointer"
                                   >
@@ -1137,6 +1206,72 @@ export default function AdminPage() {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* Neo-Brutalist Custom Delete Confirmation Dialog (Replacing native browser window.confirm) */}
+          {userToDelete && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+              <div className="w-full max-w-md bg-white border-[3px] border-black rounded-3xl p-6 sm:p-7 shadow-[8px_8px_0px_0px_#000] space-y-5 animate-in zoom-in-95 text-left select-none">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#FF6B6B] border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_#000]">
+                    <Trash2 className="w-6 h-6 text-black stroke-[2.5]" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded bg-red-100 text-red-900 border border-red-300">
+                      Konfirmasi Penghapusan
+                    </span>
+                    <h3 className="text-base sm:text-lg font-black text-black tracking-tight mt-0.5">
+                      Hapus Akun Pengguna?
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="bg-[#FFFDF5] border-2 border-black/20 rounded-2xl p-4 space-y-2.5">
+                  <p className="text-xs text-zinc-700 font-sans font-medium leading-relaxed">
+                    Apakah Anda yakin ingin menghapus akun berikut dari daftar pengguna resmi NotulenJMM?
+                  </p>
+                  <div className="p-3 bg-white border-2 border-black rounded-xl flex items-center gap-3 shadow-[2px_2px_0px_0px_#000]">
+                    <div className="w-10 h-10 rounded-xl bg-[#FFE600] border-2 border-black flex items-center justify-center font-black text-sm text-black shrink-0">
+                      {userToDelete.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-black text-black truncate">{userToDelete.name}</p>
+                      <p className="text-[11px] font-mono text-zinc-600 truncate">{userToDelete.email}</p>
+                      {userToDelete.notes && (
+                        <p className="text-[10px] text-zinc-500 font-sans italic truncate">
+                          {userToDelete.notes}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2.5 p-3.5 bg-amber-50 border-2 border-amber-300 rounded-xl text-[11px] text-amber-950 font-sans">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="leading-normal">
+                    Tindakan ini akan mencabut seluruh izin akses akun ke sistem persidangan internal MPK 13.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-end gap-2.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setUserToDelete(null)}
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold font-sans bg-white text-black border-2 border-black hover:bg-zinc-100 transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmDeleteUser}
+                    className="px-5 py-2.5 rounded-xl text-xs font-black font-sans bg-[#FF6B6B] text-black border-2 border-black hover:bg-[#ff5252] transition-all shadow-[3px_3px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Ya, Hapus Akun</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}

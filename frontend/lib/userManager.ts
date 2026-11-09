@@ -21,7 +21,6 @@ export const USERS_UPDATED_EVENT = 'notulenjmm_users_updated';
 
 export const PROTECTED_ADMIN_EMAILS: string[] = [
   'alfarrezald@gmail.com',
-  'davinmaritza@gmail.com',
 ];
 
 export const DEFAULT_MANAGED_USERS: ManagedUser[] = [
@@ -33,17 +32,17 @@ export const DEFAULT_MANAGED_USERS: ManagedUser[] = [
     status: 'ACTIVE',
     lastActiveAt: new Date().toISOString(),
     createdAt: '2026-01-01T00:00:00.000Z',
-    notes: 'Superadministrator MPK SMK Negeri 13 Bandung',
+    notes: 'Superadministrator Utama MPK SMK Negeri 13 Bandung',
   },
   {
     id: 'usr-davinmaritza',
     email: 'davinmaritza@gmail.com',
     name: 'Davin Maritza',
-    role: 'SUPERADMIN',
+    role: 'NOTULIS',
     status: 'ACTIVE',
     lastActiveAt: new Date().toISOString(),
     createdAt: '2026-01-01T00:00:00.000Z',
-    notes: 'Pengembang Sistem NotulenJMM & Presidium',
+    notes: 'Pengembang Sistem NotulenJMM',
   },
   {
     id: 'usr-rahmaraura23',
@@ -80,9 +79,23 @@ export function getManagedUsers(): ManagedUser[] {
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      // Ensure protected accounts always exist in the list
+      // Ensure only alfarrezald@gmail.com is SUPERADMIN and always active
       let modified = false;
       const existing = [...parsed];
+
+      for (let i = 0; i < existing.length; i++) {
+        const u = existing[i];
+        if (u.email.toLowerCase() === 'alfarrezald@gmail.com') {
+          if (u.role !== 'SUPERADMIN' || u.status !== 'ACTIVE') {
+            existing[i] = { ...u, role: 'SUPERADMIN', status: 'ACTIVE' };
+            modified = true;
+          }
+        } else if (u.role === 'SUPERADMIN') {
+          existing[i] = { ...u, role: 'NOTULIS' };
+          modified = true;
+        }
+      }
+
       for (const def of DEFAULT_MANAGED_USERS) {
         const found = existing.some((u) => u.email.toLowerCase() === def.email.toLowerCase());
         if (!found) {

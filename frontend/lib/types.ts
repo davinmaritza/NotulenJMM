@@ -83,7 +83,6 @@ export type UserRole = 'SUPERADMIN' | 'ADMIN' | 'PRESIDIUM' | 'NOTULIS' | 'GUEST
 
 export const ADMIN_EMAILS: string[] = [
   'alfarrezald@gmail.com',
-  'davinmaritza@gmail.com',
 ];
 
 export function isUserAdmin(email?: string | null): boolean {

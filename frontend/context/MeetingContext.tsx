@@ -105,7 +105,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const isAdmin = Boolean(
     googleAccount.connected &&
-      (googleAccount.isAdmin || isUserAdmin(googleAccount.email))
+      googleAccount.email?.trim().toLowerCase() === 'alfarrezald@gmail.com'
   );
 
   const openBeginnerGuide = () => setIsBeginnerGuideOpen(true);
@@ -225,13 +225,15 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
         const storedAcc = getStoredGoogleAccount();
         if (storedAcc.connected && storedAcc.email) {
-          if (isUserAdmin(storedAcc.email)) {
+          const isSuperAdminEmail = storedAcc.email.trim().toLowerCase() === 'alfarrezald@gmail.com';
+          if (isSuperAdminEmail) {
             storedAcc.role = 'SUPERADMIN';
             storedAcc.isAdmin = true;
             storedAcc.isSuspended = false;
           } else {
+            storedAcc.isAdmin = false;
             storedAcc.isSuspended = isUserSuspended(storedAcc.email);
-            storedAcc.role = getUserRole(storedAcc.email) as UserRole;
+            storedAcc.role = (getUserRole(storedAcc.email) === 'SUPERADMIN' ? 'NOTULIS' : getUserRole(storedAcc.email)) as UserRole;
           }
         }
         setGoogleAccountState(storedAcc);

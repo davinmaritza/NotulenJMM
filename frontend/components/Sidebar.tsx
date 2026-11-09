@@ -214,29 +214,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* Group 4: Administrasi & Tata Kelola */}
-          <div className="space-y-2">
-            <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
-              Tata Kelola
-            </span>
-
-            <button
-              onClick={() => handleSelectTab('admin', '/admin')}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
-                currentTab === 'admin'
-                  ? 'bg-[#FFE600] text-black font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] translate-x-0.5'
-                  : 'bg-white text-zinc-800 font-bold border-2 border-black/20 hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_#000]'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Shield className="w-4 h-4 text-black stroke-[2.5]" />
-                <span>Panel Administrator</span>
-              </div>
-              <span className="text-[10px] font-mono font-black px-1.5 py-0.5 rounded bg-black text-[#FFE600]">
-                MPK 13
+          {/* Group 4: Administrasi & Tata Kelola (Hanya untuk alfarrezald@gmail.com) */}
+          {isAdmin && (
+            <div className="space-y-2">
+              <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
+                Tata Kelola
               </span>
-            </button>
-          </div>
+
+              <button
+                onClick={() => handleSelectTab('admin', '/admin')}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer ${
+                  currentTab === 'admin'
+                    ? 'bg-[#FFE600] text-black font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] translate-x-0.5'
+                    : 'bg-white text-zinc-800 font-bold border-2 border-black/20 hover:border-black hover:bg-white hover:shadow-[2px_2px_0px_0px_#000]'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Shield className="w-4 h-4 text-black stroke-[2.5]" />
+                  <span>Panel Administrator</span>
+                </div>
+                <span className="text-[10px] font-mono font-black px-1.5 py-0.5 rounded bg-black text-[#FFE600]">
+                  MPK 13
+                </span>
+              </button>
+            </div>
+          )}
 
           {/* Bantuan */}
           <div className="pt-2 border-t border-black/10">
