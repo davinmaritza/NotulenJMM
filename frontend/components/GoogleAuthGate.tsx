@@ -1,6 +1,6 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import {
   Cloud,
@@ -11,10 +11,9 @@ import {
   Settings,
   AlertCircle,
   RefreshCw,
-  Sparkles,
 } from 'lucide-react';
 import { useMeetings } from '../context/MeetingContext';
-import { getGoogleClientId, setGoogleClientId, getStoredGoogleAccount } from '../lib/googleDriveBackup';
+import { getGoogleClientId, setGoogleClientId } from '../lib/googleDriveBackup';
 
 interface GoogleAuthGateProps {
   onGuestContinue: () => void;
@@ -23,24 +22,10 @@ interface GoogleAuthGateProps {
 export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue }) => {
   const { handleLoginGoogle, handleLoginWithEmail } = useMeetings();
   const [emailInput, setEmailInput] = useState<string>('');
-  const [rememberedEmail, setRememberedEmail] = useState<string | null>(null);
-  const [rememberedName, setRememberedName] = useState<string | null>(null);
-  const [rememberedPhoto, setRememberedPhoto] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [clientIdInput, setClientIdInput] = useState<string>(() => getGoogleClientId());
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const stored = getStoredGoogleAccount();
-      if (stored && stored.email) {
-        setRememberedEmail(stored.email);
-        setRememberedName(stored.name || null);
-        setRememberedPhoto(stored.photoUrl || null);
-      }
-    }
-  }, []);
 
   const handleDirectLogin = (email: string, name?: string) => {
     setIsLoading(true);
@@ -168,46 +153,6 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
                 <p className="font-black text-rose-950">Gagal Masuk</p>
                 <p className="text-[11px] mt-0.5 font-medium">{errorMsg}</p>
               </div>
-            </div>
-          )}
-
-          {/* Previously Used Account if Any */}
-          {rememberedEmail && (
-            <div className="space-y-2 pt-1 border-t-2 border-black/10">
-              <div className="text-[11px] font-black text-black flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
-                  <span>Akun Terakhir Digunakan di Perangkat Ini:</span>
-                </span>
-                <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#A7F3D0] border border-black text-black">
-                  Tersimpan
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleDirectLogin(rememberedEmail, rememberedName || undefined)}
-                className="w-full p-2.5 sm:p-3 rounded-xl border-2 border-black text-left bg-[#FEF9C3] hover:bg-[#FFE600] transition-all shadow-[2px_2px_0px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-between group cursor-pointer"
-              >
-                <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                  <div className="w-8 h-8 rounded-lg bg-white border border-black flex items-center justify-center font-black text-xs text-black shrink-0 overflow-hidden shadow-[1px_1px_0px_0px_#000]">
-                    {rememberedPhoto ? (
-                      <img
-                        src={rememberedPhoto}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      rememberedEmail.charAt(0).toUpperCase()
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <span className="text-xs font-black text-black truncate block">{rememberedName || rememberedEmail}</span>
-                    <p className="text-[10px] text-zinc-700 font-medium truncate mt-0.5">{rememberedEmail}</p>
-                  </div>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-black opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all shrink-0" />
-              </button>
             </div>
           )}
 
