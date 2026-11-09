@@ -18,36 +18,16 @@ interface GoogleAuthGateProps {
 }
 
 export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue }) => {
-  const { handleLoginGoogle, handleLoginWithEmail } = useMeetings();
-  const [emailInput, setEmailInput] = useState<string>('');
+  const { handleLoginGoogle } = useMeetings();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  const handleDirectLogin = (email: string, name?: string) => {
-    setIsLoading(true);
-    setErrorMsg(null);
-    try {
-      const targetEmail = email.trim();
-      if (!targetEmail) {
-        throw new Error('Silakan ketikkan alamat email Anda untuk memulai sesi notulen.');
-      }
-      if (!targetEmail.includes('@') || !targetEmail.includes('.')) {
-        throw new Error('Format email tidak valid. Masukkan format email lengkap (misal: sekretaris@smkn13bdg.sch.id).');
-      }
-      handleLoginWithEmail(targetEmail, name);
-    } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : String(err));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const onGoogleAuthClick = async () => {
     setIsLoading(true);
     setErrorMsg(null);
     try {
       // Trigger Google Identity Services OAuth popup
-      await handleLoginGoogle(emailInput.trim() || undefined);
+      await handleLoginGoogle();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrorMsg(msg);
@@ -180,47 +160,8 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
               )}
             </button>
 
-            {/* Alternative: Direct Email Session (No Google Drive Popup) */}
-            <div className="pt-2 border-t-2 border-black/10 space-y-2">
-              <label htmlFor="gate-email-input" className="text-xs font-black text-black flex items-center justify-between">
-                <span>Atau Masuk dengan Email Notulis (Sesi Lokal):</span>
-                <span className="text-[10px] font-mono text-zinc-500 font-bold">Tanpa Popup</span>
-              </label>
-              <div className="flex gap-2">
-                <input
-                  id="gate-email-input"
-                  name="gateEmail"
-                  type="email"
-                  value={emailInput}
-                  onChange={(e) => {
-                    setEmailInput(e.target.value);
-                    if (errorMsg) setErrorMsg(null);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleDirectLogin(emailInput);
-                    }
-                  }}
-                  placeholder="ketik email (misal: sekretaris@smkn13bdg.sch.id)"
-                  className="flex-1 bg-[#FFFDF5] border-2 border-black text-black font-mono text-xs font-bold rounded-xl px-3.5 py-2.5 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#FFE600]"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleDirectLogin(emailInput)}
-                  disabled={isLoading || !emailInput.trim()}
-                  className="px-4 py-2.5 bg-white hover:bg-zinc-100 disabled:opacity-40 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] active:translate-y-0.5 transition-all cursor-pointer"
-                >
-                  Masuk
-                </button>
-              </div>
-              <p className="text-[10px] text-zinc-600 leading-tight">
-                Gunakan opsi ini jika Anda ingin mencatat tanpa menghubungkan Google Drive.
-              </p>
-            </div>
-
             {/* Offline / Guest Mode Fallback */}
-            <div className="flex items-center justify-center pt-2">
+            <div className="flex items-center justify-center pt-3 border-t-2 border-black/10">
               <button
                 type="button"
                 onClick={onGuestContinue}
