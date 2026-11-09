@@ -1,6 +1,6 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -38,6 +38,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const pathname = usePathname();
   const router = useRouter();
   const { googleAccount, handleLogoutGoogle, handleLoginGoogle, handleLoginWithEmail, openBeginnerGuide, isAdmin } = useMeetings();
+
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState<boolean>(false);
 
   const currentTab =
     activeTab ||
@@ -293,12 +295,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
               <button
                 type="button"
-                onClick={() => {
-                  if (window.confirm('Keluar dari akun Google ini?')) {
-                    sessionStorage.removeItem('notulenjmm_guest_mode');
-                    handleLogoutGoogle();
-                  }
-                }}
+                onClick={() => setShowLogoutConfirm(true)}
                 title="Keluar dari akun Google"
                 className="p-1.5 rounded-lg bg-zinc-50 hover:bg-rose-50 text-zinc-600 hover:text-rose-700 border border-black/40 hover:border-black cursor-pointer transition-colors shrink-0"
                 aria-label="Keluar dari akun Google"
@@ -330,6 +327,53 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
       </aside>
+
+      {/* Minimalist Custom Logout Modal (No ugly native confirm) */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="w-full max-w-sm bg-white border-2 border-black rounded-2xl p-6 shadow-[6px_6px_0px_0px_#000] space-y-4 animate-in zoom-in-95 text-left select-none">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#FF6B6B] border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_#000]">
+                <LogOut className="w-5 h-5 text-black stroke-[2.5]" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded bg-zinc-100 text-zinc-800 border border-black/20">
+                  Konfirmasi Akun
+                </span>
+                <h3 className="text-sm font-black text-black tracking-tight mt-0.5">
+                  Keluar dari NotulenJMM?
+                </h3>
+              </div>
+            </div>
+
+            <p className="text-xs text-zinc-600 font-sans font-medium leading-relaxed">
+              Anda sedang masuk sebagai <span className="font-mono font-bold text-black bg-zinc-100 px-1 py-0.5 rounded">{googleAccount.email}</span>. Seluruh draf lokal Anda tetap tersimpan dengan aman.
+            </p>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white text-black border-2 border-black hover:bg-zinc-100 transition-all cursor-pointer shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLogoutConfirm(false);
+                  sessionStorage.removeItem('notulenjmm_guest_mode');
+                  handleLogoutGoogle();
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-black bg-[#FF6B6B] hover:bg-rose-500 text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <LogOut className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Ya, Keluar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

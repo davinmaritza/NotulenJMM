@@ -30,6 +30,7 @@ import {
   Edit2,
   Zap,
   GraduationCap,
+  ChevronDown,
 } from 'lucide-react';
 import { Meeting, Decision, ActionItem, MeetingAgenda, MeetingFormatStandard } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
@@ -79,6 +80,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedWa, setCopiedWa] = useState(false);
   const [showWaModal, setShowWaModal] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Quick Inline Adders
@@ -1168,7 +1170,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       </div>
 
       {/* Screen View: Executive Document Surface */}
-      <div className="bg-white border-[2.5px] border-black rounded-2xl p-6 sm:p-8 space-y-7 shadow-[6px_6px_0px_0px_#000]">
+      <div className="bg-white border-2 border-black rounded-3xl p-6 sm:p-10 lg:p-12 space-y-8 shadow-[5px_5px_0px_0px_#000]">
         {/* Header & Control Actions */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 border-b-2 border-black/10 pb-6">
           <div className="space-y-2">
@@ -1230,29 +1232,28 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
             </div>
           </div>
 
-          {/* Primary Action Toolbar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFFDF5] border-2 border-black p-3 rounded-2xl shadow-[3px_3px_0px_0px_#000]">
+          {/* Executive Minimalist Action Toolbar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#FFFDF5] border-2 border-black p-3 sm:p-3.5 rounded-2xl shadow-[3px_3px_0px_0px_#000]">
             {/* Group 1: Draf & Format */}
             <div className="flex items-center gap-2 flex-wrap">
               <button
-                onClick={openModificationModal}
-                title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black font-black rounded-xl text-xs border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                <span>Modifikasi Format</span>
-              </button>
-
-              <button
                 onClick={handleManualSaveDraft}
                 title="Simpan perubahan status saat ini ke penyimpanan lokal"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#A7F3D0] hover:bg-emerald-300 text-black font-black border-2 border-black rounded-xl text-xs shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black border-2 border-black rounded-xl text-xs shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5 text-black stroke-[2.5]" />
                 <span>Simpan Perubahan</span>
               </button>
 
-              {/* Action: Jadikan / Batal Arsip */}
+              <button
+                onClick={openModificationModal}
+                title="Buka panel modifikasi format tata naskah, pokok agenda, keputusan, dan penugasan sidang"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-zinc-100 text-black font-bold rounded-xl text-xs border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+                <span>Modifikasi Format</span>
+              </button>
+
               <button
                 onClick={handleToggleArchive}
                 title={
@@ -1260,107 +1261,138 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                     ? 'Sesi ini telah terdaftar sebagai Arsip Resmi MPK 13. Klik untuk membatalkan status arsip.'
                     : 'Kunci dan daftarkan sesi ini sebagai Arsip Resmi MPK 13'
                 }
-                className={`flex items-center gap-1.5 px-3.5 py-2 font-black border-2 border-black rounded-xl text-xs shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-2 font-bold border-2 border-black rounded-xl text-xs shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer ${
                   meeting.isArchived
-                    ? 'bg-[#FEF08A] text-black ring-2 ring-black'
-                    : 'bg-[#FFE600] hover:bg-[#ffd93d] text-black'
+                    ? 'bg-[#FEF08A] text-black ring-2 ring-black font-black'
+                    : 'bg-white hover:bg-zinc-100 text-zinc-800'
                 }`}
               >
                 <Archive className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                <span>{meeting.isArchived ? 'Arsip Terdaftar' : 'Jadikan Arsip'}</span>
+                <span>{meeting.isArchived ? 'Arsip Terdaftar' : 'Arsipkan'}</span>
               </button>
             </div>
 
-            {/* Group 2: Ekspor Dokumen & Kirim WA */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="hidden xl:inline text-[10px] font-black uppercase tracking-wider text-black mr-1">
-                Ekspor:
-              </span>
-
-              {/* Export 1: Kirim ke WhatsApp Langsung (Super Prominent) */}
+            {/* Group 2: Distribusi & Ekspor Terpadu */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* WhatsApp Share */}
               <button
                 onClick={shareToWhatsAppDirect}
-                title="Kirim naskah risalah langsung ke aplikasi WhatsApp / WhatsApp Web"
+                title="Kirim naskah risalah langsung ke aplikasi WhatsApp"
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-[#4ECDC4] hover:bg-teal-400 text-black font-black rounded-xl text-xs border-2 border-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5 fill-current" />
                 <span>Kirim WA</span>
               </button>
 
-              {/* Export: Buka Langsung di Google Docs */}
-              <button
-                onClick={handleExportToGoogleDocs}
-                disabled={isExportingGoogleDocs}
-                title="Ekspor dan buka naskah risalah resmi langsung di Google Docs"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#E0F2FE] hover:bg-sky-300 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer disabled:opacity-50"
-              >
-                {isExportingGoogleDocs ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-700 stroke-[2.5]" />
-                ) : (
-                  <FileText className="w-3.5 h-3.5 text-blue-700 stroke-[2.5]" />
-                )}
-                <span>Google Docs</span>
-              </button>
-
-              {/* Export 2: Unduh Word (.doc) */}
-              <button
-                onClick={exportWord}
-                title="Unduh dokumen Microsoft Word (.doc) lengkap dengan kop dan tabel keputusan"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#38BDF8] hover:bg-sky-400 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-              >
-                <Download className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                <span>Word</span>
-              </button>
-
-              {/* Export 3: Cetak PDF */}
+              {/* Print / PDF Export */}
               <button
                 onClick={() => window.print()}
                 title="Cetak langsung atau simpan dokumen PDF resmi ber-kop sekolah"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#FF6B6B] hover:bg-rose-500 text-black font-black border-2 border-black rounded-xl text-xs shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-zinc-100 text-black font-bold border-2 border-black rounded-xl text-xs shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                <span>PDF</span>
+                <span>Cetak / PDF</span>
               </button>
 
-              {/* Export 4: Unduh Excel (.xls) */}
-              <button
-                onClick={exportExcel}
-                title="Unduh tabel rekapitulasi keputusan dan penugasan sidang dalam format Excel (.xls)"
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#86EFAC] hover:bg-green-400 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2.5px_2.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                <span>Excel</span>
-              </button>
+              {/* Dropdown Ekspor Dokumen Lainnya */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-zinc-100 text-black border-2 border-black rounded-xl text-xs font-bold shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+                  title="Pilihan ekspor dokumen tambahan (Word, Google Docs, Excel, TXT, Markdown)"
+                >
+                  <Download className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+                  <span>Ekspor</span>
+                  <ChevronDown className="w-3 h-3 stroke-[2.5] ml-0.5" />
+                </button>
 
-              {/* Export 5: Unduh TXT */}
-              <button
-                onClick={exportTxt}
-                title="Unduh format teks polos terstruktur (.txt)"
-                className="flex items-center gap-1.5 px-2.5 py-2 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-              >
-                <FileCode className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-                <span>TXT</span>
-              </button>
-
-              {/* Pratinjau Pesan WA */}
-              <button
-                onClick={() => setShowWaModal(true)}
-                title="Buka pratinjau pesan teks format WhatsApp"
-                className="p-2 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-xs shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-                aria-label="Buka pratinjau pesan WhatsApp"
-              >
-                <Share2 className="w-3.5 h-3.5 text-black stroke-[2.5]" />
-              </button>
-
-              {/* Salin MD */}
-              <button
-                onClick={exportMarkdown}
-                title="Salin naskah Markdown"
-                className="p-2 bg-[#FFFDF5] hover:bg-yellow-100 text-black border-2 border-black rounded-xl text-xs shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
-                aria-label="Salin naskah Markdown"
-              >
-                {copiedMd ? <Check className="w-3.5 h-3.5 text-emerald-700 stroke-[3]" /> : <Copy className="w-3.5 h-3.5 text-black stroke-[2.5]" />}
-              </button>
+                {showExportMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-30"
+                      onClick={() => setShowExportMenu(false)}
+                    />
+                    <div className="absolute right-0 top-full mt-2 z-40 w-56 bg-white border-2 border-black rounded-2xl p-2 shadow-[5px_5px_0px_0px_#000] space-y-1 animate-in fade-in zoom-in-95 select-none">
+                      <span className="text-[10px] font-mono font-black uppercase text-zinc-500 px-2 py-1 block">
+                        Pilihan Format Unduhan
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowExportMenu(false);
+                          exportWord();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-black hover:bg-[#FEF08A] transition-colors text-left cursor-pointer"
+                      >
+                        <Download className="w-3.5 h-3.5 text-sky-600 stroke-[2.5]" />
+                        <span>Unduh Word (.doc)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowExportMenu(false);
+                          handleExportToGoogleDocs();
+                        }}
+                        disabled={isExportingGoogleDocs}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-black hover:bg-[#FEF08A] transition-colors text-left cursor-pointer disabled:opacity-50"
+                      >
+                        {isExportingGoogleDocs ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+                        ) : (
+                          <FileText className="w-3.5 h-3.5 text-blue-600 stroke-[2.5]" />
+                        )}
+                        <span>Buka di Google Docs</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowExportMenu(false);
+                          exportExcel();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-black hover:bg-[#FEF08A] transition-colors text-left cursor-pointer"
+                      >
+                        <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
+                        <span>Unduh Excel (.xls)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowExportMenu(false);
+                          exportTxt();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-black hover:bg-[#FEF08A] transition-colors text-left cursor-pointer"
+                      >
+                        <FileCode className="w-3.5 h-3.5 text-zinc-600 stroke-[2.5]" />
+                        <span>Unduh File Teks (.txt)</span>
+                      </button>
+                      <div className="border-t border-black/10 my-1 pt-1" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowExportMenu(false);
+                          exportMarkdown();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-black hover:bg-[#FEF08A] transition-colors text-left cursor-pointer"
+                      >
+                        <Copy className="w-3.5 h-3.5 text-zinc-800 stroke-[2.5]" />
+                        <span>{copiedMd ? 'Tersalin ke Clipboard!' : 'Salin Markdown (.md)'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowExportMenu(false);
+                          setShowWaModal(true);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-black hover:bg-[#FEF08A] transition-colors text-left cursor-pointer"
+                      >
+                        <Share2 className="w-3.5 h-3.5 text-zinc-800 stroke-[2.5]" />
+                        <span>Pratinjau Teks WhatsApp</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

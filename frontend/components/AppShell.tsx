@@ -167,14 +167,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
           </div>
         </header>
 
-        {/* Content Body with phone-optimized top breathing room */}
-        <main className="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-6 md:px-8 pt-5 sm:pt-8 pb-8 sm:pb-12 space-y-4 sm:space-y-6">
+        {/* Content Body with generous modern breathing room and fluid container */}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 lg:px-10 pt-6 sm:pt-8 pb-10 sm:pb-16 space-y-6 sm:space-y-8">
           {children}
         </main>
 
         {/* Neo-Brutalist Institutional Footer */}
         <footer className="mt-auto border-t-2 border-black bg-[#FFFDF5] py-4 text-center text-xs text-black">
-          <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 text-[11px] font-mono font-bold text-black text-center sm:text-left">
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-3 text-[11px] font-mono font-bold text-black text-center sm:text-left">
             <p className="leading-relaxed">
               NotulenJMM • Hak Cipta &copy; 2026 <strong className="font-black text-black">MPK SMK Negeri 13 Bandung</strong>. Karya <strong className="font-black text-black">Davin Maritza</strong>.
             </p>
