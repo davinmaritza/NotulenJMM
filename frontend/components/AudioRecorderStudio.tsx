@@ -63,6 +63,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
   const [audioDevices, setAudioDevices] = useState<{ deviceId: string; label: string }[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('default');
   const [audioLevel, setAudioLevel] = useState<number>(0);
+  const [liveTranscript, setLiveTranscript] = useState<string>('');
 
   // Processing & Toast State
   const [isProcessing, setIsProcessing] = useState(false);
@@ -78,6 +79,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   // Enumerate input devices on mount
   useEffect(() => {
@@ -259,6 +261,38 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       setIsRecording(true);
       setIsPaused(false);
 
+      // Initialize real-time browser Speech Recognition if available
+      if (typeof window !== 'undefined') {
+        const SpeechRecognition =
+          (window as unknown as { SpeechRecognition?: any; webkitSpeechRecognition?: any }).SpeechRecognition ||
+          (window as unknown as { SpeechRecognition?: any; webkitSpeechRecognition?: any }).webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          try {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'id-ID';
+            recognition.onresult = (event: any) => {
+              let text = '';
+              for (let i = 0; i < event.results.length; i++) {
+                text += event.results[i][0].transcript + ' ';
+              }
+              const clean = text.trim();
+              if (clean) {
+                setLiveTranscript(clean);
+              }
+            };
+            recognition.onerror = (e: any) => {
+              console.warn('SpeechRecognition notice:', e);
+            };
+            recognition.start();
+            recognitionRef.current = recognition;
+          } catch (e) {
+            console.warn('Could not start SpeechRecognition:', e);
+          }
+        }
+      }
+
       drawWaveform();
     } catch (err: unknown) {
       console.error('Microphone access denied:', err);
@@ -272,6 +306,9 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     if (mediaRecorderRef.current && isRecording && !isPaused) {
       mediaRecorderRef.current.pause();
       setIsPaused(true);
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch {}
+      }
     }
   };
 
@@ -279,6 +316,9 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     if (mediaRecorderRef.current && isRecording && isPaused) {
       mediaRecorderRef.current.resume();
       setIsPaused(false);
+      if (recognitionRef.current) {
+        try { recognitionRef.current.start(); } catch {}
+      }
     }
   };
 
@@ -287,6 +327,9 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       setIsPaused(false);
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch {}
+      }
     }
   };
 
@@ -297,11 +340,16 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
     }
+    if (recognitionRef.current) {
+      try { recognitionRef.current.abort(); } catch {}
+      recognitionRef.current = null;
+    }
     setIsRecording(false);
     setIsPaused(false);
     setSeconds(0);
     setAudioUrl(null);
     setRecordedBlob(null);
+    setLiveTranscript('');
     setErrorMessage(null);
     setDraftToast(null);
   };
@@ -362,7 +410,8 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       const response = await transcribeAudioApi(
         audioToProcess,
         undefined,
-        selectedFile ? selectedFile.name : `rekaman-vn-${Date.now()}.webm`
+        selectedFile ? selectedFile.name : `rekaman-vn-${Date.now()}.webm`,
+        liveTranscript || undefined
       );
 
       setProcessingStep('Menyusun naskah risalah & ketetapan sidang resmi...');
@@ -585,6 +634,27 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               {formatTime(seconds)}
             </div>
           </div>
+
+          {/* Live Real-time Transcribed Words Badge & Editor */}
+          {(liveTranscript || recordedBlob) && (
+            <div className="p-3 bg-[#FFFDF5] border-2 border-black rounded-xl text-xs font-bold text-black flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-[2px_2px_0px_0px_#000] animate-in fade-in">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="bg-[#FFE600] px-2 py-0.5 rounded border border-black text-[10px] uppercase font-black shrink-0 tracking-wider">
+                  Ucapan Terdeteksi
+                </span>
+                <input
+                  type="text"
+                  value={liveTranscript}
+                  onChange={(e) => setLiveTranscript(e.target.value)}
+                  placeholder="Ucapan yang terdeteksi muncul di sini (dapat Anda edit jika ada salah dengar)..."
+                  className="bg-transparent border-b border-black/30 focus:border-black focus:outline-none text-xs text-zinc-900 font-semibold font-mono w-full px-1 py-0.5"
+                />
+              </div>
+              <span className="text-[10px] text-zinc-500 font-medium shrink-0">
+                (Bisa diedit langsung)
+              </span>
+            </div>
+          )}
 
           {/* Recorder Transport Controls */}
           <div className="flex flex-wrap items-center justify-center gap-3 py-1">

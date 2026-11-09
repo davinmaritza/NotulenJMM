@@ -10,15 +10,16 @@ router = APIRouter()
 @router.post(
     "/transcribe",
     response_model=TranscribeResponse,
-    summary="Transcribe and Diarize Audio via Microsoft VibeVoice",
+    summary="Transcribe and Diarize Audio via Microsoft VibeVoice & Speech Recognition",
 )
 async def transcribe_audio(
     audio: UploadFile = File(..., description="Audio recording file (webm, wav, mp3, m4a, ogg)"),
     meeting_id: Optional[str] = Form(None, description="Optional meeting identifier"),
+    client_transcript: Optional[str] = Form(None, description="Optional real-time transcript from browser speech recognition"),
 ):
     """
-    Ingests recorded audio, performs long-form ASR (up to 60 minutes) and
-    joint speaker diarization (Who, When, What) using Microsoft VibeVoice pipeline.
+    Ingests recorded audio, performs long-form ASR and
+    joint speaker diarization using real speech recognition engine.
     """
     if not audio.filename:
         raise HTTPException(status_code=400, detail="Audio file must have a valid filename.")
@@ -39,7 +40,10 @@ async def transcribe_audio(
 
     try:
         saved_path = await vibevoice_service.save_audio_file(audio.filename, content)
-        segments, duration = await vibevoice_service.transcribe_and_diarize(saved_path)
+        segments, duration = await vibevoice_service.transcribe_and_diarize(
+            saved_path,
+            client_transcript=client_transcript
+        )
 
         unique_speakers = len(set(s.speaker for s in segments))
 
