@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { Meeting, AudioSegment, HistoryLog, GoogleDriveAccount, isUserAdmin, ADMIN_EMAILS, UserRole } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
-import { createMplsMeetingTemplate } from '../lib/meetingTemplates';
+import { createMplsMeetingTemplate, OFFICIAL_MEETING_TEMPLATES } from '../lib/meetingTemplates';
 import { formatIndonesianDateTime } from '../lib/indonesianDate';
 import {
   upsertUserOnLogin,
@@ -53,6 +53,7 @@ interface MeetingContextType {
   handleSynthesizeNotulen: (customNotes?: string) => Promise<void>;
   handleCreateNewMeeting: () => string;
   handleCreateMplsMeeting: () => string;
+  handleCreateTemplateMeeting: (templateId: string) => string;
   handleStartCraftSession: (session: {
     cardTitle: string;
     cardDescription: string;
@@ -782,17 +783,22 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return newMeet.id;
   };
 
-  const handleCreateMplsMeeting = (): string => {
-    const mplsMeet = createMplsMeetingTemplate();
-    setMeetings((prev) => [mplsMeet, ...prev.filter((m) => m.id !== mplsMeet.id)]);
-    setActiveMeetingId(mplsMeet.id);
+  const handleCreateTemplateMeeting = (templateId: string): string => {
+    const matched = OFFICIAL_MEETING_TEMPLATES.find((t) => t.id === templateId);
+    const targetMeet = matched ? matched.create() : createMplsMeetingTemplate();
+    setMeetings((prev) => [targetMeet, ...prev.filter((m) => m.id !== targetMeet.id)]);
+    setActiveMeetingId(targetMeet.id);
     const updatedLogs = addHistoryLog(
       'CREATE',
-      'Pembuatan Agenda MPLS',
-      `Membuat agenda resmi pembentukan panitia MPLS '${mplsMeet.title}'.`
+      'Pembuatan Risalah Sidang Template',
+      `Membuat agenda resmi dari template '${targetMeet.title}'.`
     );
     setHistoryLogs(updatedLogs);
-    return mplsMeet.id;
+    return targetMeet.id;
+  };
+
+  const handleCreateMplsMeeting = (): string => {
+    return handleCreateTemplateMeeting('panitia-mpls');
   };
 
   const handleStartCraftSession = (session: {
@@ -870,6 +876,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         handleSynthesizeNotulen,
         handleCreateNewMeeting,
         handleCreateMplsMeeting,
+        handleCreateTemplateMeeting,
         handleStartCraftSession,
         isRecording,
         isSynthesizing,

@@ -70,47 +70,51 @@ interface CommissionInfo {
 const DEFAULT_COMMISSIONS: CommissionInfo[] = [
   {
     id: 'komisi-a',
-    name: 'Komisi A (Organisasi, Hukum & Kaderisasi)',
+    name: 'Komisi A (Pengawasan OSIS & Kebijakan)',
     code: 'KOM-A',
-    coordinator: 'Siti Rahmawati',
-    classGrade: 'XI RPL 1',
-    memberCount: 6,
-    focus: 'Verifikasi kuorum sidang, tata tertib musyawarah, penyelarasan AD/ART, dan sertijab pengurus.',
+    coordinator: 'Zafana Alaiqa Zachwan & Danis Ferdiansyah',
+    classGrade: 'XI KA 2 & XI PPLG 1',
+    memberCount: 16,
+    focus: 'Pengawasan kinerja OSIS, penyelenggaraan Sidang Pleno (I, II, III), Sidang GBHK, penertiban SP, evaluasi pra/pasca acara, serta pengelolaan arsip digital Jalur Menyurat MPK (JMM).',
     color: '#FFE600',
-    activePrograms: ['Sosialisasi Tata Naskah Dinas', 'Uji Kelayakan Calon Pengurus MPK', 'Sidang Pleno Evaluasi'],
+    activePrograms: [
+      'Sidang Pleno Pengawasan OSIS (I, II, III)',
+      'Sidang GBHK & Evaluasi Rapat Sekbid',
+      'Penerbitan Surat Peringatan (SP) OSIS',
+      'Pengelolaan Arsip Digital Jalur Menyurat MPK (JMM)',
+    ],
   },
   {
     id: 'komisi-b',
-    name: 'Komisi B (Aspirasi, Advokasi & Humas)',
+    name: 'Komisi B (Tata Kelola Ekstrakurikuler & Lapangan)',
     code: 'KOM-B',
-    coordinator: 'Dimas Pratama',
-    classGrade: 'XI TKJ 2',
-    memberCount: 8,
-    focus: 'Penjaringan suara perwakilan kelas, advokasi aspirasi siswa ke sekolah, dan publikasi transparansi.',
+    coordinator: 'Muhammad Imam Mulhakim & Adinda Syarifa Setiawan',
+    classGrade: 'XI TJKT 2 & XI KA 4',
+    memberCount: 13,
+    focus: 'Penyelenggaraan Rapat Delegasi Ekstrakurikuler (minimal 6 bulan sekali), sinkronisasi jadwal lapangan (Planner), monitoring presensi kegiatan, serta advokasi sarana & pembina ekskul.',
     color: '#38BDF8',
-    activePrograms: ['Kotak Aspirasi Digital', 'Buletin Suara Majelis', 'Forum Dialog Terbuka Siswa'],
+    activePrograms: [
+      'Rapat Delegasi Ekstrakurikuler Formal & Non-Formal',
+      'Penyusunan Jadwal Penggunaan Lapangan (Planner)',
+      'Monitoring Presensi & Pelaporan Triwulan Ekskul',
+      'Advokasi Sarana Lomba & Fasilitas Ekstrakurikuler',
+    ],
   },
   {
     id: 'komisi-c',
-    name: 'Komisi C (Anggaran, Keuangan & Aset)',
+    name: 'Komisi C (Aspirasi Siswa, Survei LSM & Media Publikasi)',
     code: 'KOM-C',
-    coordinator: 'Alya Zahra',
-    classGrade: 'XI AKL 1',
-    memberCount: 5,
-    focus: 'Pengawasan rancangan anggaran OSIS & Ekskul, audit SPJ kegiatan, dan inventarisasi fasilitas majelis.',
+    coordinator: 'Restu Noor Aditia Rae & Nuri Anastasya Oktaviana',
+    classGrade: 'XI PPLG 2 & XI KA 6',
+    memberCount: 18,
+    focus: 'Penjaringan suara siswa via Program AKSARA, survei langsung per kelas oleh LSM (Lembaga Survey MPK), telaah aspirasi ke OSIS via JMM, serta konten publikasi kreatif (Desainer & CapTeam).',
     color: '#A7F3D0',
-    activePrograms: ['Audit Transparansi SPJ LDKS', 'Verifikasi RAPB Tahunan', 'Standarisasi Format Kwitansi'],
-  },
-  {
-    id: 'komisi-d',
-    name: 'Komisi D (Pengawasan Ekstrakurikuler & Disiplin)',
-    code: 'KOM-D',
-    coordinator: 'Farhan Malik',
-    classGrade: 'XI DKV 1',
-    memberCount: 7,
-    focus: 'Monitoring keterlaksanaan program kerja 23 ekstrakurikuler, evaluasi pembina, dan disiplin anggota.',
-    color: '#FF6B6B',
-    activePrograms: ['Monitoring Latihan Gabungan Ekskul', 'Evaluasi Keterlaksanaan Proker', 'Pemberian Rekomendasi'],
+    activePrograms: [
+      'Program AKSARA (Aksi Siswa Bersuara)',
+      'Survei Berkala LSM (Lembaga Survey MPK)',
+      'Aspiration Day & Menfess Porak/Porseni',
+      'Publikasi Media Sosial Resmi & Edukasi Kebijakan',
+    ],
   },
 ];
 
@@ -582,7 +586,7 @@ export default function AdminPage() {
           }`}
         >
           <Users className="w-4 h-4 stroke-[2.5]" />
-          <span>Tata Kelola 4 Komisi</span>
+          <span>Tata Kelola 3 Komisi (AD/ART)</span>
         </button>
 
         <button
@@ -676,40 +680,54 @@ export default function AdminPage() {
 
           {/* Presidium Card */}
           <div className="bg-white border-2 border-black rounded-2xl p-5 sm:p-6 shadow-[4px_4px_0px_0px_#000] space-y-4">
-            <div className="flex items-center justify-between border-b-2 border-black/10 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-black/10 pb-3 gap-2">
               <div className="flex items-center gap-2">
                 <Award className="w-5 h-5 text-amber-600 stroke-[2.5]" />
-                <h2 className="text-base font-black text-black">Presidium Sidang Utama • MPK Periode 2026/2027</h2>
+                <h2 className="text-base font-black text-black">Presidium Sidang Utama • MPK Periode 2025/2026</h2>
               </div>
-              <span className="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded border border-black">
-                SK Kepala SMKN 13 Bandung
-              </span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[11px] font-mono font-bold text-black bg-[#FFE600] px-2.5 py-0.5 rounded border border-black shadow-[1px_1px_0px_0px_#000]">
+                  MPK Nawadasha Bhakti Amita Paramartha
+                </span>
+                <span className="text-xs font-mono font-bold text-zinc-600 bg-zinc-100 px-2 py-0.5 rounded border border-black">
+                  SK Kepala SMKN 13 Bandung
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="p-3.5 rounded-xl bg-[#FFFDF5] border-2 border-black space-y-1">
                 <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Ketua MPK</span>
-                <p className="text-sm font-black text-black">Davin Maritza</p>
-                <p className="text-[11px] text-zinc-600">Pimpinan Sidang Pleno I</p>
+                <p className="text-sm font-black text-black">Shafa Na’ila Hasna</p>
+                <p className="text-[11px] text-zinc-600 font-mono">NIS. 102419165 • Presidium Sidang I</p>
               </div>
 
               <div className="p-3.5 rounded-xl bg-[#FFFDF5] border-2 border-black space-y-1">
-                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Wakil Ketua MPK</span>
-                <p className="text-sm font-black text-black">M. Rizky Pratama</p>
-                <p className="text-[11px] text-zinc-600">Pimpinan Sidang Pleno II</p>
+                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Sekretaris I (Notulis MPK)</span>
+                <p className="text-sm font-black text-black">Praya Nuri Fairuuz</p>
+                <p className="text-[11px] text-zinc-600 font-mono">NIS. 102419230 • Penanggung Jawab Risalah</p>
               </div>
 
               <div className="p-3.5 rounded-xl bg-[#FFFDF5] border-2 border-black space-y-1">
-                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Sekretaris Jenderal</span>
-                <p className="text-sm font-black text-black">Nadhira Putri</p>
-                <p className="text-[11px] text-zinc-600">Penanggung Jawab Notulensi</p>
+                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Pembina Kesiswaan MPK</span>
+                <p className="text-sm font-black text-black">Tessa Eka Yuniar, S.Pd.</p>
+                <p className="text-[11px] text-zinc-600">Pembina MPK SMK Negeri 13</p>
               </div>
 
               <div className="p-3.5 rounded-xl bg-[#FFFDF5] border-2 border-black space-y-1">
-                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Bendahara Umum</span>
-                <p className="text-sm font-black text-black">Kayla Anindya</p>
-                <p className="text-[11px] text-zinc-600">Verifikator Anggaran Sidang</p>
+                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Kepala Sekolah / Pelindung</span>
+                <p className="text-sm font-black text-black">Agus Nugroho, S.Pd., M.T.</p>
+                <p className="text-[11px] text-zinc-600">Penanggung Jawab Kebijakan</p>
               </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-900 flex items-center justify-between flex-wrap gap-2">
+              <span className="font-medium">
+                Penyelarasan AD/ART MPK Nawadasha Bhakti Amita Paramartha (NBAP) Masa Bakti 2025/2026.
+              </span>
+              <span className="font-mono text-[11px] font-bold bg-white px-2 py-0.5 rounded border border-amber-300">
+                Pengembang: Davin Maritza (Jalur Menyurat MPK / Komisi A &amp; C)
+              </span>
             </div>
           </div>
 
@@ -1278,10 +1296,10 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* TAB 2: 4 COMMISSIONS MANAGEMENT */}
+      {/* TAB 2: 3 COMMISSIONS MANAGEMENT (AD/ART MPK SMKN 13) */}
       {activeTab === 'commissions' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {commissions.map((comm) => (
               <div
                 key={comm.id}
