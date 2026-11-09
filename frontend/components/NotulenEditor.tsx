@@ -896,6 +896,16 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
       const formatPrompts: Record<MeetingFormatStandard, string> = {
         TATA_NASKAH_DINAS:
           'Tata Naskah Dinas Resmi MPK 13. Susun konsiderans hukum, pasal ketetapan pleno, dan bahasa yuridis resmi.',
+        MUBES_AD_ART:
+          'Format Musyawarah Besar (MUBES) MPK NBAP. Konsiderans Pancasila, UUD 1945, UU No. 20/2003, pengesahan pasal-pasal Anggaran Dasar & Anggaran Rumah Tangga, serta TAP MUBES resmi.',
+        SIDANG_GBHK:
+          'Format Sidang Garis Besar Haluan Kerja (GBHK) MPK-OSIS. Pengesahan program kerja tahunan OSIS, telaah matriks sekbid 1-10, batas waktu SPJ, dan ketetapan TAP bersama.',
+        SIDANG_PLENO_OSIS:
+          'Format Sidang Pleno Pengawasan OSIS (Komisi A). Evaluasi ketercapaian triwulan proker sekbid OSIS, uji bukti kepatuhan kas, dan surat rekomendasi / peringatan (SP).',
+        SIDANG_ISTIMEWA_PERADILAN:
+          'Format Sidang Istimewa Peradilan Mahkamah MPK. Struktur Majelis Hakim, JPU Komisi A, Terdakwa, Penasihat Hukum, saksi, sumpah peradilan, dan amar putusan sanksi organisasi.',
+        RAPAT_DELEGASI_EKSKUL:
+          'Format Rapat Delegasi Ekstrakurikuler (Komisi B). Sinkronisasi matriks jadwal lapangan olahraga (Planner), rekapitulasi presensi triwulan (Informator), dan fasilitas ekskul.',
         PEMBENTUKAN_PANITIA_MPLS:
           'Format Pembentukan Panitia MPLS & Pokja Kegiatan. Susun struktur panitia pelaksana (Ketua, Sekretaris, Bendahara), 6 koordinator divisi operasional, estimasi RAB, dan tata tertib ramah anak.',
         RISALAH_PADAT:
@@ -1808,7 +1818,7 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
               {/* Standar Format Selector */}
               <div className="space-y-2">
                 <p className="text-xs font-black text-black block">
-                  Pilih Standar Format Tata Naskah:
+                  Pilih Standar Format Tata Naskah (Sesuai AD/ART MPK 13):
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
                   {[
@@ -1816,6 +1826,31 @@ export const NotulenEditor: React.FC<NotulenEditorProps> = ({ meeting, onUpdateM
                       key: 'TATA_NASKAH_DINAS' as MeetingFormatStandard,
                       title: 'Tata Naskah Dinas MPK 13',
                       desc: 'Format Berita Acara & SK Resmi lengkap',
+                    },
+                    {
+                      key: 'MUBES_AD_ART' as MeetingFormatStandard,
+                      title: 'MUBES AD/ART',
+                      desc: 'Sidang tertinggi pengesahan konstitusi & proker',
+                    },
+                    {
+                      key: 'SIDANG_GBHK' as MeetingFormatStandard,
+                      title: 'Sidang GBHK MPK-OSIS',
+                      desc: 'Pengesahan matriks program kerja OSIS tahunan',
+                    },
+                    {
+                      key: 'SIDANG_PLENO_OSIS' as MeetingFormatStandard,
+                      title: 'Pleno Pengawasan (Kom-A)',
+                      desc: 'Evaluasi kinerja OSIS, SP, & audit kas kegiatan',
+                    },
+                    {
+                      key: 'RAPAT_DELEGASI_EKSKUL' as MeetingFormatStandard,
+                      title: 'Delegasi Ekskul (Kom-B)',
+                      desc: 'Jadwal lapangan (Planner) & presensi ekskul',
+                    },
+                    {
+                      key: 'SIDANG_ISTIMEWA_PERADILAN' as MeetingFormatStandard,
+                      title: 'Sidang Istimewa Peradilan',
+                      desc: 'Hakim Agung, JPU, penegakan sanksi & mahkamah',
                     },
                     {
                       key: 'PEMBENTUKAN_PANITIA_MPLS' as MeetingFormatStandard,

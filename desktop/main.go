@@ -38,7 +38,7 @@ func openBrowser(url string) error {
 
 func main() {
 	fmt.Println("==================================================================")
-	fmt.Println("   NOTULENJMM - MPK SMK NEGERI 13 BANDUNG (v0.9.1)")
+	fmt.Println("   NOTULENJMM - MPK SMK NEGERI 13 BANDUNG (v0.9.2)")
 	fmt.Println("   Sistem Manajemen Risalah Sidang & Dokumentasi Digital")
 	fmt.Println("   Karya: Davin Maritza | Lisensi: MIT License")
 	fmt.Println("==================================================================")

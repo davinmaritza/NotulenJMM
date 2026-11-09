@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMeetings } from '../context/MeetingContext';
+import { OFFICIAL_MEETING_TEMPLATES } from '../lib/meetingTemplates';
 
 export interface CardConfig {
   id: string;
@@ -63,43 +64,55 @@ export interface CraftStudioConfig {
 export const PRESET_MPK: CraftStudioConfig = {
   tab1Name: 'Format Musyawarah',
   tab2Name: 'Bank Dokumen',
-  headerTitle: 'Format Musyawarah & Penyusunan Risalah Sidang',
-  headerSubtitle: 'Pilih format persidangan, susun pokok usulan komisi atau dewan pembina, dan rumuskan risalah resmi berstandar Majelis Perwakilan Kelas SMK Negeri 13 Bandung.',
+  headerTitle: 'Format Musyawarah & Risalah Sidang MPK 13',
+  headerSubtitle: 'Pilih format persidangan resmi, susun konsiderans hukum atau usulan komisi, dan rumuskan risalah berstandar AD/ART MPK Nawadasha Bhakti Amita Paramartha.',
   step1Title: 'Pilih format persidangan majelis',
   step2Title: 'Uraikan pokok bahasan & materi usulan',
-  promptPlaceholder: 'Tuliskan pokok agenda sidang MPK SMK Negeri 13 Bandung, draf pasal ketetapan, usulan perwakilan kelas, atau alokasi anggaran yang akan diputuskan...',
+  promptPlaceholder: 'Tuliskan pokok agenda sidang MPK SMK Negeri 13 Bandung, draf pasal ketetapan TAP, materi dakwaan sidang peradilan, atau rekomendasi komisi...',
   cards: [
     {
-      id: 'pleno',
-      iconName: 'Scale',
-      title: 'Sidang Pleno',
-      description: 'Tata tertib, ketetapan majelis, dan voting pengurus kelas',
+      id: 'mubes-ad-art',
+      iconName: 'Building2',
+      title: 'Musyawarah Besar (MUBES)',
+      description: 'Pengesahan Anggaran Dasar, ART, dan Garis Besar Program Kerja MPK NBAP 2025/2026',
     },
     {
-      id: 'raker',
-      iconName: 'Users',
-      title: 'Rapat Kerja (Raker)',
-      description: 'Penyusunan program kerja, koordinasi komisi & divisi OSIS',
-    },
-    {
-      id: 'evaluasi',
+      id: 'sidang-gbhk',
       iconName: 'FileText',
-      title: 'Evaluasi Program (LPJ)',
-      description: 'Laporan pertanggungjawaban kegiatan & evaluasi kinerja siswa',
+      title: 'Sidang GBHK (MPK - OSIS)',
+      description: 'Pengesahan matriks program kerja tahunan OSIS, batas waktu SPJ, dan pagu kas',
     },
     {
-      id: 'kustom',
-      iconName: 'Sliders',
-      title: 'Agenda Kustom',
-      description: 'Format terbuka untuk koordinasi darurat, komisi khusus, atau ide bebas',
-      isCustom: true,
+      id: 'pleno-pengawasan-osis',
+      iconName: 'Scale',
+      title: 'Sidang Pleno Pengawasan OSIS',
+      description: 'Evaluasi program kerja Sekbid OSIS (Komisi A), kepatuhan SPJ, dan rekomendasi berkala',
+    },
+    {
+      id: 'delegasi-ekskul',
+      iconName: 'Users',
+      title: 'Rapat Delegasi Ekstrakurikuler',
+      description: 'Penataan jadwal lapangan (Planner), absensi triwulan (Informator), dan sarana ekskul',
+    },
+    {
+      id: 'sidang-peradilan',
+      iconName: 'Shield',
+      title: 'Sidang Istimewa Peradilan',
+      description: 'Kekuasaan kehakiman, Hakim Agung, JPU, penegakan sanksi dan amar putusan peradilan',
+    },
+    {
+      id: 'panitia-mpls',
+      iconName: 'Trophy',
+      title: 'Pembentukan Panitia MPLS',
+      description: 'Struktur panitia masa orientasi, pembagian 6 divisi operasional, RAB, & rundown ramah anak',
     },
   ],
   ideaPills: [
-    'Evaluasi LPJ Porseni Semester Genap',
-    'Perencanaan Anggaran Dana LDKS 2026',
-    'Struktur Kepengurusan MPK Periode 2026/2027',
-    'Penyusunan Aspirasi Siswa Terkait Fasilitas Sekolah',
+    'Pengesahan Anggaran Dasar & Rumah Tangga (AD/ART) MPK NBAP',
+    'Sidang Pleno I Pengawasan Realisasi Program Kerja OSIS (Komisi A)',
+    'Sinkronisasi Matriks Jadwal Lapangan 23 Ekstrakurikuler (Komisi B)',
+    'Sidang Istimewa Peradilan Penegakan Disiplin Organisasi (Mahkamah MPK)',
+    'Program AKSARA & Kotak Saran IT Aspirasi Siswa (Komisi C)',
   ],
 };
 
@@ -210,15 +223,19 @@ interface CraftStudioViewProps {
 
 export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession }) => {
   const router = useRouter();
-  const { openBeginnerGuide, isBeginnerMode, handleCreateMplsMeeting } = useMeetings();
+  const { openBeginnerGuide, isBeginnerMode, handleCreateMplsMeeting, handleCreateTemplateMeeting } = useMeetings();
   const [config, setConfig] = useState<CraftStudioConfig>(PRESET_MPK);
   const [activePreset, setActivePreset] = useState<'mpk' | 'mpls' | 'organisasi' | 'custom'>('mpk');
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [saveStatus, setSaveStatus] = useState<string>('');
 
-  const handleTryInstantExample = () => {
-    handleCreateMplsMeeting();
+  const handleLaunchOfficialTemplate = (templateId: string) => {
+    handleCreateTemplateMeeting(templateId);
     router.push('/notulen');
+  };
+
+  const handleTryInstantExample = () => {
+    handleLaunchOfficialTemplate('panitia-mpls');
   };
 
   // Interactive selection states
@@ -408,6 +425,11 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
   const selectedCard = config.cards.find((c) => c.id === selectedCardId) || config.cards[0];
 
   const handleStart = () => {
+    const matchedTemplate = OFFICIAL_MEETING_TEMPLATES.find((t) => t.id === selectedCardId);
+    if (matchedTemplate && !promptText.trim()) {
+      handleLaunchOfficialTemplate(matchedTemplate.id);
+      return;
+    }
     onStartSession({
       cardTitle: selectedCard ? selectedCard.title : 'Sesi Baru',
       cardDescription: selectedCard ? selectedCard.description : '',
@@ -490,6 +512,33 @@ export const CraftStudioView: React.FC<CraftStudioViewProps> = ({ onStartSession
               <p className="text-[11px] font-bold text-black leading-tight">
                 Langkah 3: Klik tombol kuning &quot;Mulai Sesi Rapat&quot;
               </p>
+            </div>
+          </div>
+
+          {/* Template Resmi Sidang AD/ART MPK 13 (1-Klik Langsung Siap) */}
+          <div className="pt-2.5 border-t-2 border-black/10 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono uppercase font-black text-zinc-700 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600 stroke-[2.5]" />
+                Template Risalah Resmi AD/ART MPK NBAP (1-Klik Langsung Siap):
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {OFFICIAL_MEETING_TEMPLATES.map((tmpl) => (
+                <button
+                  key={tmpl.id}
+                  type="button"
+                  onClick={() => handleLaunchOfficialTemplate(tmpl.id)}
+                  className="p-2.5 bg-white hover:bg-[#FFE600] text-black border-2 border-black rounded-xl text-left shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex flex-col justify-between group"
+                >
+                  <span className="text-[9px] font-mono font-black uppercase px-1.5 py-0.5 bg-zinc-100 group-hover:bg-white rounded border border-black inline-block self-start mb-1">
+                    {tmpl.badge}
+                  </span>
+                  <p className="text-xs font-black text-black leading-tight line-clamp-2">
+                    {tmpl.title}
+                  </p>
+                </button>
+              ))}
             </div>
           </div>
         </div>

@@ -457,6 +457,216 @@ export function createMplsMeetingTemplate(): Meeting {
   };
 }
 
+/**
+ * Template Resmi: Sidang GBHK (Garis Besar Haluan Kerja) MPK - OSIS
+ * Berdasarkan ART Bab III Pasal 19-21
+ */
+export function createSidangGbhkTemplate(): Meeting {
+  const now = new Date();
+  const dateFormatted = formatIndonesianDateTime(now, '09:00', '15:00');
+
+  return {
+    id: `meet-gbhk-${Date.now()}`,
+    title: 'Sidang GBHK (Garis Besar Haluan Kerja) Pengesahan Program Kerja OSIS 2025/2026',
+    date: dateFormatted,
+    location: 'Aula Utama SMK Negeri 13 Bandung',
+    organizer: 'MPK & OSIS SMK Negeri 13 Bandung',
+    status: 'FINALIZED',
+    durationSeconds: 240 * 60,
+    formatStandard: 'SIDANG_GBHK',
+    leaderName: 'Shafa Na’ila Hasna (Ketua MPK) & Ketua Presidium Sidang',
+    noteTakerName: 'Praya Nuri Fairuuz & Davin Maritza (Jalur Menyurat MPK)',
+    lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+    attendees: [
+      { id: 'att-g-1', name: 'Shafa Na’ila Hasna', role: 'Leader', present: true },
+      { id: 'att-g-2', name: 'Praya Nuri Fairuuz', role: 'Note Taker', present: true },
+      { id: 'att-g-3', name: 'Zafana Alaiqa Zachwan (Komisi A)', role: 'Member', present: true },
+      { id: 'att-g-4', name: 'Danis Ferdiansyah (Komisi A)', role: 'Member', present: true },
+      { id: 'att-g-5', name: 'Davin Maritza (JMM)', role: 'Member', present: true },
+      { id: 'att-g-6', name: 'Badan Pengurus Harian OSIS', role: 'Member', present: true },
+      { id: 'att-g-7', name: 'Koordinator Sekbid 1 - 10 OSIS', role: 'Member', present: true },
+      { id: 'att-g-8', name: 'Tessa Eka Yuniar, S.Pd. (Pembina)', role: 'Guest', present: true },
+    ],
+    transcript: [
+      {
+        id: 'tr-g-1',
+        speaker: 'Pimpinan Sidang GBHK',
+        startTime: '00:05',
+        endTime: '01:25',
+        text: 'Sidang Garis Besar Haluan Kerja (GBHK) MPK bersama OSIS SMK Negeri 13 Bandung resmi dibuka. Agenda utama menguji dan mengesahkan seluruh rancangan program kerja OSIS masa bakti 2025/2026.',
+      },
+      {
+        id: 'tr-g-2',
+        speaker: 'Ketua OSIS',
+        startTime: '01:30',
+        endTime: '03:45',
+        text: 'Kami memaparkan usulan 24 agenda kegiatan dari 10 Sekbid dengan penekanan pada digitalisasi kegiatan kesiswaan, peringatan hari besar nasional, serta kolaborasi lintas ekskul.',
+      },
+      {
+        id: 'tr-g-3',
+        speaker: 'Zafana Alaiqa (Komisi A)',
+        startTime: '03:50',
+        endTime: '05:10',
+        text: 'Komisi A menyetujui seluruh draf proker dengan syarat penerbitan proposal minimal H-14 dan batas akhir penyerahan SPJ kesiswaan maksimal H+7 setelah kegiatan.',
+      },
+    ],
+    mostImportant:
+      'Garis Besar Haluan Kerja (GBHK) OSIS 2025/2026 disahkan secara resmi oleh MPK SMK Negeri 13 Bandung, menjadi pedoman wajib pelaksanaan seluruh kegiatan siswa selama 1 tahun kepengurusan.',
+    executiveSummary:
+      'Sidang GBHK merupakan forum legislatif tertinggi MPK bersama OSIS. Dalam sidang ini, rancangan kerja Sekbid 1 s.d. 10 telah diuji kelayakan anggaran, korelasi kalender akademik, dan aspek kepatuhan tata tertib sekolah. Sidang menetapkan 24 program kerja resmi dan jadwal pelaporan berkala per triwulan kepada Komisi A.',
+    agendas: [
+      {
+        title: 'Pengujian dan Sinkronisasi Program Kerja Sekbid 1 s.d. 10',
+        discussionPoints: [
+          'Sinkronisasi kalender kerja OSIS dengan kalender akademik SMKN 13 Bandung.',
+          'Pemeriksaan rasionalitas anggaran belanja dan target peserta kegiatan.',
+        ],
+      },
+      {
+        title: 'Penetapan Standar Operasional Prosedur (SOP) & Akuntabilitas SPJ',
+        discussionPoints: [
+          'Kewajiban koordinasi pra-acara bersama Komisi A (Evaluator & JMM).',
+          'Sanksi administratif dan penangguhan izin kegiatan jika SPJ terlambat diserahkan.',
+        ],
+      },
+    ],
+    decisions: [
+      {
+        id: `dec-gbhk-1`,
+        number: `TAP/003/GBHK-MPK/XI/2025`,
+        decisionText:
+          'Mengesahkan Garis Besar Haluan Kerja (GBHK) OSIS SMK Negeri 13 Bandung Masa Bakti 2025/2026 secara aklamasi.',
+        rationale:
+          'Memberikan mandat hukum yang mengikat bagi BPH OSIS dan Sekbid 1-10 dalam merealisasikan program kesiswaan.',
+        category: 'Program Kerja',
+        status: 'DISAHKAN',
+        date: '2025-11-09',
+      },
+    ],
+    actionItems: [
+      {
+        id: `act-gbhk-1`,
+        description: 'Penerbitan buku matriks GBHK OSIS dan penyerahan ke Kepala Sekolah untuk pengesahan SK',
+        assignee: 'Shafa Na’ila Hasna & Ketua OSIS',
+        dueDate: '2025-11-16',
+        status: 'IN_PROGRESS',
+      },
+    ],
+  };
+}
+
+/**
+ * Template Resmi: Sidang Istimewa Peradilan & Mahkamah MPK
+ * Berdasarkan ART Bab III Pasal 22-24 & AD Pasal 14-15 (Kekuasaan Kehakiman & Sanksi)
+ */
+export function createSidangIstimewaPeradilanTemplate(): Meeting {
+  const now = new Date();
+  const dateFormatted = formatIndonesianDateTime(now, '15:30', '17:45');
+
+  return {
+    id: `meet-peradilan-${Date.now()}`,
+    title: 'Sidang Istimewa Peradilan Mahkamah MPK (Penegakan Disiplin & Pelanggaran Aturan Organisasi)',
+    date: dateFormatted,
+    location: 'Ruang Sidang Kehormatan Majelis SMK Negeri 13 Bandung',
+    organizer: 'Badan Peradilan Mahkamah MPK Nawadasha Bhakti Amita Paramartha',
+    status: 'FINALIZED',
+    durationSeconds: 135 * 60,
+    formatStandard: 'SIDANG_ISTIMEWA_PERADILAN',
+    leaderName: 'Hakim Agung MPK (Presidium Sidang Peradilan)',
+    noteTakerName: 'Panitera Persidangan / Davin Maritza (JMM)',
+    lastSavedAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+    attendees: [
+      { id: 'att-j-1', name: 'Hakim Agung MPK', role: 'Leader', present: true },
+      { id: 'att-j-2', name: 'Hakim Anggota I & II', role: 'Leader', present: true },
+      { id: 'att-j-3', name: 'Jaksa Penuntut Umum (JPU Komisi A)', role: 'Member', present: true },
+      { id: 'att-j-4', name: 'Panitera / Davin Maritza', role: 'Note Taker', present: true },
+      { id: 'att-j-5', name: 'Pihak Terperiksa / Terdakwa', role: 'Member', present: true },
+      { id: 'att-j-6', name: 'Penasihat Hukum (PH)', role: 'Member', present: true },
+      { id: 'att-j-7', name: 'Saksi Fakta I & II', role: 'Member', present: true },
+      { id: 'att-j-8', name: 'Pembina Kesiswaan MPK', role: 'Guest', present: true },
+    ],
+    transcript: [
+      {
+        id: 'tr-j-1',
+        speaker: 'Hakim Agung MPK',
+        startTime: '00:05',
+        endTime: '01:40',
+        text: 'Demi keadilan berdasarkan Ketuhanan Yang Maha Esa, Sidang Istimewa Peradilan Mahkamah MPK SMK Negeri 13 Bandung dibuka dan dinyatakan terbuka untuk umum dengan sumpah jabatan yang sah.',
+      },
+      {
+        id: 'tr-j-2',
+        speaker: 'Jaksa Penuntut Umum (Komisi A)',
+        startTime: '01:45',
+        endTime: '03:15',
+        text: 'Berdasarkan hasil investigasi dan bukti digital, pihak terperiksa diduga melanggar Pasal 14 Anggaran Dasar mengenai tata tertib dan penyalahgunaan wewenang inventaris.',
+      },
+      {
+        id: 'tr-j-3',
+        speaker: 'Penasihat Hukum (PH)',
+        startTime: '03:20',
+        endTime: '04:50',
+        text: 'Klien kami bersumpah atas nama Tuhan YME dan memberikan keterangan pembelaan bahwa keterlambatan laporan disebabkan oleh force majeure dan miskomunikasi kepanitiaan.',
+      },
+      {
+        id: 'tr-j-4',
+        speaker: 'Hakim Agung MPK',
+        startTime: '04:55',
+        endTime: '06:10',
+        text: 'Menimbang seluruh fakta hukum, keterangan saksi, dan pembelaan terdakwa, Majelis Hakim membacakan amar putusan persidangan.',
+      },
+    ],
+    mostImportant:
+      'Majelis Hakim Peradilan MPK menetapkan putusan yang mengikat secara adil, menjatuhkan sanksi administratif terukur, serta memulihkan ketertiban tata kelola organisasi sesuai AD/ART.',
+    executiveSummary:
+      'Sidang Istimewa Peradilan MPK diselenggarakan untuk mengadili dugaan pelanggaran tata tertib dan etika kepengurusan. Persidangan berlangsung tertib dengan perangkat lengkap: Majelis Hakim, JPU Komisi A, Terdakwa didampingi Penasihat Hukum, dan Saksi. Putusan diambil berdasarkan musyawarah hakim dengan menjunjung tinggi asas keadilan dan pembinaan siswa.',
+    agendas: [
+      {
+        title: 'Pembacaan Surat Dakwaan & Pemeriksaan Bukti Permulaan',
+        discussionPoints: [
+          'Pembacaan materi pelanggaran oleh JPU Komisi A.',
+          'Verifikasi keabsahan bukti dokumen fisik dan digital JMM.',
+        ],
+      },
+      {
+        title: 'Pemeriksaan Saksi, Keterangan Terdakwa, dan Pembelaan (Pledoi)',
+        discussionPoints: [
+          'Pengambilan sumpah saksi atas nama Tuhan Yang Maha Esa.',
+          'Penyampaian nota pembelaan dari Penasihat Hukum (PH).',
+        ],
+      },
+      {
+        title: 'Musyawarah Majelis Hakim & Pembacaan Amar Putusan',
+        discussionPoints: [
+          'Pertimbangan faktor meringankan dan memberatkan.',
+          'Pembacaan surat putusan resmi persidangan kehormatan MPK.',
+        ],
+      },
+    ],
+    decisions: [
+      {
+        id: `dec-peradilan-1`,
+        number: `PUT/001/MAHKAMAH-MPK/XI/2025`,
+        decisionText:
+          'Menyatakan terperiksa terbukti melakukan kelalaian administratif organisasi tingkat sedang, menjatuhkan sanksi Surat Peringatan I (SP I) dan kewajiban menyelesaikan perbaikan laporan dalam 7 hari.',
+        rationale:
+          'Menegakkan kewibawaan AD/ART dan prinsip Check & Balance dengan tetap mengedepankan asas edukatif kesiswaan.',
+        category: 'Disiplin',
+        status: 'DISAHKAN',
+        date: '2025-11-09',
+      },
+    ],
+    actionItems: [
+      {
+        id: `act-peradilan-1`,
+        description: 'Penyerahan salinan berkas amar putusan peradilan kepada Pembina MPK dan Kepala Sekolah',
+        assignee: 'Panitera Persidangan',
+        dueDate: '2025-11-10',
+        status: 'IN_PROGRESS',
+      },
+    ],
+  };
+}
+
 export interface OfficialTemplateItem {
   id: string;
   title: string;
@@ -477,6 +687,13 @@ export const OFFICIAL_MEETING_TEMPLATES: OfficialTemplateItem[] = [
     create: createMubesMeetingTemplate,
   },
   {
+    id: 'sidang-gbhk',
+    title: 'Sidang GBHK (MPK - OSIS)',
+    badge: 'Sidang Terbuka',
+    description: 'Pengesahan program kerja tahunan OSIS, telaah matriks sekbid 1-10, dan pagu anggaran kas',
+    create: createSidangGbhkTemplate,
+  },
+  {
     id: 'pleno-pengawasan-osis',
     title: 'Sidang Pleno Pengawasan OSIS',
     badge: 'Komisi A',
@@ -489,6 +706,13 @@ export const OFFICIAL_MEETING_TEMPLATES: OfficialTemplateItem[] = [
     badge: 'Komisi B',
     description: 'Penataan jadwal lapangan (Planner), presensi triwulan (Informator), dan fasilitas ekskul',
     create: createRapatDelegasiEkskulTemplate,
+  },
+  {
+    id: 'sidang-peradilan',
+    title: 'Sidang Istimewa Peradilan',
+    badge: 'Mahkamah MPK',
+    description: 'Kekuasaan kehakiman, Hakim Agung, JPU, pembelaan terdakwa, dan penegakan sanksi konstitusi',
+    create: createSidangIstimewaPeradilanTemplate,
   },
   {
     id: 'panitia-mpls',

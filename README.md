@@ -2,7 +2,7 @@
 
 Aplikasi tata naskah dinas, risalah musyawarah, dan dokumentasi sidang untuk Majelis Perwakilan Kelas (MPK) SMK Negeri 13 Bandung.
 
-[![Release](https://img.shields.io/badge/Release-v0.9.1-yellow?style=flat-square&logo=github)](https://github.com/davinmaritza/NotulenJMM/releases/tag/v0.9.1)
+[![Release](https://img.shields.io/badge/Release-v0.9.2-yellow?style=flat-square&logo=github)](https://github.com/davinmaritza/NotulenJMM/releases/tag/v0.9.2)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Build](https://img.shields.io/badge/Build-Turbopack%2011%2F11-emerald?style=flat-square)](https://nextjs.org/)
 [![Production](https://img.shields.io/badge/Production-notulen--jmm.vercel.app-sky?style=flat-square)](https://notulen-jmm.vercel.app)
@@ -22,13 +22,13 @@ NotulenJMM merapikan alur kerja tersebut ke dalam satu antarmuka: susun agenda s
 | :--- | :--- | :--- | :--- |
 | **Web Produksi** | Peramban Cloud | Akses langsung tanpa instalasi di domain produksi Vercel. | [Buka notulen-jmm.vercel.app](https://notulen-jmm.vercel.app) |
 | **Domain Kustom** | Peramban Cloud | Akses resmi via Cloudflare DNS dengan Google OAuth produksi. | [Buka jmm.davinn.net](https://jmm.davinn.net) |
-| **Android** | Berkas APK (5.2 MB) | Paket instalasi untuk HP atau tablet Android 8.0 ke atas. | [Unduh APK v0.9.1](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.9.1/NotulenJMM-v0.9.1-Android.apk) |
-| **Windows** | Eksekusi Standalone (7.0 MB) | Program portabel untuk Windows 10 dan 11 (64-bit). Cukup klik dua kali untuk membuka. | [Unduh EXE v0.9.1](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.9.1/NotulenJMM-v0.9.1-Windows-x64.exe) |
-| **Linux** | Biner Portabel (6.8 MB) | Biner mandiri untuk Linux x86_64 (Linux Mint, Ubuntu, Debian). | [Unduh Biner Linux v0.9.1](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.9.1/NotulenJMM-v0.9.1-Linux-x64) |
+| **Android** | Berkas APK (5.3 MB) | Paket instalasi untuk HP atau tablet Android 8.0 ke atas. | [Unduh APK v0.9.2](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.9.2/NotulenJMM-v0.9.2-Android.apk) |
+| **Windows** | Eksekusi Standalone (7.1 MB) | Program portabel untuk Windows 10 dan 11 (64-bit). Cukup klik dua kali untuk membuka. | [Unduh EXE v0.9.2](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.9.2/NotulenJMM-v0.9.2-Windows-x64.exe) |
+| **Linux** | Biner Portabel (6.9 MB) | Biner mandiri untuk Linux x86_64 (Linux Mint, Ubuntu, Debian). | [Unduh Biner Linux v0.9.2](https://github.com/davinmaritza/NotulenJMM/releases/download/v0.9.2/NotulenJMM-v0.9.2-Linux-x64) |
 | **Figma Canvas** | Desain UI Resmi | Spesifikasi antarmuka, aset logo, dan sistem desain Neo-Brutalism. | [Buka Figma NotulenJMM](https://www.figma.com/design/L0S8EZChNZ9ibopivFvt49) |
 | **Web Lokal** | Port 3000 | Server pengujian lokal di laptop pengembang. | `http://localhost:3000` |
 
-Daftar checksum SHA-256 untuk seluruh berkas biner tercantum pada [halaman rilis GitHub v0.9.1](https://github.com/davinmaritza/NotulenJMM/releases/tag/v0.9.1).
+Daftar checksum SHA-256 untuk seluruh berkas biner tercantum pada [halaman rilis GitHub v0.9.2](https://github.com/davinmaritza/NotulenJMM/releases/tag/v0.9.2).
 
 ---
 
@@ -158,10 +158,10 @@ cd desktop
 go run main.go
 
 # Kompilasi biner Windows x64
-GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/NotulenJMM-v0.9.1-Windows-x64.exe
+GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/NotulenJMM-v0.9.2-Windows-x64.exe
 
 # Kompilasi biner Linux x64
-GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/NotulenJMM-v0.9.1-Linux-x64
+GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ../dist/NotulenJMM-v0.9.2-Linux-x64
 ```
 
 ### 3. Layanan Backend (Python FastAPI)

@@ -40,6 +40,11 @@ export interface MeetingAgenda {
 
 export type MeetingFormatStandard =
   | 'TATA_NASKAH_DINAS'
+  | 'MUBES_AD_ART'
+  | 'SIDANG_GBHK'
+  | 'SIDANG_PLENO_OSIS'
+  | 'SIDANG_ISTIMEWA_PERADILAN'
+  | 'RAPAT_DELEGASI_EKSKUL'
   | 'PEMBENTUKAN_PANITIA_MPLS'
   | 'RISALAH_PADAT'
   | 'RAPAT_KERJA_ANGGARAN'
