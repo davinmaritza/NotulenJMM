@@ -37,7 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { googleAccount, handleLogoutGoogle, handleLoginGoogle, handleLoginWithEmail, openBeginnerGuide } = useMeetings();
+  const { googleAccount, handleLogoutGoogle, handleLoginGoogle, handleLoginWithEmail, openBeginnerGuide, isAdmin } = useMeetings();
 
   const currentTab =
     activeTab ||
@@ -282,12 +282,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-black text-black truncate max-w-[125px]" title={googleAccount.name ? `${googleAccount.name} (${googleAccount.email})` : googleAccount.email}>
-                    {googleAccount.name || googleAccount.email}
-                  </p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-[11px] font-black text-black truncate max-w-[90px]" title={googleAccount.name ? `${googleAccount.name} (${googleAccount.email})` : googleAccount.email}>
+                      {googleAccount.name || googleAccount.email}
+                    </p>
+                    {isAdmin && (
+                      <span className="px-1 py-0.2 rounded bg-[#FFE600] text-black border border-black font-mono text-[8px] font-black uppercase tracking-wider shrink-0 shadow-[1px_1px_0px_0px_#000]">
+                        ADMIN
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-center gap-1 text-[9px] font-mono font-bold text-sky-800">
-                    <Cloud className="w-2.5 h-2.5 text-sky-700 shrink-0" />
-                    <span className="truncate">Auto-Backup Aktif</span>
+                    {isAdmin ? (
+                      <>
+                        <Shield className="w-2.5 h-2.5 text-amber-700 shrink-0" />
+                        <span className="truncate text-amber-900 font-black">Admin Terverifikasi</span>
+                      </>
+                    ) : (
+                      <>
+                        <Cloud className="w-2.5 h-2.5 text-sky-700 shrink-0" />
+                        <span className="truncate">Auto-Backup Aktif</span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

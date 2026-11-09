@@ -1,7 +1,7 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { Meeting, AudioSegment, HistoryLog, GoogleDriveAccount } from '../lib/types';
+import { Meeting, AudioSegment, HistoryLog, GoogleDriveAccount, isUserAdmin, ADMIN_EMAILS } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
 import { createMplsMeetingTemplate } from '../lib/meetingTemplates';
 import { formatIndonesianDateTime } from '../lib/indonesianDate';
@@ -76,6 +76,7 @@ interface MeetingContextType {
   closeBeginnerGuide: () => void;
   isBeginnerMode: boolean;
   setIsBeginnerMode: (enabled: boolean) => void;
+  isAdmin: boolean;
 }
 
 const MeetingContext = createContext<MeetingContextType | undefined>(undefined);
@@ -95,6 +96,11 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const [isBeginnerGuideOpen, setIsBeginnerGuideOpen] = useState<boolean>(false);
   const [isBeginnerMode, setIsBeginnerModeState] = useState<boolean>(true);
+
+  const isAdmin = Boolean(
+    googleAccount.connected &&
+      (googleAccount.isAdmin || isUserAdmin(googleAccount.email))
+  );
 
   const openBeginnerGuide = () => setIsBeginnerGuideOpen(true);
   const closeBeginnerGuide = () => setIsBeginnerGuideOpen(false);
@@ -211,7 +217,12 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
             setActiveMeetingId(sanitized[0].id);
           }
         }
-        setGoogleAccountState(getStoredGoogleAccount());
+        const storedAcc = getStoredGoogleAccount();
+        if (storedAcc.connected && storedAcc.email && isUserAdmin(storedAcc.email)) {
+          storedAcc.role = 'SUPERADMIN';
+          storedAcc.isAdmin = true;
+        }
+        setGoogleAccountState(storedAcc);
         setHistoryLogs(getStoredHistoryLogs());
         const savedBeginnerMode = localStorage.getItem('notulenjmm_beginner_mode');
         if (savedBeginnerMode !== null) {
@@ -296,6 +307,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       const token = await requestGoogleAccessToken(clientId, false);
       const profile = await fetchGoogleUserProfile(token);
+      const isSuperAdmin = isUserAdmin(profile.email);
       const newAccount: GoogleDriveAccount = {
         connected: true,
         email: profile.email,
@@ -305,6 +317,8 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         accessToken: token,
         tokenExpiresAt: Date.now() + 3500 * 1000,
         autoSyncEnabled: true,
+        role: isSuperAdmin ? 'SUPERADMIN' : 'NOTULIS',
+        isAdmin: isSuperAdmin,
       };
       setGoogleAccountState(newAccount);
       saveStoredGoogleAccount(newAccount);
@@ -348,12 +362,15 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       throw new Error('Format email tidak valid. Masukkan alamat email Google yang benar.');
     }
     const displayName = name?.trim() || cleanEmail.split('@')[0];
+    const isSuperAdmin = isUserAdmin(cleanEmail);
     const newAccount: GoogleDriveAccount = {
       connected: true,
       email: cleanEmail,
       name: displayName,
       lastSyncTime: new Date().toISOString(),
       autoSyncEnabled: true,
+      role: isSuperAdmin ? 'SUPERADMIN' : 'NOTULIS',
+      isAdmin: isSuperAdmin,
     };
     setGoogleAccountState(newAccount);
     saveStoredGoogleAccount(newAccount);
@@ -827,6 +844,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         closeBeginnerGuide,
         isBeginnerMode,
         setIsBeginnerMode,
+        isAdmin,
       }}
     >
       {children}

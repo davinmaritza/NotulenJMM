@@ -79,6 +79,19 @@ export interface HistoryLog {
   details: string;
 }
 
+export type UserRole = 'SUPERADMIN' | 'ADMIN' | 'PRESIDIUM' | 'NOTULIS' | 'GUEST';
+
+export const ADMIN_EMAILS: string[] = [
+  'alfarrezald@gmail.com',
+  'davinmaritza@gmail.com',
+];
+
+export function isUserAdmin(email?: string | null): boolean {
+  if (!email) return false;
+  const normalized = email.trim().toLowerCase();
+  return ADMIN_EMAILS.some((adm) => adm.toLowerCase() === normalized);
+}
+
 export interface GoogleDriveAccount {
   connected: boolean;
   email?: string;
@@ -88,5 +101,8 @@ export interface GoogleDriveAccount {
   accessToken?: string;
   tokenExpiresAt?: number;
   autoSyncEnabled?: boolean;
+  role?: UserRole;
+  isAdmin?: boolean;
 }
+
 
