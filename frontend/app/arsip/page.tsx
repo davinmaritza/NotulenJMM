@@ -331,7 +331,7 @@ export default function ArsipPage() {
               Belum Ada Sesi Sidang Tersimpan
             </h3>
             <p className="text-xs text-black/75 font-bold leading-relaxed">
-              Sistem siap merekam voice note sekretaris dan merumuskan risalah sidang. Silakan rekam suara sidang atau unggah berkas audio di Studio.
+              Sistem siap mencatat Notulensi Berbasis Voice dan merumuskan naskah dinas sidang MPK NBAP. Silakan mulai perekaman suara sidang atau unggah berkas audio di Studio.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -340,7 +340,7 @@ export default function ArsipPage() {
               className="flex items-center gap-2 px-5 py-2.5 bg-[#FF6B6B] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
             >
               <Mic className="w-4 h-4 text-black stroke-[2.5]" />
-              <span>Rekam Voice Note Sidang</span>
+              <span>Notulensi Berbasis Voice</span>
             </button>
             <button
               onClick={() => router.push('/')}

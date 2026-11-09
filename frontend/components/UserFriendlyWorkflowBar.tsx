@@ -100,7 +100,7 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
             </div>
           </div>
 
-          {/* STEP 2: Voice Note */}
+          {/* STEP 2: Notulensi Berbasis Voice */}
           <div
             onClick={() => onSelectTab('record')}
             className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border-2 transition-all cursor-pointer flex items-center sm:items-start gap-2.5 sm:gap-3 sm:hover:-translate-x-0.5 sm:hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 touch-manipulation ${
@@ -118,12 +118,12 @@ export const UserFriendlyWorkflowBar: React.FC<UserFriendlyWorkflowBarProps> = (
                   Langkah 2
                 </span>
                 <span className="text-[8px] sm:text-[9px] font-black text-black bg-[#FFD93D] border border-black px-1.5 py-0.2 rounded shadow-[1px_1px_0px_0px_#000]">
-                  Waveform
+                  Voice
                 </span>
               </div>
-              <h4 className="text-xs font-black text-black truncate pt-0.5">Perekam Voice Note</h4>
+              <h4 className="text-xs font-black text-black truncate pt-0.5">Notulensi Berbasis Voice</h4>
               <p className="hidden sm:block text-[11px] text-zinc-700 font-medium line-clamp-1">
-                Rekam langsung, jeda saat skors, &amp; simpan draf
+                Perekaman suara sidang, jeda saat skorsing, &amp; transkripsi TAP
               </p>
             </div>
           </div>

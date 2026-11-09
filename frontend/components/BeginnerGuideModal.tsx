@@ -169,11 +169,11 @@ export const BeginnerGuideModal: React.FC<BeginnerGuideModalProps> = ({ isOpen, 
                       Rekam Suara atau Catat Poin Penting
                     </h5>
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-100 border border-black font-bold">
-                      Voice Note / Catatan
+                      Notulensi Berbasis Voice
                     </span>
                   </div>
                   <p className="text-xs text-zinc-700 font-medium leading-relaxed">
-                    Buka menu <strong>Studio Voice Note</strong> dan letakkan HP/laptop di tengah meja rapat untuk merekam suara pimpinan dan peserta. Jika rapat berlangsung singkat, Anda juga bisa langsung mengetik poin-poin usulan di catatan pengarah.
+                    Buka menu <strong>Notulensi Berbasis Voice</strong> dan letakkan mikrofon/perangkat di tengah meja sidang untuk merekam jalannya musyawarah, interupsi fraksi, dan konsiderans putusan. Sesuai Tupoksi Sekretaris MPK NBAP, Anda juga dapat menjeda saat skorsing berlangsung.
                   </p>
                 </div>
               </div>

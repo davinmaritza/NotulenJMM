@@ -248,7 +248,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         }
 
         if (!meetingTitle.trim()) {
-          const nowTitle = `Voice Note Sidang MPK ${new Date().toLocaleDateString('id-ID', {
+          const nowTitle = `Notulensi Suara Sidang MPK ${new Date().toLocaleDateString('id-ID', {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
@@ -396,12 +396,12 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
   const handleProcessUploadedAudio = async () => {
     const audioToProcess = selectedFile || recordedBlob;
     if (!audioToProcess) {
-      setErrorMessage('Pilih atau rekam berkas suara voice note terlebih dahulu.');
+      setErrorMessage('Pilih atau rekam berkas suara sidang terlebih dahulu.');
       return;
     }
 
     setIsProcessing(true);
-    setProcessingStep('Mengunggah rekaman voice note ke server transkripsi...');
+    setProcessingStep('Mengunggah rekaman suara sidang ke server transkripsi AI...');
     setErrorMessage(null);
     setDraftToast(null);
 
@@ -455,14 +455,14 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         <div>
           <div className="flex items-center gap-2.5">
             <h2 className="text-base sm:text-lg font-black text-black tracking-tight">
-              Studio Voice Note &amp; Perekaman Sidang
+              Notulensi Berbasis Voice &amp; Perekaman Sidang
             </h2>
             <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#FFD93D] text-black border-2 border-black shadow-[1.5px_1.5px_0px_0px_#000]">
-              Tata Naskah Digital
+              AD/ART MPK NBAP
             </span>
           </div>
           <p className="text-xs text-zinc-700 font-medium mt-1 font-sans">
-            Rekam langsung suara sidang dengan kendali jeda/pause, atau unggah voice note WhatsApp/HP untuk diolah ke draf online
+            Perekaman suara langsung (Voice) dan transkripsi cerdas naskah dinas resmi MPK SMK Negeri 13 Bandung
           </p>
         </div>
 
@@ -477,7 +477,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             }`}
           >
             <Mic className="w-4 h-4 text-black stroke-[2.5]" />
-            <span>Rekam Voice Note</span>
+            <span>Rekam Suara Sidang (Voice)</span>
           </button>
           <button
             onClick={() => setStudioMode('upload')}
@@ -488,7 +488,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             }`}
           >
             <Upload className="w-4 h-4 text-black stroke-[2.5]" />
-            <span>Unggah Berkas Audio</span>
+            <span>Unggah Berkas Suara</span>
           </button>
         </div>
       </div>
@@ -498,9 +498,9 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         <div className="flex items-start gap-3">
           <HelpCircle className="w-5 h-5 text-black stroke-[2.5] shrink-0 mt-0.5" />
           <div className="space-y-0.5">
-            <p className="font-black text-black">Petunjuk Mudah untuk Notulis:</p>
+            <p className="font-black text-black">Petunjuk Notulis &amp; Sekretaris Sidang MPK:</p>
             <p className="text-zinc-800 font-medium leading-relaxed text-[11px]">
-              Letakkan ponsel/laptop di tengah meja rapat. Jika forum diskors atau istirahat, klik <strong>Jeda (Pause)</strong>. Kamu bisa klik <strong>Simpan Sebagai Draf Online</strong> kapan saja agar rekaman aman tersimpan di peramban.
+              Sesuai Tupoksi Sekretaris MPK NBAP: Letakkan mikrofon/perangkat di tengah meja sidang. Notulensi Berbasis Voice akan menangkap suara pimpinan sidang, interupsi fraksi, pandangan komisi, dan konsiderans putusan. Klik <strong>Jeda (Pause)</strong> saat pimpinan mengetuk palu skorsing sidang.
             </p>
           </div>
         </div>
@@ -512,11 +512,11 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
                 month: 'long',
                 year: 'numeric',
               });
-              setMeetingTitle(`Sidang Koordinasi MPK 13 — ${todayStr}`);
+              setMeetingTitle(`Sidang Pleno / Koordinasi MPK 13 — ${todayStr}`);
             }}
             className="px-3.5 py-1.5 bg-[#C4B5FD] hover:bg-[#b5a3fc] text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
           >
-            Isi Judul Otomatis Hari Ini
+            Isi Judul Sidang Hari Ini
           </button>
         </div>
       </div>
@@ -655,7 +655,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
                   className="flex items-center gap-2 px-6 py-3 bg-[#FF6B6B] hover:bg-rose-500 text-black font-black rounded-xl text-xs border-2 border-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                 >
                   <Mic className="w-4 h-4 stroke-[2.5]" />
-                  <span>{recordedBlob ? 'Rekam Ulang Voice Note' : 'Mulai Rekam Voice Note'}</span>
+                  <span>{recordedBlob ? 'Rekam Ulang Suara Sidang' : 'Mulai Perekaman Suara Sidang (Voice)'}</span>
                 </button>
                 {recordedBlob && (
                   <button
@@ -698,7 +698,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             )}
           </div>
 
-          {/* Voice Note Player Preview */}
+          {/* Voice Player Preview */}
           {audioUrl && !isRecording && (
             <div className="p-4 bg-[#FFFDF5] border-2 border-black rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[3px_3px_0px_0px_#000]">
               <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -706,7 +706,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
                   <Volume2 className="w-5 h-5 text-black stroke-[2.5]" />
                 </div>
                 <div>
-                  <p className="text-xs font-black text-black">Pratinjau Voice Note Hasil Rekaman</p>
+                  <p className="text-xs font-black text-black">Pratinjau Rekaman Suara Sidang (Voice)</p>
                   <p className="text-[10px] font-mono text-zinc-700 font-bold">Durasi: {formatTime(seconds)} • WebM Audio</p>
                 </div>
               </div>
@@ -728,7 +728,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             </div>
             <div>
               <p className="text-sm font-black text-black">
-                {selectedFile ? selectedFile.name : 'Pilih atau Tarik Berkas Voice Note / Audio ke Sini'}
+                {selectedFile ? selectedFile.name : 'Pilih atau Tarik Berkas Rekaman Suara Sidang (Voice / Audio) ke Sini'}
               </p>
               <p className="text-xs text-zinc-700 font-medium mt-1">
                 Format didukung: <strong className="text-black font-black">.mp3, .wav, .m4a, .ogg, .webm, .flac, .opus</strong>
@@ -763,7 +763,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
                 </div>
                 <div className="space-y-0.5">
                   <p className="text-xs font-black text-black truncate max-w-xs">
-                    {selectedFile ? selectedFile.name : 'Audio Voice Note'}
+                    {selectedFile ? selectedFile.name : 'Rekaman Suara Sidang (Voice)'}
                   </p>
                   <p className="text-[10px] font-mono text-zinc-700 font-bold">Berkas audio siap diproses atau disimpan</p>
                 </div>

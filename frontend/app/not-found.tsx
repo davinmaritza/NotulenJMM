@@ -121,8 +121,8 @@ export default function NotFoundPage() {
                 <Mic className="w-3.5 h-3.5 stroke-[2.5]" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-black text-black group-hover:underline">Voice Note</p>
-                <p className="text-[10px] text-zinc-600 font-medium truncate">Rekam suara rapat</p>
+                <p className="text-xs font-black text-black group-hover:underline">Notulensi Berbasis Voice</p>
+                <p className="text-[10px] text-zinc-600 font-medium truncate">Perekaman suara sidang MPK</p>
               </div>
             </Link>
 

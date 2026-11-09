@@ -601,7 +601,7 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         {
           title: 'Draf Agenda Rapat',
           discussionPoints: [
-            'Draf rekaman suara voice note tersimpan secara online.',
+            'Draf rekaman Notulensi Berbasis Voice tersimpan secara aman di peramban.',
             `Catatan pengarah: ${draft.secretaryNotes.slice(0, 80)}...`,
           ],
         },

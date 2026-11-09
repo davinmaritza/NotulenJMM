@@ -112,10 +112,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Middle: Categorized Navigation List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
-          {/* Group 1: Ruang Kerja Sidang */}
+          {/* Group 1: Ruang Kerja MPK 13 */}
           <div className="space-y-2">
             <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
-              Ruang Kerja
+              Ruang Kerja MPK 13
             </span>
 
             <button
@@ -128,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-2.5">
                 <Compass className="w-4 h-4 text-black stroke-[2.5]" />
-                <span>Studio Agenda</span>
+                <span>Studio Musyawarah</span>
               </div>
               <span className="text-[10px] font-mono font-bold text-zinc-700">Mufakat</span>
             </button>
@@ -151,10 +151,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* Group 2: Produksi & Audio */}
+          {/* Group 2: Transkripsi & Naskah Dinas */}
           <div className="space-y-2">
             <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
-              Produksi &amp; Suara
+              Transkripsi &amp; Risalah
             </span>
 
             <button
@@ -169,12 +169,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-2.5">
                 <Mic className="w-4 h-4 text-black stroke-[2.5]" />
-                <span>Studio Voice Note</span>
+                <span>Notulensi Berbasis Voice</span>
               </div>
               {isRecording ? (
                 <span className="w-2.5 h-2.5 rounded-full bg-rose-600 border border-black animate-ping" />
               ) : (
-                <span className="text-[10px] font-mono font-bold text-zinc-700">Rekam</span>
+                <span className="text-[10px] font-mono font-bold text-zinc-700">Audio</span>
               )}
             </button>
 
@@ -188,16 +188,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-2.5">
                 <BookOpen className="w-4 h-4 text-black stroke-[2.5]" />
-                <span>Risalah &amp; Notulen</span>
+                <span>Risalah &amp; Naskah Dinas</span>
               </div>
               <span className="text-[10px] font-mono font-bold text-zinc-700">Editor</span>
             </button>
           </div>
 
-          {/* Group 3: Keputusan & Tindak Lanjut */}
+          {/* Group 3: Ketetapan & Tindak Lanjut Komisi */}
           <div className="space-y-2">
             <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
-              Ketetapan &amp; Tugas
+              Ketetapan TAP &amp; Komisi
             </span>
 
             <button
@@ -210,17 +210,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="flex items-center gap-2.5">
                 <CheckSquare className="w-4 h-4 text-black stroke-[2.5]" />
-                <span>Ketetapan &amp; Tugas</span>
+                <span>Ketetapan TAP &amp; Tugas</span>
               </div>
-              <span className="text-[10px] font-mono font-bold text-zinc-700">PIC</span>
+              <span className="text-[10px] font-mono font-bold text-zinc-700">Komisi</span>
             </button>
           </div>
 
-          {/* Group 4: Administrasi & Tata Kelola (Hanya untuk alfarrezald@gmail.com) */}
+          {/* Group 4: Administrasi & Presidium (Hanya untuk alfarrezald@gmail.com) */}
           {isAdmin && (
             <div className="space-y-2">
               <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
-                Tata Kelola
+                Presidium Majelis
               </span>
 
               <button
@@ -236,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <span>Panel Administrator</span>
                 </div>
                 <span className="text-[10px] font-mono font-black px-1.5 py-0.5 rounded bg-black text-[#FFE600]">
-                  MPK 13
+                  Presidium
                 </span>
               </button>
             </div>
