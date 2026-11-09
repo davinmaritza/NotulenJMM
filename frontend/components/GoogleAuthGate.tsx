@@ -8,12 +8,10 @@ import {
   ShieldCheck,
   Zap,
   ArrowRight,
-  Settings,
   AlertCircle,
   RefreshCw,
 } from 'lucide-react';
 import { useMeetings } from '../context/MeetingContext';
-import { getGoogleClientId, setGoogleClientId } from '../lib/googleDriveBackup';
 
 interface GoogleAuthGateProps {
   onGuestContinue: () => void;
@@ -24,8 +22,6 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
   const [emailInput, setEmailInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [showConfig, setShowConfig] = useState<boolean>(false);
-  const [clientIdInput, setClientIdInput] = useState<string>(() => getGoogleClientId());
 
   const handleDirectLogin = (email: string, name?: string) => {
     setIsLoading(true);
@@ -50,10 +46,6 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
     setIsLoading(true);
     setErrorMsg(null);
     try {
-      const activeClientId = clientIdInput.trim() || getGoogleClientId();
-      if (activeClientId) {
-        setGoogleClientId(activeClientId);
-      }
       // Trigger Google Identity Services OAuth popup
       await handleLoginGoogle(emailInput.trim() || undefined);
     } catch (err) {
@@ -62,13 +54,6 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const onSaveClientId = (e: React.FormEvent) => {
-    e.preventDefault();
-    setGoogleClientId(clientIdInput.trim());
-    setErrorMsg(null);
-    setShowConfig(false);
   };
 
   return (
@@ -235,7 +220,7 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
             </div>
 
             {/* Offline / Guest Mode Fallback */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-center pt-2">
               <button
                 type="button"
                 onClick={onGuestContinue}
@@ -243,67 +228,8 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = ({ onGuestContinue 
               >
                 Lanjutkan Mode Tamu / Offline (Tanpa Akun)
               </button>
-
-              <button
-                type="button"
-                onClick={() => setShowConfig(!showConfig)}
-                className="text-xs font-bold text-zinc-600 hover:text-black flex items-center gap-1 transition-colors cursor-pointer"
-              >
-                <Settings className="w-3.5 h-3.5 stroke-[2.2]" />
-                <span>Pengaturan Client ID</span>
-              </button>
             </div>
           </div>
-
-          {/* Expandable Google Client ID Configuration Drawer */}
-          {showConfig && (
-            <form onSubmit={onSaveClientId} className="p-4 rounded-xl bg-[#FFFDF5] border-2 border-black space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-black text-black">Konfigurasi Google Client ID</span>
-                <span className="text-[10px] text-zinc-500 font-mono">OAuth 2.0</span>
-              </div>
-              <p className="text-[11px] text-zinc-600">
-                Client ID Google Cloud Console aktif:
-              </p>
-              <label htmlFor="gate-client-id-input" className="sr-only">
-                Konfigurasi Google Client ID OAuth 2.0
-              </label>
-              <input
-                id="gate-client-id-input"
-                name="googleClientId"
-                type="text"
-                aria-label="Konfigurasi Google Client ID OAuth 2.0"
-                value={clientIdInput}
-                onChange={(e) => setClientIdInput(e.target.value)}
-                placeholder="misal: 123456789-abcdef.apps.googleusercontent.com"
-                className="w-full bg-white border-2 border-black text-black font-mono text-xs rounded-xl px-3 py-2 shadow-[2px_2px_0px_0px_#000] focus:outline-none"
-              />
-              <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
-                <button
-                  type="button"
-                  onClick={onGoogleAuthClick}
-                  className="px-3 py-1.5 bg-[#E0F2FE] hover:bg-sky-200 text-black border border-black rounded-lg text-xs font-bold shadow-[1px_1px_0px_0px_#000] cursor-pointer"
-                >
-                  Tes Otorisasi Popup OAuth
-                </button>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowConfig(false)}
-                    className="px-3 py-1.5 text-xs font-bold text-black hover:underline cursor-pointer"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-3.5 py-1.5 bg-[#A7F3D0] hover:bg-emerald-300 text-black border-2 border-black rounded-lg text-xs font-black shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer"
-                  >
-                    Simpan Client ID
-                  </button>
-                </div>
-              </div>
-            </form>
-          )}
         </div>
 
         {/* Footer Credit & Info */}
