@@ -203,20 +203,7 @@ export default function ArsipPage() {
             ) : (
               <Cloud className="w-4 h-4 stroke-[2.5] text-sky-800" />
             )}
-            <span>Cadangan Cloud &amp; Google</span>
-            {googleAccount.connected &&
-              (isAutoSyncing ? (
-                <span className="hidden sm:inline-flex text-[9px] font-mono font-bold bg-[#FEF08A] px-1.5 py-0.5 rounded border border-black shadow-[0.5px_0.5px_0px_0px_#000]">
-                  Menyinkronkan...
-                </span>
-              ) : (
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 border border-black animate-pulse" />
-                  <span className="hidden md:inline-flex text-[9px] font-mono font-bold bg-[#A7F3D0] px-1.5 py-0.5 rounded border border-black shadow-[0.5px_0.5px_0px_0px_#000]">
-                    Auto
-                  </span>
-                </div>
-              ))}
+            <span>Cadangan Cloud</span>
           </button>
 
           <button

@@ -225,27 +225,11 @@ export default function AdminPage() {
               <Shield className="w-8 h-8 text-black stroke-[2.5]" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span className="px-2.5 py-0.5 rounded-full bg-black text-[#FFE600] font-mono text-[10px] font-black uppercase tracking-wider">
-                  Panel Administrator
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-[#E0F2FE] text-black border border-black font-mono text-[10px] font-bold">
-                  MPK SMK Negeri 13 Bandung
-                </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#A7F3D0] text-black border border-black font-mono text-[10px] font-black">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                  Presidium Aktif
-                </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FFE600] text-black border border-black font-mono text-[10px] font-black shadow-[1px_1px_0px_0px_#000]">
-                  <Shield className="w-3 h-3 text-black stroke-[3]" />
-                  Admin: alfarrezald@gmail.com
-                </span>
-              </div>
               <h1 className="text-xl sm:text-2xl font-black text-black tracking-tight">
-                Pusat Tata Kelola &amp; Integritas Majelis
+                Panel Administrator Majelis
               </h1>
-              <p className="text-xs text-zinc-700 font-sans font-medium mt-0.5">
-                Monitoring kuorum sidang, manajemen 4 komisi kerja, buku induk ketetapan TAP, dan pemeliharaan arsip cloud.
+              <p className="text-xs text-zinc-600 font-sans font-medium mt-1">
+                Tata kelola persidangan, 4 komisi kerja, buku induk ketetapan TAP, dan pemeliharaan data.
               </p>
             </div>
           </div>
@@ -376,15 +360,11 @@ export default function AdminPage() {
             </div>
           </div>
           <div className="text-sm font-black text-black truncate">
-            {googleAccount.connected ? 'Google Drive' : 'Mode Offline'}
+            {googleAccount.connected ? 'Google Drive' : 'Mode Lokal'}
           </div>
-          <p className="text-[10px] text-zinc-600 font-mono truncate">
-            {googleAccount.connected && googleAccount.email ? googleAccount.email : 'Sesi Tamu Terproteksi'}
+          <p className="text-[11px] text-zinc-500 font-mono truncate">
+            {googleAccount.connected && googleAccount.email ? googleAccount.email : 'Tersimpan di browser'}
           </p>
-          <div className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-            <span>Penyimpanan Aman</span>
-          </div>
         </div>
       </div>
 
@@ -458,53 +438,45 @@ export default function AdminPage() {
         <div className="space-y-6">
           {/* Administrator Utama Card */}
           <div className="bg-white border-2 border-black rounded-2xl p-5 sm:p-6 shadow-[4px_4px_0px_0px_#000] space-y-4">
-            <div className="flex items-center justify-between border-b-2 border-black/10 pb-3 flex-wrap gap-2">
+            <div className="flex items-center justify-between border-b-2 border-black/10 pb-3">
               <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-amber-600 stroke-[2.5]" />
-                <h2 className="text-base font-black text-black">Administrator Sistem Utama &amp; Dewan Pengawas</h2>
+                <Shield className="w-5 h-5 text-black stroke-[2.5]" />
+                <h2 className="text-base font-black text-black">Administrator Utama Sistem</h2>
               </div>
-              <span className="text-[10px] font-mono font-black text-amber-950 bg-[#FFE600] px-2.5 py-1 rounded-full border border-black uppercase tracking-wider shadow-[1px_1px_0px_0px_#000]">
-                ROOT SUPERADMIN ACCESS
-              </span>
             </div>
 
             <div className="p-4 rounded-xl bg-[#FFFDF5] border-2 border-black flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-black text-[#FFE600] border-2 border-black flex items-center justify-center font-black text-lg shrink-0 shadow-[2px_2px_0px_0px_#000]">
+                <div className="w-10 h-10 rounded-xl bg-[#FFE600] border-2 border-black flex items-center justify-center font-black text-base text-black shrink-0 shadow-[2px_2px_0px_0px_#000]">
                   A
                 </div>
                 <div>
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-2">
                     <span className="text-sm font-black text-black">alfarrezald@gmail.com</span>
-                    <span className="px-2 py-0.5 bg-black text-[#FFE600] text-[9px] font-mono font-black rounded-full uppercase">
-                      SUPERADMIN
-                    </span>
-                    <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 border border-black text-[9px] font-mono font-black rounded-full">
-                      HAK AKSES PENUH
-                    </span>
+                    <span className="text-xs font-mono font-bold text-zinc-500">• Administrator</span>
                   </div>
-                  <p className="text-xs text-zinc-600 mt-1">
-                    Otoritas tertinggi pengesahan risalah sidang, kontrol tata kelola 4 komisi kerja, buku induk ketetapan TAP, audit log notulis, dan manajemen master cloud.
+                  <p className="text-xs text-zinc-600 mt-0.5">
+                    Otoritas pengesahan risalah sidang, kontrol komisi, buku induk ketetapan TAP, dan pemeliharaan arsip.
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 w-full md:w-auto justify-end">
                 {googleAccount.email?.toLowerCase() === 'alfarrezald@gmail.com' ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-100 text-emerald-900 border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000]">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-700 stroke-[2.5]" />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-100 text-black border border-black rounded-lg text-xs font-bold font-mono">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 stroke-[2.5]" />
                     Sesi Aktif
                   </span>
                 ) : (
                   <button
                     onClick={() => {
                       handleLoginWithEmail('alfarrezald@gmail.com', 'Alfarrezald (Administrator Utama)');
-                      showNotice('Sesi Administrator alfarrezald@gmail.com berhasil diaktifkan!');
+                      showNotice('Sesi Administrator alfarrezald@gmail.com diaktifkan');
                     }}
                     className="flex items-center gap-1.5 px-3.5 py-2 bg-[#FFE600] hover:bg-yellow-300 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
                   >
                     <UserCheck className="w-4 h-4 stroke-[2.5]" />
-                    <span>Aktifkan Sesi Admin</span>
+                    <span>Masuk Sesi Admin</span>
                   </button>
                 )}
               </div>
@@ -793,16 +765,11 @@ export default function AdminPage() {
           <div className="flex items-center justify-between border-b-2 border-black/10 pb-3 flex-wrap gap-2">
             <div>
               <h2 className="text-base font-black text-black">Audit Trail Aktivitas Notulensi</h2>
-              <p className="text-xs text-zinc-600">Catatan riwayat perubahan data, sinkronisasi, dan aksi pengguna terverifikasi.</p>
+              <p className="text-xs text-zinc-600">Catatan riwayat perubahan data, sinkronisasi, dan aksi pengguna.</p>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold bg-[#FFE600] px-2 py-0.5 rounded border border-black text-black shadow-[1px_1px_0px_0px_#000]">
-                Supervisor: alfarrezald@gmail.com
-              </span>
-              <span className="text-xs font-mono font-bold bg-[#E0F2FE] px-2 py-0.5 rounded border border-black">
-                {historyLogs.length} Entri Tercatat
-              </span>
-            </div>
+            <span className="text-xs font-mono font-bold bg-zinc-100 px-2 py-0.5 rounded border border-black/40">
+              {historyLogs.length} Entri
+            </span>
           </div>
 
           {historyLogs.length === 0 ? (
@@ -866,12 +833,12 @@ export default function AdminPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Superadmin Operator */}
               <div className="p-3.5 rounded-xl bg-[#FFFDF5] border-2 border-black space-y-1">
-                <span className="text-[10px] font-mono uppercase font-black text-amber-700 block">Root Administrator</span>
+                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Administrator Utama</span>
                 <p className="text-xs font-black text-black truncate" title="alfarrezald@gmail.com">
                   alfarrezald@gmail.com
                 </p>
-                <p className="text-[10px] text-emerald-800 font-bold font-mono">
-                  {googleAccount.email?.toLowerCase() === 'alfarrezald@gmail.com' ? '● Sesi Aktif' : '○ Hak Akses Terdaftar'}
+                <p className="text-[10px] text-zinc-600 font-mono">
+                  {googleAccount.email?.toLowerCase() === 'alfarrezald@gmail.com' ? 'Sesi Aktif' : 'Terdaftar'}
                 </p>
               </div>
 
@@ -882,18 +849,18 @@ export default function AdminPage() {
                   {backendHealth?.online ? 'Online (Port 8000)' : 'Mode Standalone'}
                 </p>
                 <p className="text-[10px] text-zinc-600 font-mono">
-                  {backendHealth?.router_gateway || 'client-simulation ready'}
+                  {backendHealth?.router_gateway || 'Local simulation'}
                 </p>
               </div>
 
               {/* VibeVoice STT */}
               <div className="p-3.5 rounded-xl bg-[#FFFDF5] border-2 border-black space-y-1">
-                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Mesin Transkripsi (STT)</span>
+                <span className="text-[10px] font-mono uppercase font-black text-zinc-600 block">Mesin Transkripsi</span>
                 <p className="text-sm font-black text-black">
-                  Web Speech API + Google STT
+                  Speech Recognition
                 </p>
                 <p className="text-[10px] text-zinc-600 font-mono">
-                  Transkripsi Suara Nyata (Bebas Mock)
+                  Browser STT &amp; Audio Transcode
                 </p>
               </div>
 

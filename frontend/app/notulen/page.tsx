@@ -4,9 +4,8 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { SpeakerDiarizationView } from '../../components/SpeakerDiarizationView';
 import { NotulenEditor } from '../../components/NotulenEditor';
-import { BeginnerChecklistCard } from '../../components/BeginnerChecklistCard';
 import { useMeetings } from '../../context/MeetingContext';
-import { FileText, Mic, Compass, GraduationCap } from 'lucide-react';
+import { FileText, Mic, Compass } from 'lucide-react';
 
 export default function NotulenPage() {
   const router = useRouter();
@@ -35,13 +34,6 @@ export default function NotulenPage() {
     <div className="space-y-6 sm:space-y-8">
       {activeMeeting ? (
         <>
-          {/* Beginner Completeness Guide Checklist */}
-          <BeginnerChecklistCard
-            meeting={activeMeeting}
-            onOpenGuide={openBeginnerGuide}
-            onSynthesize={() => handleSynthesizeWithScroll()}
-          />
-
           <SpeakerDiarizationView
             transcript={activeMeeting.transcript}
             onUpdateTranscript={(updated) =>
@@ -79,13 +71,6 @@ export default function NotulenPage() {
             >
               <FileText className="w-4 h-4 text-black stroke-[2.5]" />
               <span>Muat Contoh Panitia MPLS 2026/2027</span>
-            </button>
-            <button
-              onClick={openBeginnerGuide}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#38BDF8] text-black border-2 border-black rounded-xl text-xs font-black shadow-[3px_3px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#000] transition-all cursor-pointer"
-            >
-              <GraduationCap className="w-4 h-4 text-black stroke-[2.5]" />
-              <span>Panduan Cepat Pemula</span>
             </button>
             <button
               onClick={() => router.push('/record')}

@@ -238,27 +238,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          {/* Group 4: Panduan Pemula */}
-          <div className="space-y-2 pt-1 border-t-2 border-black/10">
-            <span className="px-2 text-[10px] font-mono uppercase tracking-[0.15em] text-black font-extrabold block">
-              Bantuan
-            </span>
-
+          {/* Bantuan */}
+          <div className="pt-2 border-t border-black/10">
             <button
               type="button"
               onClick={() => {
                 setIsOpenMobile(false);
                 openBeginnerGuide();
               }}
-              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs bg-[#FFE600] hover:bg-[#ffd93d] text-black font-black border-2 border-black shadow-[3px_3px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-zinc-600 hover:text-black hover:bg-[#FFFDF5] transition-all cursor-pointer"
             >
-              <div className="flex items-center gap-2.5">
-                <GraduationCap className="w-4 h-4 text-black stroke-[2.5]" />
-                <span>Panduan Pemula</span>
-              </div>
-              <span className="text-[9px] font-mono font-black px-1.5 py-0.5 rounded bg-black text-[#FFE600]">
-                3 Menit
-              </span>
+              <GraduationCap className="w-4 h-4 text-zinc-600 stroke-[2]" />
+              <span>Panduan Pemula</span>
             </button>
           </div>
 
@@ -287,24 +278,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       {googleAccount.name || googleAccount.email}
                     </p>
                     {isAdmin && (
-                      <span className="px-1 py-0.2 rounded bg-[#FFE600] text-black border border-black font-mono text-[8px] font-black uppercase tracking-wider shrink-0 shadow-[1px_1px_0px_0px_#000]">
+                      <span className="px-1 py-0.2 rounded bg-[#FFE600] text-black border border-black font-mono text-[8px] font-black uppercase tracking-wider shrink-0">
                         ADMIN
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 text-[9px] font-mono font-bold text-sky-800">
-                    {isAdmin ? (
-                      <>
-                        <Shield className="w-2.5 h-2.5 text-amber-700 shrink-0" />
-                        <span className="truncate text-amber-900 font-black">Admin Terverifikasi</span>
-                      </>
-                    ) : (
-                      <>
-                        <Cloud className="w-2.5 h-2.5 text-sky-700 shrink-0" />
-                        <span className="truncate">Auto-Backup Aktif</span>
-                      </>
-                    )}
-                  </div>
+                  <p className="text-[10px] text-zinc-500 font-mono truncate max-w-[125px]" title={googleAccount.email}>
+                    {googleAccount.email}
+                  </p>
                 </div>
               </div>
 
@@ -317,7 +298,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }
                 }}
                 title="Keluar dari akun Google"
-                className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-black shadow-[1px_1px_0px_0px_#000] cursor-pointer transition-colors shrink-0"
+                className="p-1.5 rounded-lg bg-zinc-50 hover:bg-rose-50 text-zinc-600 hover:text-rose-700 border border-black/40 hover:border-black cursor-pointer transition-colors shrink-0"
                 aria-label="Keluar dari akun Google"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -327,9 +308,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ) : (
           <div className="p-3 border-t-2 border-black bg-[#FFFDF5]">
             <div className="p-2.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_0px_#000] space-y-2">
-              <div className="flex items-center justify-between text-[10px] font-bold">
-                <span className="text-zinc-600 font-mono">Mode Tamu</span>
-                <span className="px-1.5 py-0.5 rounded bg-zinc-100 border border-black text-[9px]">Offline</span>
+              <div className="flex items-center justify-between text-xs font-bold text-zinc-600">
+                <span>Mode Tamu</span>
               </div>
               <button
                 type="button"
@@ -339,30 +319,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     window.location.reload();
                   }
                 }}
-                className="w-full py-2 px-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-lg text-[10px] font-black flex items-center justify-center gap-1.5 shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
+                className="w-full py-1.5 px-2 bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black rounded-lg text-xs font-black flex items-center justify-center gap-1.5 shadow-[1.5px_1.5px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
                 title="Masuk dengan Akun Google"
               >
-                <Sparkles className="w-3.5 h-3.5 fill-black text-black shrink-0" />
-                <span className="truncate">Masuk Akun Google</span>
+                <span>Masuk Akun Google</span>
               </button>
             </div>
           </div>
         )}
-
-        {/* Institutional System Status Footer */}
-        <div className="p-3.5 border-t-2 border-black bg-white">
-          <div className="flex items-center justify-between text-black">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 border border-black animate-pulse" />
-              <span className="text-[10px] font-mono font-bold tracking-tight text-zinc-800">
-                Sistem Notulen Siap
-              </span>
-            </div>
-            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#FFFDF5] border border-black shadow-[1px_1px_0px_0px_#000]">
-              MPK 13
-            </span>
-          </div>
-        </div>
       </aside>
     </>
   );

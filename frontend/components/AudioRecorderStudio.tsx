@@ -506,16 +506,6 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
           <button
-            type="button"
-            onClick={openBeginnerGuide}
-            className="px-3 py-1.5 bg-[#FFE600] hover:bg-amber-300 text-black border-2 border-black rounded-xl text-xs font-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center gap-1.5"
-            title="Buka Panduan Pemula"
-          >
-            <GraduationCap className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>Panduan Pemula</span>
-          </button>
-
-          <button
             onClick={() => {
               const todayStr = new Date().toLocaleDateString('id-ID', {
                 day: 'numeric',

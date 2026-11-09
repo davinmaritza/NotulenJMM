@@ -4,11 +4,10 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Sidebar } from './Sidebar';
-import { UserFriendlyWorkflowBar } from './UserFriendlyWorkflowBar';
 import { GoogleAuthGate } from './GoogleAuthGate';
 import { BeginnerGuideModal } from './BeginnerGuideModal';
 import { useMeetings } from '../context/MeetingContext';
-import { Menu, GraduationCap } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -46,15 +45,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       : pathname === '/admin'
       ? 'admin'
       : 'craft';
-
-  const handleNavigateFromWorkflow = (tab: string) => {
-    if (tab === 'craft') router.push('/');
-    else if (tab === 'dashboard') router.push('/arsip');
-    else if (tab === 'record') router.push('/record');
-    else if (tab === 'notulen') router.push('/notulen');
-    else if (tab === 'actions') router.push('/tasks');
-    else if (tab === 'admin') router.push('/admin');
-  };
 
   // 1. Initial hydration skeleton to prevent auth gate flicker
   if (!isHydrated) {
@@ -124,15 +114,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => openBeginnerGuide()}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#FFE600] hover:bg-[#ffd93d] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] text-xs font-black cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition-all"
-              title="Buka Panduan Pemula"
-            >
-              <GraduationCap className="w-4 h-4 stroke-[2.5]" />
-              <span className="hidden xs:inline">Panduan</span>
-            </button>
-
-            <button
               onClick={() => setIsOpenMobile(true)}
               className="p-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] cursor-pointer active:translate-x-0.5 active:translate-y-0.5"
               title="Buka Menu Navigasi"
@@ -145,14 +126,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
 
         {/* Content Body with phone-optimized top breathing room */}
         <main className="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-6 md:px-8 pt-5 sm:pt-8 pb-8 sm:pb-12 space-y-4 sm:space-y-6">
-          {/* Friendly 3-Step Workflow & Secretary Greeting Hub */}
-          <UserFriendlyWorkflowBar
-            activeTab={currentTab}
-            onSelectTab={handleNavigateFromWorkflow}
-            hasActiveMeeting={!!activeMeeting}
-            totalMeetingsCount={meetings.length}
-          />
-
           {children}
         </main>
 
