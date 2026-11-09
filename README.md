@@ -35,16 +35,22 @@ Daftar checksum SHA-256 untuk seluruh berkas biner tercantum pada [halaman rilis
 ## Fitur Utama
 
 ### 1. Panel Administrator & Tata Kelola Majelis (`/admin`)
-- **Presidium Sidang Utama**: Struktur kepemimpinan MPK Nawadasha Bhakti Amita Paramartha (NBAP) Periode 2025/2026:
-  - Ketua MPK: **Shafa Na’ila Hasna** (NIS. 102419165)
-  - Sekretaris I / Notulis MPK: **Praya Nuri Fairuuz** (NIS. 102419230)
-  - Pembina Kesiswaan MPK: **Tessa Eka Yuniar, S.Pd.**
-  - Kepala Sekolah / Penanggung Jawab: **Agus Nugroho, S.Pd., M.T.**
-  - Pengembang Sistem & JMM: **Davin Maritza** (Jalur Menyurat MPK)
+- **Presidium Sidang Utama**: Struktur pimpinan sidang dan penanggung jawab persidangan MPK:
+  - **Ketua MPK**: Pimpinan tertinggi sidang majelis (Presidium Sidang I), pemegang mandat ketetapan TAP, dan koordinator umum kepengurusan.
+  - **Sekretaris I (Notulis MPK)**: Penanggung jawab perumusan risalah sidang, verifikasi daftar hadir/kuorum peserta, dan pengarsipan naskah dinas.
+  - **Pembina Kesiswaan MPK**: Pengarah dan pembimbing tata tertib serta kebijakan persidangan majelis.
+  - **Kepala Sekolah**: Pelindung hukum organisasi dan pengesah Surat Keputusan (SK).
+  - **Divisi Jalur Menyurat MPK (JMM)**: Pengelola sistem notulensi digital dan registri ketetapan persidangan.
 - **Tata Kelola 3 Komisi Kerja (Sesuai AD/ART)**:
-  - **Komisi A (Pengawasan OSIS & Kebijakan)**: Koordinator: Zafana Alaiqa Zachwan & Danis Ferdiansyah (16 anggota). Menyelenggarakan Sidang Pleno I/II/III, Sidang GBHK, penerbitan Surat Peringatan (SP), evaluasi pra/pasca acara, dan pengelolaan arsip Jalur Menyurat MPK (JMM).
-  - **Komisi B (Tata Kelola Ekstrakurikuler & Lapangan)**: Koordinator: Muhammad Imam Mulhakim & Adinda Syarifa Setiawan (13 anggota). Menyelenggarakan Rapat Delegasi Ekskul, sinkronisasi matriks jadwal lapangan (Planner), monitoring presensi triwulan (Informator), dan fasilitas ekskul.
-  - **Komisi C (Aspirasi Siswa, Survei LSM & Media Publikasi)**: Koordinator: Restu Noor Aditia Rae & Nuri Anastasya Oktaviana (18 anggota). Penjaringan aspirasi via Program AKSARA, survei per kelas oleh LSM (Lembaga Survey MPK), analisis aspirasi ke OSIS via JMM, dan publikasi media kreatif (Desainer & CapTeam).
+  - **Komisi A (Pengawasan OSIS & Kebijakan)**:
+    - *Struktur Internal*: Koordinator I & II, Divisi Evaluator, Pengawas Rapat OSIS, Pengawas Sekbid OSIS, dan Jalur Surat Menyurat (JMM).
+    - *Tupoksi Utama*: Menyelenggarakan Sidang Pleno Pengawasan OSIS (I, II, III), Sidang GBHK, penerbitan Surat Peringatan (SP), evaluasi pra/pasca acara, serta pengarsipan berkas kerja sama eksekutif-legislatif.
+  - **Komisi B (Tata Kelola Ekstrakurikuler & Lapangan)**:
+    - *Struktur Internal*: Koordinator I & II, Koordinator Lapangan (Planner), dan Divisi Informator.
+    - *Tupoksi Utama*: Menyelenggarakan Rapat Delegasi Ekstrakurikuler berkala, sinkronisasi matriks jadwal penggunaan lapangan (Planner), monitoring absensi triwulan (Informator), dan advokasi kebutuhan sarana lomba ekskul.
+  - **Komisi C (Aspirasi Siswa, Survei LSM & Media Publikasi)**:
+    - *Struktur Internal*: Koordinator I & II, Lembaga Survey MPK (LSM), Jalur Menyurat MPK (JMM), Tim Desainer Kreatif, dan Tim Redaksi/Caption (CapTeam).
+    - *Tupoksi Utama*: Penjaringan aspirasi siswa via Program AKSARA, survei per kelas oleh LSM, telaah aspirasi ke OSIS via JMM, dan pengelolaan kanal publikasi media resmi.
 - **Proteksi Akses Khusus Superadmin**: Akses ke `/admin` dikunci secara eksklusif untuk `alfarrezald@gmail.com`. Pengguna lain dicegah baik di menu navigasi sidebar maupun di tingkat rute guard Next.js.
 - **Buku Induk Registri Ketetapan TAP & KEP**: Tabel terpusat seluruh nomor surat keputusan dinas, amar putusan, rasional pertimbangan hukum, filter kategori, dan pencarian instan.
 - **Audit Trail & Notary Logs**: Pelacakan riwayat aktivitas pencatatan, perubahan data, dan sinkronisasi cloud secara transparan.
@@ -212,6 +218,6 @@ NotulenJMM/
 
 ## Lisensi dan Hak Cipta
 
-- **Pengembang**: [Davin Maritza](https://github.com/davinmaritza)
 - **Organisasi**: Majelis Perwakilan Kelas (MPK) SMK Negeri 13 Bandung
-- **Lisensi**: [MIT License](LICENSE) (c) 2026 Davin Maritza & MPK SMK Negeri 13 Bandung.
+- **Divisi**: Jalur Menyurat MPK (JMM)
+- **Lisensi**: [MIT License](LICENSE) (c) 2026 MPK SMK Negeri 13 Bandung.
