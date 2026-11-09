@@ -1,10 +1,16 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { Meeting, AudioSegment, HistoryLog, GoogleDriveAccount, isUserAdmin, ADMIN_EMAILS } from '../lib/types';
+import { Meeting, AudioSegment, HistoryLog, GoogleDriveAccount, isUserAdmin, ADMIN_EMAILS, UserRole } from '../lib/types';
 import { synthesizeNotulenApi } from '../lib/api';
 import { createMplsMeetingTemplate } from '../lib/meetingTemplates';
 import { formatIndonesianDateTime } from '../lib/indonesianDate';
+import {
+  upsertUserOnLogin,
+  isUserSuspended,
+  getUserRole,
+  USERS_UPDATED_EVENT,
+} from '../lib/userManager';
 import {
   getStoredGoogleAccount,
   saveStoredGoogleAccount,
@@ -218,9 +224,15 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
           }
         }
         const storedAcc = getStoredGoogleAccount();
-        if (storedAcc.connected && storedAcc.email && isUserAdmin(storedAcc.email)) {
-          storedAcc.role = 'SUPERADMIN';
-          storedAcc.isAdmin = true;
+        if (storedAcc.connected && storedAcc.email) {
+          if (isUserAdmin(storedAcc.email)) {
+            storedAcc.role = 'SUPERADMIN';
+            storedAcc.isAdmin = true;
+            storedAcc.isSuspended = false;
+          } else {
+            storedAcc.isSuspended = isUserSuspended(storedAcc.email);
+            storedAcc.role = getUserRole(storedAcc.email) as UserRole;
+          }
         }
         setGoogleAccountState(storedAcc);
         setHistoryLogs(getStoredHistoryLogs());
@@ -234,6 +246,32 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setIsHydrated(true);
     }, 0);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Listen for real-time user management updates (activation/suspension/role changes)
+  useEffect(() => {
+    const handleUsersUpdated = () => {
+      setGoogleAccountState((prev) => {
+        if (!prev.connected || !prev.email) return prev;
+        const suspended = isUserSuspended(prev.email);
+        const role = getUserRole(prev.email) as UserRole;
+        if (prev.isSuspended !== suspended || prev.role !== role) {
+          return {
+            ...prev,
+            isSuspended: suspended,
+            role,
+          };
+        }
+        return prev;
+      });
+    };
+
+    window.addEventListener(USERS_UPDATED_EVENT, handleUsersUpdated);
+    window.addEventListener('storage', handleUsersUpdated);
+    return () => {
+      window.removeEventListener(USERS_UPDATED_EVENT, handleUsersUpdated);
+      window.removeEventListener('storage', handleUsersUpdated);
+    };
   }, []);
 
   // Sync to localStorage only after hydration
@@ -307,7 +345,10 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       const token = await requestGoogleAccessToken(clientId, false);
       const profile = await fetchGoogleUserProfile(token);
+      const managedUser = upsertUserOnLogin(profile.email, profile.name, profile.picture);
       const isSuperAdmin = isUserAdmin(profile.email);
+      const isSuspended = managedUser.status === 'SUSPENDED';
+
       const newAccount: GoogleDriveAccount = {
         connected: true,
         email: profile.email,
@@ -317,8 +358,9 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         accessToken: token,
         tokenExpiresAt: Date.now() + 3500 * 1000,
         autoSyncEnabled: true,
-        role: isSuperAdmin ? 'SUPERADMIN' : 'NOTULIS',
+        role: isSuperAdmin ? 'SUPERADMIN' : (managedUser.role as UserRole),
         isAdmin: isSuperAdmin,
+        isSuspended,
       };
       setGoogleAccountState(newAccount);
       saveStoredGoogleAccount(newAccount);
@@ -362,15 +404,19 @@ export const MeetingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       throw new Error('Format email tidak valid. Masukkan alamat email Google yang benar.');
     }
     const displayName = name?.trim() || cleanEmail.split('@')[0];
+    const managedUser = upsertUserOnLogin(cleanEmail, displayName);
     const isSuperAdmin = isUserAdmin(cleanEmail);
+    const isSuspended = managedUser.status === 'SUSPENDED';
+
     const newAccount: GoogleDriveAccount = {
       connected: true,
       email: cleanEmail,
       name: displayName,
       lastSyncTime: new Date().toISOString(),
       autoSyncEnabled: true,
-      role: isSuperAdmin ? 'SUPERADMIN' : 'NOTULIS',
+      role: isSuperAdmin ? 'SUPERADMIN' : (managedUser.role as UserRole),
       isAdmin: isSuperAdmin,
+      isSuspended,
     };
     setGoogleAccountState(newAccount);
     saveStoredGoogleAccount(newAccount);

@@ -103,6 +103,7 @@ export interface GoogleDriveAccount {
   autoSyncEnabled?: boolean;
   role?: UserRole;
   isAdmin?: boolean;
+  isSuspended?: boolean;
 }
 
 

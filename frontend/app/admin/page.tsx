@@ -34,8 +34,26 @@ import {
   Settings2,
   BarChart3,
   Award,
+  UserPlus,
+  UserX,
+  ShieldAlert,
+  Ban,
+  Mail,
+  Lock,
 } from 'lucide-react';
 import { Decision, Meeting, ActionItem } from '../../lib/types';
+import {
+  getManagedUsers,
+  toggleUserStatus,
+  updateUserRole,
+  addManagedUser,
+  deleteManagedUser,
+  ManagedUser,
+  ManagedUserRole,
+  ManagedUserStatus,
+  USERS_UPDATED_EVENT,
+  PROTECTED_ADMIN_EMAILS,
+} from '../../lib/userManager';
 
 interface CommissionInfo {
   id: string;
@@ -112,13 +130,105 @@ export default function AdminPage() {
     isAdmin,
   } = useMeetings();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'commissions' | 'decisions' | 'audit' | 'system'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'commissions' | 'decisions' | 'audit' | 'system'>('overview');
   const [commissions, setCommissions] = useState<CommissionInfo[]>(DEFAULT_COMMISSIONS);
   const [backendHealth, setBackendHealth] = useState<HealthCheckResult | null>(null);
   const [isPingingBackend, setIsPingingBackend] = useState<boolean>(false);
   const [searchDecision, setSearchDecision] = useState<string>('');
   const [filterCategory, setFilterCategory] = useState<string>('ALL');
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  // User Management State
+  const [managedUsers, setManagedUsers] = useState<ManagedUser[]>([]);
+  const [searchUser, setSearchUser] = useState<string>('');
+  const [filterUserStatus, setFilterUserStatus] = useState<'ALL' | 'ACTIVE' | 'SUSPENDED'>('ALL');
+  const [filterUserRole, setFilterUserRole] = useState<'ALL' | ManagedUserRole>('ALL');
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState<boolean>(false);
+  const [newEmail, setNewEmail] = useState<string>('');
+  const [newName, setNewName] = useState<string>('');
+  const [newRole, setNewRole] = useState<ManagedUserRole>('NOTULIS');
+  const [newStatus, setNewStatus] = useState<ManagedUserStatus>('ACTIVE');
+  const [newNotes, setNewNotes] = useState<string>('');
+
+  // Initial and sync effect for managed users
+  useEffect(() => {
+    setManagedUsers(getManagedUsers());
+
+    const handleSync = () => {
+      setManagedUsers(getManagedUsers());
+    };
+
+    window.addEventListener(USERS_UPDATED_EVENT, handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener(USERS_UPDATED_EVENT, handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
+
+  const handleToggleUserStatus = (user: ManagedUser) => {
+    try {
+      const res = toggleUserStatus(user.id);
+      showNotice(
+        `Status akun ${user.email} berhasil diubah menjadi ${
+          res.newStatus === 'ACTIVE' ? '🟢 AKTIF' : '🔴 DITANGGUHKAN'
+        }.`
+      );
+      setManagedUsers(getManagedUsers());
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showNotice(`Gagal: ${msg}`);
+    }
+  };
+
+  const handleRoleChange = (user: ManagedUser, role: ManagedUserRole) => {
+    try {
+      updateUserRole(user.id, role);
+      showNotice(`Peran ${user.email} diubah menjadi ${role}.`);
+      setManagedUsers(getManagedUsers());
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showNotice(`Gagal: ${msg}`);
+    }
+  };
+
+  const handleDeleteUser = (user: ManagedUser) => {
+    if (!window.confirm(`Hapus akun ${user.email} dari daftar pengguna NotulenJMM?`)) {
+      return;
+    }
+    try {
+      deleteManagedUser(user.id);
+      showNotice(`Akun ${user.email} berhasil dihapus dari sistem.`);
+      setManagedUsers(getManagedUsers());
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showNotice(`Gagal: ${msg}`);
+    }
+  };
+
+  const handleCreateUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      addManagedUser({
+        email: newEmail,
+        name: newName,
+        role: newRole,
+        status: newStatus,
+        notes: newNotes,
+      });
+      showNotice(`Pengguna baru ${newEmail} berhasil ditambahkan!`);
+      setIsAddUserModalOpen(false);
+      setNewEmail('');
+      setNewName('');
+      setNewRole('NOTULIS');
+      setNewStatus('ACTIVE');
+      setNewNotes('');
+      setManagedUsers(getManagedUsers());
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showNotice(`Gagal menambahkan pengguna: ${msg}`);
+    }
+  };
 
   // Load backend health
   useEffect(() => {
@@ -383,6 +493,18 @@ export default function AdminPage() {
         </button>
 
         <button
+          onClick={() => setActiveTab('users')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'users'
+              ? 'bg-[#FFE600] text-black border-2 border-black shadow-[3px_3px_0px_0px_#000]'
+              : 'bg-white text-zinc-700 border-2 border-black/20 hover:border-black hover:text-black'
+          }`}
+        >
+          <UserCheck className="w-4 h-4 stroke-[2.5]" />
+          <span>Pengguna &amp; Akun Google ({managedUsers.length})</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('commissions')}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'commissions'
@@ -597,6 +719,427 @@ export default function AdminPage() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* TAB: USER MANAGEMENT & ACCESS CONTROL */}
+      {activeTab === 'users' && (
+        <div className="space-y-6">
+          {/* Top Banner & Quick Add */}
+          <div className="bg-white border-2 border-black rounded-2xl p-5 sm:p-6 shadow-[4px_4px_0px_0px_#000] space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-black/10 pb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <UserCheck className="w-5 h-5 text-black stroke-[2.5]" />
+                  <h2 className="text-base sm:text-lg font-black text-black">
+                    Manajemen Pengguna &amp; Akun Google
+                  </h2>
+                </div>
+                <p className="text-xs text-zinc-600 font-sans font-medium mt-1">
+                  Kontrol otorisasi akun Google Cloud untuk sistem notulensi. Admin dapat menangguhkan (suspend) akses pengguna yang tidak aktif atau mengaktifkan kembali akun kapan saja.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setIsAddUserModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FFE600] text-black font-black text-xs border-2 border-black hover:bg-[#ebd300] shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer whitespace-nowrap self-start md:self-auto"
+              >
+                <UserPlus className="w-4 h-4 stroke-[2.5]" />
+                <span>+ Tambah Akun Baru</span>
+              </button>
+            </div>
+
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+              <div className="p-3.5 rounded-xl bg-[#FFFDF5] border-2 border-black/20 space-y-1">
+                <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-wider block">
+                  Total Pengguna
+                </span>
+                <span className="text-xl font-black text-black">{managedUsers.length}</span>
+                <p className="text-[10px] text-zinc-500 font-sans">Terdaftar di sistem</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-emerald-50/60 border-2 border-emerald-500/40 space-y-1">
+                <span className="text-[10px] font-mono font-bold text-emerald-800 uppercase tracking-wider block">
+                  Akun Aktif
+                </span>
+                <span className="text-xl font-black text-emerald-950">
+                  {managedUsers.filter((u) => u.status === 'ACTIVE').length}
+                </span>
+                <p className="text-[10px] text-emerald-700 font-sans">Diberi izin akses</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-red-50/60 border-2 border-red-500/40 space-y-1">
+                <span className="text-[10px] font-mono font-bold text-red-800 uppercase tracking-wider block">
+                  Ditangguhkan
+                </span>
+                <span className="text-xl font-black text-red-950">
+                  {managedUsers.filter((u) => u.status === 'SUSPENDED').length}
+                </span>
+                <p className="text-[10px] text-red-700 font-sans">Akses diblokir (suspended)</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-sky-50/60 border-2 border-sky-500/40 space-y-1">
+                <span className="text-[10px] font-mono font-bold text-sky-800 uppercase tracking-wider block">
+                  Superadmin &amp; Admin
+                </span>
+                <span className="text-xl font-black text-sky-950">
+                  {managedUsers.filter((u) => u.role === 'SUPERADMIN' || u.role === 'ADMIN').length}
+                </span>
+                <p className="text-[10px] text-sky-700 font-sans">Otoritas tata kelola</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Search, Filter Toolbar & Table */}
+          <div className="bg-white border-2 border-black rounded-2xl p-5 sm:p-6 shadow-[4px_4px_0px_0px_#000] space-y-4">
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchUser}
+                  onChange={(e) => setSearchUser(e.target.value)}
+                  placeholder="Cari nama, email Google, atau keterangan..."
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-sans font-medium bg-[#FFFDF5] border-2 border-black/20 focus:border-black focus:outline-hidden transition-all text-black placeholder:text-zinc-400"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+                <select
+                  value={filterUserStatus}
+                  onChange={(e) => setFilterUserStatus(e.target.value as any)}
+                  aria-label="Filter status pengguna"
+                  className="px-3 py-2.5 rounded-xl text-xs font-bold font-sans bg-[#FFFDF5] border-2 border-black/20 focus:border-black focus:outline-hidden cursor-pointer"
+                >
+                  <option value="ALL">Semua Status</option>
+                  <option value="ACTIVE">🟢 Hanya Aktif</option>
+                  <option value="SUSPENDED">🔴 Hanya Ditangguhkan</option>
+                </select>
+
+                <select
+                  value={filterUserRole}
+                  onChange={(e) => setFilterUserRole(e.target.value as any)}
+                  aria-label="Filter peran pengguna"
+                  className="px-3 py-2.5 rounded-xl text-xs font-bold font-sans bg-[#FFFDF5] border-2 border-black/20 focus:border-black focus:outline-hidden cursor-pointer"
+                >
+                  <option value="ALL">Semua Peran</option>
+                  <option value="SUPERADMIN">SUPERADMIN</option>
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="PRESIDIUM">PRESIDIUM</option>
+                  <option value="NOTULIS">NOTULIS</option>
+                  <option value="ANGGOTA">ANGGOTA</option>
+                </select>
+              </div>
+            </div>
+
+            {/* User List Table */}
+            <div className="overflow-x-auto rounded-xl border-2 border-black">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#FFE600] text-black border-b-2 border-black text-[11px] font-mono uppercase tracking-wider font-extrabold select-none">
+                    <th className="p-3.5">Akun Google / Pengguna</th>
+                    <th className="p-3.5">Peran &amp; Hak Akses</th>
+                    <th className="p-3.5">Status</th>
+                    <th className="p-3.5">Terakhir Aktif</th>
+                    <th className="p-3.5 text-right">Aksi Otoritas</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y-2 divide-black/10 font-sans text-xs">
+                  {managedUsers
+                    .filter((u) => {
+                      const q = searchUser.trim().toLowerCase();
+                      const matchSearch =
+                        !q ||
+                        u.name.toLowerCase().includes(q) ||
+                        u.email.toLowerCase().includes(q) ||
+                        (u.notes && u.notes.toLowerCase().includes(q));
+                      const matchStatus = filterUserStatus === 'ALL' || u.status === filterUserStatus;
+                      const matchRole = filterUserRole === 'ALL' || u.role === filterUserRole;
+                      return matchSearch && matchStatus && matchRole;
+                    })
+                    .map((user) => {
+                      const isProtected = PROTECTED_ADMIN_EMAILS.some(
+                        (adm) => adm.toLowerCase() === user.email.toLowerCase()
+                      );
+                      const isCurrentSession =
+                        googleAccount.connected &&
+                        googleAccount.email?.toLowerCase() === user.email.toLowerCase();
+
+                      return (
+                        <tr
+                          key={user.id}
+                          className={`hover:bg-[#FFFDF5] transition-colors ${
+                            user.status === 'SUSPENDED' ? 'bg-red-50/40' : ''
+                          }`}
+                        >
+                          {/* User Column */}
+                          <td className="p-3.5">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`w-9 h-9 rounded-xl border-2 border-black flex items-center justify-center font-black text-xs shrink-0 shadow-[2px_2px_0px_0px_#000] overflow-hidden ${
+                                  user.role === 'SUPERADMIN'
+                                    ? 'bg-[#FFE600] text-black'
+                                    : user.role === 'ADMIN'
+                                    ? 'bg-sky-300 text-black'
+                                    : user.role === 'PRESIDIUM'
+                                    ? 'bg-purple-300 text-black'
+                                    : 'bg-white text-black'
+                                }`}
+                              >
+                                {user.avatarUrl ? (
+                                  <Image
+                                    src={user.avatarUrl}
+                                    alt={user.name}
+                                    width={36}
+                                    height={36}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <span>{user.name.charAt(0).toUpperCase()}</span>
+                                )}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-black text-black truncate">{user.name}</span>
+                                  {isCurrentSession && (
+                                    <span className="px-1.5 py-0.2 bg-zinc-200 border border-black/30 rounded text-[9px] font-mono font-bold">
+                                      Anda
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-[11px] font-mono text-zinc-600 truncate">{user.email}</p>
+                                {user.notes && (
+                                  <p className="text-[10px] text-zinc-500 font-sans italic truncate">
+                                    {user.notes}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Role Column */}
+                          <td className="p-3.5">
+                            {isProtected ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-400 font-mono font-black text-[10px]">
+                                <Shield className="w-3 h-3" />
+                                SUPERADMIN
+                              </span>
+                            ) : (
+                              <select
+                                value={user.role}
+                                onChange={(e) => handleRoleChange(user, e.target.value as ManagedUserRole)}
+                                aria-label={`Pilih peran untuk ${user.email}`}
+                                className="px-2.5 py-1 rounded-lg bg-white border border-black text-[11px] font-mono font-bold focus:outline-hidden cursor-pointer shadow-[1px_1px_0px_0px_#000]"
+                              >
+                                <option value="SUPERADMIN">SUPERADMIN</option>
+                                <option value="ADMIN">ADMIN</option>
+                                <option value="PRESIDIUM">PRESIDIUM</option>
+                                <option value="NOTULIS">NOTULIS</option>
+                                <option value="ANGGOTA">ANGGOTA</option>
+                              </select>
+                            )}
+                          </td>
+
+                          {/* Status Column */}
+                          <td className="p-3.5">
+                            {user.status === 'ACTIVE' ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-400 text-[10px] font-mono font-black">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                AKTIF
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-900 border border-red-400 text-[10px] font-mono font-black">
+                                <Ban className="w-3 h-3 text-red-600" />
+                                DITANGGUHKAN
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Last Active Column */}
+                          <td className="p-3.5 text-zinc-600 font-mono text-[11px]">
+                            {user.lastActiveAt ? (
+                              new Date(user.lastActiveAt).toLocaleDateString('id-ID', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+
+                          {/* Action Column */}
+                          <td className="p-3.5 text-right whitespace-nowrap">
+                            <div className="flex items-center justify-end gap-2">
+                              {isProtected ? (
+                                <span
+                                  className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-500 font-bold px-2 py-1 bg-zinc-100 rounded border border-black/10"
+                                  title="Akun superadministrator utama terlindungi dan tidak dapat disuspend"
+                                >
+                                  <Lock className="w-3 h-3" />
+                                  Terlindungi
+                                </span>
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => handleToggleUserStatus(user)}
+                                    title={
+                                      user.status === 'ACTIVE'
+                                        ? 'Tangguhkan (Suspend) akun ini agar tidak bisa mengakses aplikasi'
+                                        : 'Aktifkan kembali akses akun ini'
+                                    }
+                                    className={`px-3 py-1.5 rounded-xl text-xs font-black border-2 border-black shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all cursor-pointer flex items-center gap-1.5 ${
+                                      user.status === 'ACTIVE'
+                                        ? 'bg-red-100 hover:bg-red-200 text-red-900'
+                                        : 'bg-emerald-300 hover:bg-emerald-400 text-black'
+                                    }`}
+                                  >
+                                    {user.status === 'ACTIVE' ? (
+                                      <>
+                                        <Ban className="w-3.5 h-3.5" />
+                                        <span>Tangguhkan</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                        <span>Aktifkan</span>
+                                      </>
+                                    )}
+                                  </button>
+
+                                  <button
+                                    onClick={() => handleDeleteUser(user)}
+                                    title="Hapus akun dari daftar pengguna"
+                                    className="p-1.5 rounded-xl border border-black/30 hover:border-black hover:bg-red-100 text-zinc-700 hover:text-red-700 transition-colors cursor-pointer"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Add User Modal */}
+          {isAddUserModalOpen && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+              <div className="w-full max-w-md bg-white border-[2.5px] border-black rounded-2xl p-6 shadow-[8px_8px_0px_0px_#000] space-y-4 animate-in zoom-in-95">
+                <div className="flex items-center justify-between border-b-2 border-black pb-3">
+                  <div className="flex items-center gap-2">
+                    <UserPlus className="w-5 h-5 text-black stroke-[2.5]" />
+                    <h3 className="text-base font-black text-black">Tambah Pengguna Baru</h3>
+                  </div>
+                  <button
+                    onClick={() => setIsAddUserModalOpen(false)}
+                    className="p-1 rounded-lg border border-black hover:bg-zinc-100 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <form onSubmit={handleCreateUser} className="space-y-3.5">
+                  <div className="space-y-1">
+                    <label className="text-xs font-mono font-bold text-zinc-700 block">
+                      Alamat Email Google:
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={newEmail}
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      placeholder="nama@gmail.com / akun@smkn13bdg.sch.id"
+                      className="w-full px-3.5 py-2.5 rounded-xl text-xs font-mono bg-[#FFFDF5] border-2 border-black focus:outline-hidden"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-mono font-bold text-zinc-700 block">
+                      Nama Lengkap:
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="Contoh: Muhammad Farhan"
+                      className="w-full px-3.5 py-2.5 rounded-xl text-xs font-sans font-medium bg-[#FFFDF5] border-2 border-black focus:outline-hidden"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs font-mono font-bold text-zinc-700 block">
+                        Peran / Otoritas:
+                      </label>
+                      <select
+                        value={newRole}
+                        onChange={(e) => setNewRole(e.target.value as ManagedUserRole)}
+                        className="w-full px-3 py-2.5 rounded-xl text-xs font-mono font-bold bg-[#FFFDF5] border-2 border-black focus:outline-hidden cursor-pointer"
+                      >
+                        <option value="NOTULIS">NOTULIS</option>
+                        <option value="PRESIDIUM">PRESIDIUM</option>
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="SUPERADMIN">SUPERADMIN</option>
+                        <option value="ANGGOTA">ANGGOTA</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs font-mono font-bold text-zinc-700 block">
+                        Status Awal:
+                      </label>
+                      <select
+                        value={newStatus}
+                        onChange={(e) => setNewStatus(e.target.value as ManagedUserStatus)}
+                        className="w-full px-3 py-2.5 rounded-xl text-xs font-mono font-bold bg-[#FFFDF5] border-2 border-black focus:outline-hidden cursor-pointer"
+                      >
+                        <option value="ACTIVE">🟢 Aktif</option>
+                        <option value="SUSPENDED">🔴 Ditangguhkan</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-mono font-bold text-zinc-700 block">
+                      Catatan / Jabatan Organisasi (Opsional):
+                    </label>
+                    <input
+                      type="text"
+                      value={newNotes}
+                      onChange={(e) => setNewNotes(e.target.value)}
+                      placeholder="Misal: Notulis Komisi C / Pengurus MPK"
+                      className="w-full px-3.5 py-2.5 rounded-xl text-xs font-sans bg-[#FFFDF5] border-2 border-black focus:outline-hidden"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsAddUserModalOpen(false)}
+                      className="px-4 py-2.5 rounded-xl text-xs font-bold border-2 border-black hover:bg-zinc-100 cursor-pointer"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 rounded-xl text-xs font-black bg-[#FFE600] text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:bg-[#ebd300] cursor-pointer"
+                    >
+                      Simpan Pengguna
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
