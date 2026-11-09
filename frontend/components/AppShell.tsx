@@ -43,6 +43,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
       ? 'notulen'
       : pathname === '/tasks'
       ? 'actions'
+      : pathname === '/admin'
+      ? 'admin'
       : 'craft';
 
   const handleNavigateFromWorkflow = (tab: string) => {
@@ -51,6 +53,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     else if (tab === 'record') router.push('/record');
     else if (tab === 'notulen') router.push('/notulen');
     else if (tab === 'actions') router.push('/tasks');
+    else if (tab === 'admin') router.push('/admin');
   };
 
   // 1. Initial hydration skeleton to prevent auth gate flicker
