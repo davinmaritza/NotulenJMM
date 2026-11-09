@@ -17,10 +17,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [isOpenMobile, setIsOpenMobile] = useState<boolean>(false);
-  const [isGuestMode, setIsGuestMode] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem('notulenjmm_guest_mode') === 'true';
-  });
 
   const {
     meetings,
@@ -68,18 +64,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     );
   }
 
-  // 2. Google Authentication Gate if not connected and not in guest mode
-  if (!(googleAccount.connected && googleAccount.email) && !isGuestMode) {
-    return (
-      <GoogleAuthGate
-        onGuestContinue={() => {
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem('notulenjmm_guest_mode', 'true');
-          }
-          setIsGuestMode(true);
-        }}
-      />
-    );
+  // 2. Google Authentication Gate (Hanya Login Lewat Google)
+  if (!(googleAccount.connected && googleAccount.email)) {
+    return <GoogleAuthGate />;
   }
 
   // 3. User Suspension Lockout Gate
