@@ -18,6 +18,8 @@ import {
   RotateCcw,
   HelpCircle,
   GraduationCap,
+  Sparkles,
+  Video,
 } from 'lucide-react';
 import { AudioSegment } from '../lib/types';
 import { transcribeAudioApi } from '@/lib/api';
@@ -53,6 +55,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
 
   // File Upload State
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   // Live Recording State
   const [isRecording, setIsRecording] = useState(false);
@@ -354,17 +357,87 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     setDraftToast(null);
   };
 
+  // AI Metadata Inference Helper (Parses filename or creates smart default)
+  const inferMetadataFromFilename = (filename: string) => {
+    const clean = filename.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+    const lower = clean.toLowerCase();
+    let inferredTitle = '';
+    let inferredNotes = '';
+
+    if (lower.includes('komisi a') || lower.includes('komisia')) {
+      inferredTitle = 'Sidang Komisi A — Aspirasi Siswa & Hubungan Eksternal';
+      inferredNotes = 'Fokus pada penjaringan aspirasi perwakilan kelas, koordinasi ekskul/OSIS, dan perumusan rekomendasi majelis.';
+    } else if (lower.includes('komisi b') || lower.includes('komisib')) {
+      inferredTitle = 'Sidang Komisi B — Pengawasan Program & Kedisiplinan Siswa';
+      inferredNotes = 'Evaluasi keterlaksanaan program kerja, monitoring tata tertib organisasi, dan tindak lanjut pengawasan.';
+    } else if (lower.includes('komisi c') || lower.includes('komisic')) {
+      inferredTitle = 'Sidang Komisi C — Anggaran Kas, Keuangan & Inventaris';
+      inferredNotes = 'Audit alokasi anggaran kas, pertanggungjawaban nota belanja, dan pengesahan inventaris fasilitas majelis.';
+    } else if (lower.includes('pleno')) {
+      inferredTitle = 'Sidang Pleno Majelis Perwakilan Kelas SMK Negeri 13 Bandung';
+      inferredNotes = 'Gunakan diksi formal ketetapan TAP MPK, pastikan kuorum peserta tercatat, dan rumuskan keputusan sidang bernomor resmi.';
+    } else if (lower.includes('ldks') || lower.includes('kaderisasi')) {
+      inferredTitle = 'Sidang Koordinasi Kaderisasi & Penyelenggaraan LDKS';
+      inferredNotes = 'Tekankan pembagian divisi kepanitiaan, timeline kaderisasi peserta didik, dan persetujuan tata tertib LDKS.';
+    } else if (lower.includes('evaluasi') || lower.includes('lpj')) {
+      inferredTitle = 'Sidang Evaluasi & Laporan Pertanggungjawaban (LPJ)';
+      inferredNotes = 'Rangkum kendala pelaksanaan, capaian indikator kinerja, dan rekomendasi perbaikan untuk periode mendatang.';
+    } else {
+      const words = clean
+        .split(' ')
+        .filter(Boolean)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
+      inferredTitle =
+        words.length > 3 ? `Sidang Musyawarah MPK: ${words}` : `Sidang Musyawarah MPK SMK Negeri 13 Bandung`;
+      inferredNotes =
+        'Rumuskan ringkasan eksekutif secara lugas, deteksi pimpinan sidang dan notulis, serta tetapkan poin keputusan resmi.';
+    }
+
+    return { inferredTitle, inferredNotes };
+  };
+
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setAudioUrl(url);
     setRecordedBlob(file);
+    setErrorMessage(null);
 
-    // Auto-generate clean title from filename
-    const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-    const formattedTitle =
-      nameWithoutExt.charAt(0).toUpperCase() + nameWithoutExt.slice(1);
-    setMeetingTitle(formattedTitle || 'Sesi Sidang Pleno MPK');
+    // Auto-populate intelligent metadata from audio file
+    const { inferredTitle, inferredNotes } = inferMetadataFromFilename(file.name);
+    setMeetingTitle(inferredTitle);
+    if (!secretaryNotes.trim()) {
+      setSecretaryNotes(inferredNotes);
+    }
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
   };
 
   // Save Current Session as Online Draft
@@ -415,12 +488,22 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
       );
 
       setProcessingStep('Menyusun naskah risalah & ketetapan sidang resmi...');
-      const titleToUse = meetingTitle.trim() || 'Sesi Sidang MPK SMK Negeri 13 Bandung';
+      const fallbackMeta = selectedFile
+        ? inferMetadataFromFilename(selectedFile.name)
+        : {
+            inferredTitle: 'Sesi Sidang MPK SMK Negeri 13 Bandung',
+            inferredNotes:
+              'Rumuskan ringkasan eksekutif secara lugas, deteksi peran pimpinan sidang dan notulis, serta tetapkan putusan resmi.',
+          };
+
+      const titleToUse = meetingTitle.trim() || fallbackMeta.inferredTitle;
+      const notesToUse = secretaryNotes.trim() || fallbackMeta.inferredNotes;
+
       onDiarizationComplete(
         response.segments,
         response.durationSeconds || seconds,
         titleToUse,
-        secretaryNotes,
+        notesToUse,
         audioUrl || undefined
       );
     } catch (err: unknown) {
@@ -721,30 +804,51 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
         <div className="space-y-5">
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="p-8 sm:p-10 border-2 border-dashed border-black hover:bg-yellow-50 rounded-2xl bg-[#FFFDF5] transition-all cursor-pointer text-center space-y-3 shadow-[3px_3px_0px_0px_#000]"
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`p-8 sm:p-10 border-2 border-dashed rounded-2xl transition-all cursor-pointer text-center space-y-3 ${
+              isDragging
+                ? 'border-black bg-amber-100 scale-[1.01] shadow-[5px_5px_0px_0px_#000]'
+                : 'border-black hover:bg-amber-50/50 bg-[#FFFDF5] shadow-[3px_3px_0px_0px_#000]'
+            }`}
           >
             <div className="w-12 h-12 rounded-2xl bg-[#FFD93D] border-2 border-black flex items-center justify-center mx-auto text-black shadow-[2px_2px_0px_0px_#000]">
-              <FileAudio className="w-6 h-6 stroke-[2.5]" />
+              {selectedFile?.name.toLowerCase().endsWith('.mp4') ? (
+                <Video className="w-6 h-6 stroke-[2.5]" />
+              ) : (
+                <FileAudio className="w-6 h-6 stroke-[2.5]" />
+              )}
             </div>
             <div>
               <p className="text-sm font-black text-black">
-                {selectedFile ? selectedFile.name : 'Pilih atau Tarik Berkas Rekaman Suara Sidang (Voice / Audio) ke Sini'}
+                {isDragging
+                  ? 'Lepaskan berkas rekaman suara sidang (Voice / Audio / MP4) di sini!'
+                  : selectedFile
+                  ? selectedFile.name
+                  : 'Tarik & Letakkan Berkas Audio/Video HP ke Sini, atau Klik untuk Memilih'}
               </p>
               <p className="text-xs text-zinc-700 font-medium mt-1">
-                Format didukung: <strong className="text-black font-black">.mp3, .wav, .m4a, .ogg, .webm, .flac, .opus</strong>
+                Format didukung: <strong className="text-black font-black">.mp4, .mp3, .m4a, .wav, .aac, .ogg, .webm, .flac, .opus</strong>
               </p>
             </div>
             {selectedFile && (
-              <span className="inline-block text-[11px] font-black text-black bg-[#A7F3D0] border-2 border-black px-3 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000]">
-                Ukuran: {formatFileSize(selectedFile.size)}
-              </span>
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                <span className="inline-block text-[11px] font-black text-black bg-[#A7F3D0] border-2 border-black px-3 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000]">
+                  Ukuran: {formatFileSize(selectedFile.size)}
+                </span>
+                <span className="inline-block text-[11px] font-black text-black bg-[#FFE600] border-2 border-black px-3 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000]">
+                  Format: {selectedFile.name.split('.').pop()?.toUpperCase()}
+                </span>
+              </div>
             )}
             <input
               id="audio-file-upload"
               name="audio-file-upload"
               ref={fileInputRef}
               type="file"
-              accept="audio/*,.mp3,.wav,.m4a,.ogg,.webm,.flac,.aac,.opus"
+              accept="audio/*,video/mp4,.mp4,.mp3,.wav,.m4a,.ogg,.webm,.flac,.aac,.opus"
               aria-label="Unggah Berkas Audio Rekaman"
               onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -754,57 +858,108 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
             />
           </div>
 
-          {/* Audio Preview if selected from file */}
+          {/* Audio or MP4 Video Preview if selected from file */}
           {audioUrl && (
             <div className="p-4 bg-[#FFFDF5] border-2 border-black rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[3px_3px_0px_0px_#000]">
               <div className="flex items-center gap-3 w-full sm:w-auto">
-                <div className="w-9 h-9 rounded-xl bg-[#38BDF8] border-2 border-black flex items-center justify-center shrink-0 shadow-[1.5px_1.5px_0px_0px_#000]">
-                  <Volume2 className="w-5 h-5 text-black stroke-[2.5]" />
+                <div className="w-10 h-10 rounded-xl bg-[#38BDF8] border-2 border-black flex items-center justify-center shrink-0 shadow-[1.5px_1.5px_0px_0px_#000]">
+                  {selectedFile?.name.toLowerCase().endsWith('.mp4') ? (
+                    <Video className="w-5 h-5 text-black stroke-[2.5]" />
+                  ) : (
+                    <Volume2 className="w-5 h-5 text-black stroke-[2.5]" />
+                  )}
                 </div>
                 <div className="space-y-0.5">
-                  <p className="text-xs font-black text-black truncate max-w-xs">
+                  <p className="text-xs font-black text-black truncate max-w-xs sm:max-w-md">
                     {selectedFile ? selectedFile.name : 'Rekaman Suara Sidang (Voice)'}
                   </p>
-                  <p className="text-[10px] font-mono text-zinc-700 font-bold">Berkas audio siap diproses atau disimpan</p>
+                  <p className="text-[10px] font-mono text-zinc-700 font-bold">
+                    Berkas suara siap disintesis oleh AI NotulenJMM
+                  </p>
                 </div>
               </div>
-              <audio src={audioUrl} controls className="w-full sm:w-80 h-10 border-2 border-black rounded-xl" />
+              {selectedFile?.name.toLowerCase().endsWith('.mp4') ? (
+                <video
+                  src={audioUrl}
+                  controls
+                  className="w-full sm:w-72 h-24 object-cover bg-black border-2 border-black rounded-xl"
+                />
+              ) : (
+                <audio src={audioUrl} controls className="w-full sm:w-80 h-10 border-2 border-black rounded-xl" />
+              )}
             </div>
           )}
         </div>
       )}
 
-      {/* COMMON METADATA FORM: TITLE & SECRETARY STEERING NOTES */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t-2 border-black/10">
-        <div className="space-y-1.5">
-          <label htmlFor="recording-meeting-title" className="text-xs font-black text-black">
-            Agenda / Judul Sesi Sidang:
-          </label>
-          <input
-            id="recording-meeting-title"
-            name="recording-meeting-title"
-            type="text"
-            value={meetingTitle}
-            onChange={(e) => setMeetingTitle(e.target.value)}
-            placeholder="Contoh: Sidang Pleno Koordinasi Panitia LDKS 2026"
-            className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2.5 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
-          />
+      {/* COMMON METADATA FORM: TITLE & SECRETARY STEERING NOTES WITH AI AUTO-PILOT */}
+      <div className="space-y-3 pt-3 border-t-2 border-black/10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-black text-black uppercase tracking-wider">
+              Metadata Sidang &amp; Pengarah AI
+            </span>
+            <span className="text-[10px] font-bold text-black bg-[#A7F3D0] border border-black px-2 py-0.5 rounded-full shadow-[1px_1px_0px_0px_#000]">
+              Otomatis Diisi AI
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              if (selectedFile) {
+                const { inferredTitle, inferredNotes } = inferMetadataFromFilename(selectedFile.name);
+                setMeetingTitle(inferredTitle);
+                setSecretaryNotes(inferredNotes);
+              } else {
+                const todayStr = new Date().toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                });
+                setMeetingTitle(`Sidang Pleno Musyawarah MPK 13 — ${todayStr}`);
+                setSecretaryNotes(
+                  'Rumuskan ringkasan eksekutif padat, identifikasi pimpinan sidang dan notulis, serta tetapkan putusan utama resmi.'
+                );
+              }
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#FFE600] hover:bg-yellow-300 text-black border-2 border-black rounded-xl text-[11px] font-black shadow-[1.5px_1.5px_0px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all cursor-pointer self-start sm:self-auto"
+          >
+            <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>AI Auto-Detect Judul &amp; Arahan</span>
+          </button>
         </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor="recording-secretary-notes" className="text-xs font-black text-black flex items-center justify-between">
-            <span>Catatan Pengarah Notulis (Arahan Format &amp; Keputusan):</span>
-            <span className="text-[10px] font-black text-black bg-yellow-200 border border-black px-1.5 py-0.2 rounded shadow-[1px_1px_0px_0px_#000]">Panduan Diksi</span>
-          </label>
-          <textarea
-            id="recording-secretary-notes"
-            name="recording-secretary-notes"
-            value={secretaryNotes}
-            onChange={(e) => setSecretaryNotes(e.target.value)}
-            rows={3}
-            placeholder="Tuliskan arahan susunan kata: misal gaya bahasa formal MPK, tonjolkan rincian anggaran dana dan tenggat waktu tugas..."
-            className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black leading-relaxed resize-none font-sans"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label htmlFor="recording-meeting-title" className="text-xs font-black text-black">
+              Agenda / Judul Sesi Sidang:
+            </label>
+            <input
+              id="recording-meeting-title"
+              name="recording-meeting-title"
+              type="text"
+              value={meetingTitle}
+              onChange={(e) => setMeetingTitle(e.target.value)}
+              placeholder="Contoh: Sidang Pleno Koordinasi Panitia LDKS 2026"
+              className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2.5 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="recording-secretary-notes" className="text-xs font-black text-black flex items-center justify-between">
+              <span>Catatan Pengarah Notulis (Arahan Format &amp; Keputusan):</span>
+              <span className="text-[10px] font-black text-black bg-yellow-200 border border-black px-1.5 py-0.2 rounded shadow-[1px_1px_0px_0px_#000]">Panduan Diksi</span>
+            </label>
+            <textarea
+              id="recording-secretary-notes"
+              name="recording-secretary-notes"
+              value={secretaryNotes}
+              onChange={(e) => setSecretaryNotes(e.target.value)}
+              rows={3}
+              placeholder="Tuliskan arahan susunan kata: misal gaya bahasa formal MPK, tonjolkan rincian anggaran dana dan tenggat waktu tugas..."
+              className="w-full bg-[#FFFDF5] border-2 border-black rounded-xl px-3.5 py-2 text-xs text-black font-medium placeholder:text-zinc-500 shadow-[2px_2px_0px_0px_#000] focus:outline-none focus:ring-2 focus:ring-black leading-relaxed resize-none font-sans"
+            />
+          </div>
         </div>
       </div>
 

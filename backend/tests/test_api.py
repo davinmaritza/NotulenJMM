@@ -55,6 +55,18 @@ def test_audio_transcribe_valid_file():
     assert "text" in data["segments"][0]
     assert "speaker" in data["segments"][0]
 
+def test_audio_transcribe_mp4_file():
+    """Verify mp4 video/audio container from smartphone recordings is accepted and processed."""
+    fake_mp4_bytes = b"\x00\x00\x00\x20ftypisom\x00\x00\x02\x00isomiso2mp41"
+    files = {"audio": ("rekaman_sidang_hp.mp4", io.BytesIO(fake_mp4_bytes), "video/mp4")}
+    data_form = {"meeting_id": "meet-hp-mp4"}
+    response = client.post("/api/v1/audio/transcribe", files=files, data=data_form)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["meeting_id"] == "meet-hp-mp4"
+    assert len(data["segments"]) > 0
+
 def test_notulen_synthesize_empty_transcript():
     """Verify empty transcript payload returns 400 Bad Request."""
     payload = {

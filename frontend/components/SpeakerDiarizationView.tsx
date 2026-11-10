@@ -30,10 +30,11 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
 
   const uniqueSpeakers = Array.from(new Set(transcript.map((s) => s.speaker)));
 
-  const handleRenameSpeaker = (oldName: string) => {
-    if (!newSpeakerName.trim()) return;
+  const handleRenameSpeaker = (oldName: string, overrideName?: string) => {
+    const targetName = (overrideName || newSpeakerName).trim();
+    if (!targetName) return;
     const updated = transcript.map((seg) =>
-      seg.speaker === oldName ? { ...seg, speaker: newSpeakerName.trim() } : seg
+      seg.speaker === oldName ? { ...seg, speaker: targetName } : seg
     );
     onUpdateTranscript(updated);
     setEditingSpeaker(null);
@@ -164,33 +165,58 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
                   {spk.charAt(0).toUpperCase()}
                 </div>
                 {editingSpeaker === spk ? (
-                  <div className="flex items-center gap-1.5">
-                    <label htmlFor={`rename-speaker-${spk}`} className="sr-only">
-                      Ganti nama pembicara {spk}
-                    </label>
-                    <input
-                      id={`rename-speaker-${spk}`}
-                      name={`rename-speaker-${spk}`}
-                      type="text"
-                      aria-label={`Ganti nama pembicara ${spk}`}
-                      value={newSpeakerName}
-                      onChange={(e) => setNewSpeakerName(e.target.value)}
-                      placeholder="Nama baru..."
-                      className="bg-white border-2 border-black text-black rounded px-2 py-0.5 text-xs focus:outline-none font-bold"
-                      onKeyDown={(e) => e.key === 'Enter' && handleRenameSpeaker(spk)}
-                    />
-                    <button
-                      onClick={() => handleRenameSpeaker(spk)}
-                      className="px-2 py-0.5 bg-[#A7F3D0] text-black border border-black rounded text-[11px] font-black cursor-pointer shadow-[1px_1px_0px_0px_#000]"
-                    >
-                      OK
-                    </button>
-                    <button
-                      onClick={() => setEditingSpeaker(null)}
-                      className="text-black hover:underline text-[11px] font-bold cursor-pointer"
-                    >
-                      Batal
-                    </button>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5">
+                    <div className="flex items-center gap-1.5">
+                      <label htmlFor={`rename-speaker-${spk}`} className="sr-only">
+                        Ganti nama pembicara {spk}
+                      </label>
+                      <input
+                        id={`rename-speaker-${spk}`}
+                        name={`rename-speaker-${spk}`}
+                        type="text"
+                        aria-label={`Ganti nama pembicara ${spk}`}
+                        value={newSpeakerName}
+                        onChange={(e) => setNewSpeakerName(e.target.value)}
+                        placeholder="Nama baru..."
+                        className="bg-white border-2 border-black text-black rounded px-2 py-0.5 text-xs focus:outline-none font-bold"
+                        onKeyDown={(e) => e.key === 'Enter' && handleRenameSpeaker(spk)}
+                      />
+                      <button
+                        onClick={() => handleRenameSpeaker(spk)}
+                        className="px-2 py-0.5 bg-[#A7F3D0] text-black border border-black rounded text-[11px] font-black cursor-pointer shadow-[1px_1px_0px_0px_#000]"
+                      >
+                        OK
+                      </button>
+                      <button
+                        onClick={() => setEditingSpeaker(null)}
+                        className="text-black hover:underline text-[11px] font-bold cursor-pointer"
+                      >
+                        Batal
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-1 pt-1 sm:pt-0">
+                      <button
+                        type="button"
+                        onClick={() => handleRenameSpeaker(spk, 'Pimpinan Sidang')}
+                        className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 border border-black cursor-pointer"
+                      >
+                        + Pimpinan Sidang
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRenameSpeaker(spk, 'Notulis Sidang')}
+                        className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 hover:bg-sky-200 border border-black cursor-pointer"
+                      >
+                        + Notulis
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRenameSpeaker(spk, 'Perwakilan Komisi')}
+                        className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 hover:bg-emerald-200 border border-black cursor-pointer"
+                      >
+                        + Komisi
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex items-center gap-1.5">

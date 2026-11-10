@@ -13,7 +13,7 @@ router = APIRouter()
     summary="Transcribe and Diarize Audio via Microsoft VibeVoice & Speech Recognition",
 )
 async def transcribe_audio(
-    audio: UploadFile = File(..., description="Audio recording file (webm, wav, mp3, m4a, ogg)"),
+    audio: UploadFile = File(..., description="Audio/Video recording file (webm, wav, mp3, m4a, ogg, mp4)"),
     meeting_id: Optional[str] = Form(None, description="Optional meeting identifier"),
     client_transcript: Optional[str] = Form(None, description="Optional real-time transcript from browser speech recognition"),
 ):

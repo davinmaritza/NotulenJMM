@@ -46,15 +46,7 @@ export const GoogleAuthGate: React.FC<GoogleAuthGateProps> = () => {
         aria-hidden="true"
       />
 
-      {/* Subtle Neo-Brutalist Decorative Geometric Accents in Background */}
-      <div
-        className="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-[#FFE600]/20 border-2 border-black/10 pointer-events-none blur-[2px]"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -bottom-16 -left-16 w-80 h-80 rounded-3xl bg-[#38BDF8]/15 border-2 border-black/10 pointer-events-none rotate-12"
-        aria-hidden="true"
-      />
+
 
       {/* TOP INSTITUTIONAL BAR */}
       <header className="relative z-10 w-full border-b-2 border-black bg-white/90 backdrop-blur-sm px-4 sm:px-8 py-3.5 shadow-[0_2px_0_0_#000]">

@@ -21,7 +21,7 @@ class VibeVoiceService:
         self.endpoint = settings.VIBEVOICE_ENDPOINT
         os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
-    ALLOWED_EXTENSIONS = {".mp3", ".wav", ".m4a", ".ogg", ".webm", ".flac", ".aac", ".opus"}
+    ALLOWED_EXTENSIONS = {".mp3", ".wav", ".m4a", ".ogg", ".webm", ".flac", ".aac", ".opus", ".mp4"}
 
     async def save_audio_file(self, filename: str, content: bytes) -> str:
         """Saves incoming audio bytes safely to local temporary cache with strict extension validation."""
