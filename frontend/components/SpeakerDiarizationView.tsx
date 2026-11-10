@@ -1,8 +1,20 @@
 'use client';
 // Copyright (c) 2026 MPK SMK Negeri 13 Bandung. Created by Davin Maritza.
-import React, { useState } from 'react';
-import { Clock, Edit2, Sparkles, RefreshCw, MessageSquare, Check, ArrowRight } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import {
+  Clock,
+  Edit2,
+  Sparkles,
+  RefreshCw,
+  MessageSquare,
+  Check,
+  ArrowRight,
+  Upload,
+  FileAudio,
+  Video,
+} from 'lucide-react';
 import { AudioSegment } from '../lib/types';
+import { transcribeAudioApi } from '@/lib/api';
 
 interface SpeakerDiarizationViewProps {
   transcript: AudioSegment[];
@@ -27,6 +39,53 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
   const [secretaryNotes, setSecretaryNotes] = useState<string>(
     initialSecretaryNotes || ''
   );
+
+  // Auto-Scan Audio Upload States
+  const [isScanningAudio, setIsScanningAudio] = useState<boolean>(false);
+  const [scanStep, setScanStep] = useState<string>('');
+  const [isDraggingAudio, setIsDraggingAudio] = useState<boolean>(false);
+  const audioInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleAudioUploadAndScan = async (file: File) => {
+    setIsScanningAudio(true);
+    setScanStep('Memindai sinyal dan spektrum berkas audio...');
+    try {
+      setScanStep('Mendeteksi pembicara & mentranskripsikan suara...');
+      const response = await transcribeAudioApi(file, undefined, file.name);
+      if (response.segments && response.segments.length > 0) {
+        onUpdateTranscript(response.segments);
+        setScanStep('Otomatis merumuskan risalah sidang & ketetapan resmi...');
+        await onSynthesizeNotulen(secretaryNotes);
+      }
+    } catch (err) {
+      console.error('Scan error:', err);
+    } finally {
+      setIsScanningAudio(false);
+      setScanStep('');
+    }
+  };
+
+  const handleDragOverAudio = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingAudio(true);
+  };
+
+  const handleDragLeaveAudio = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingAudio(false);
+  };
+
+  const handleDropAudio = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingAudio(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleAudioUploadAndScan(file);
+    }
+  };
 
   const uniqueSpeakers = Array.from(new Set(transcript.map((s) => s.speaker)));
 
@@ -108,6 +167,66 @@ export const SpeakerDiarizationView: React.FC<SpeakerDiarizationViewProps> = ({
             </>
           )}
         </button>
+      </div>
+
+      {/* Auto-Scan Audio Dropzone */}
+      <div
+        onClick={() => audioInputRef.current?.click()}
+        onDragOver={handleDragOverAudio}
+        onDragLeave={handleDragLeaveAudio}
+        onDrop={handleDropAudio}
+        className={`p-4 sm:p-5 border-2 border-dashed rounded-2xl transition-all cursor-pointer text-center space-y-2 ${
+          isDraggingAudio
+            ? 'border-black bg-amber-100 scale-[1.01] shadow-[4px_4px_0px_0px_#000]'
+            : isScanningAudio
+            ? 'border-black bg-yellow-50 shadow-[3px_3px_0px_0px_#000]'
+            : 'border-black hover:bg-amber-50/50 bg-[#FFFDF5] shadow-[2px_2px_0px_0px_#000]'
+        }`}
+      >
+        <input
+          ref={audioInputRef}
+          type="file"
+          accept="audio/*,video/mp4,.mp4,.mp3,.wav,.m4a,.ogg,.webm,.flac,.aac,.opus"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleAudioUploadAndScan(file);
+          }}
+          className="hidden"
+        />
+        {isScanningAudio ? (
+          <div className="flex flex-col items-center justify-center gap-2 py-3 animate-pulse">
+            <RefreshCw className="w-6 h-6 animate-spin text-black stroke-[2.5]" />
+            <p className="text-xs font-black text-black">⚡ {scanStep}</p>
+            <p className="text-[11px] text-zinc-600 font-medium">Mohon tunggu, berkas audio sedang dipindai dan risalah otomatis dirumuskan...</p>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#FFE600] border-2 border-black flex items-center justify-center shrink-0 shadow-[1.5px_1.5px_0px_0px_#000]">
+                <FileAudio className="w-5 h-5 text-black stroke-[2.5]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs font-black text-black">
+                    Perbarui Rekaman Audio Sidang (Auto-Scan)
+                  </p>
+                  <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-[#A7F3D0] text-black border border-black shadow-[1px_1px_0px_0px_#000]">
+                    Auto-Scan Aktif
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-600 font-medium mt-0.5">
+                  Tarik atau pilih file (.mp4, .mp3, .m4a, .wav). Begitu dimasukkan, AI langsung <strong>memindai audio &amp; merumuskan risalah</strong> tanpa perlu klik lagi.
+                </p>
+              </div>
+            </div>
+            <div className="shrink-0 self-start sm:self-auto">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FFE600] hover:bg-yellow-300 border-2 border-black text-[11px] font-black text-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                <Upload className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Pilih Berkas Audio</span>
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Human Guidance: Arahan Notulis Sidang */}

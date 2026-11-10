@@ -397,7 +397,7 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     return { inferredTitle, inferredNotes };
   };
 
-  const handleFileSelect = (file: File) => {
+  const triggerAutoScan = async (file: File) => {
     setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setAudioUrl(url);
@@ -407,9 +407,45 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
     // Auto-populate intelligent metadata from audio file
     const { inferredTitle, inferredNotes } = inferMetadataFromFilename(file.name);
     setMeetingTitle(inferredTitle);
-    if (!secretaryNotes.trim()) {
-      setSecretaryNotes(inferredNotes);
+    const finalNotes = secretaryNotes.trim() || inferredNotes;
+    setSecretaryNotes(finalNotes);
+
+    // Immediately trigger audio scanning and minutes formulation
+    setIsProcessing(true);
+    setProcessingStep('Memindai sinyal dan spektrum berkas audio...');
+    setDraftToast(null);
+
+    try {
+      setProcessingStep('Melakukan speech recognition & pemisahan pembicara...');
+      const response = await transcribeAudioApi(
+        file,
+        undefined,
+        file.name,
+        liveTranscript || undefined
+      );
+
+      setProcessingStep('Menyusun naskah risalah, ringkasan eksekutif & ketetapan resmi...');
+      const titleToUse = inferredTitle || 'Sesi Sidang MPK SMK Negeri 13 Bandung';
+
+      onDiarizationComplete(
+        response.segments,
+        response.durationSeconds || seconds,
+        titleToUse,
+        finalNotes,
+        url
+      );
+    } catch (err: unknown) {
+      console.error('Audio auto-scan error:', err);
+      setErrorMessage(
+        'Gagal memproses audio secara otomatis. Silakan periksa status server atau coba berkas audio lain.'
+      );
+      setIsProcessing(false);
+      setProcessingStep('');
     }
+  };
+
+  const handleFileSelect = (file: File) => {
+    triggerAutoScan(file);
   };
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -832,9 +868,15 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               <p className="text-xs text-zinc-700 font-medium mt-1">
                 Format didukung: <strong className="text-black font-black">.mp4, .mp3, .m4a, .wav, .aac, .ogg, .webm, .flac, .opus</strong>
               </p>
+              <div className="flex items-center justify-center gap-2 pt-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#A7F3D0] border-2 border-black text-[11px] font-black text-black shadow-[1.5px_1.5px_0px_0px_#000]">
+                  <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Auto-Scan Aktif: Masukkan audio, AI otomatis memindai &amp; merumuskan</span>
+                </span>
+              </div>
             </div>
             {selectedFile && (
-              <div className="flex items-center justify-center gap-2 flex-wrap">
+              <div className="flex items-center justify-center gap-2 flex-wrap pt-1">
                 <span className="inline-block text-[11px] font-black text-black bg-[#A7F3D0] border-2 border-black px-3 py-0.5 rounded-full shadow-[1.5px_1.5px_0px_0px_#000]">
                   Ukuran: {formatFileSize(selectedFile.size)}
                 </span>
@@ -857,6 +899,20 @@ export const AudioRecorderStudio: React.FC<AudioRecorderStudioProps> = ({
               className="hidden"
             />
           </div>
+
+          {/* Live Auto-Scan Progress Banner */}
+          {isProcessing && (
+            <div className="p-5 bg-amber-100/90 border-2 border-black rounded-2xl flex flex-col items-center justify-center text-center space-y-3 shadow-[4px_4px_0px_0px_#000] animate-pulse">
+              <div className="w-12 h-12 rounded-2xl bg-[#FFE600] border-2 border-black flex items-center justify-center text-black shadow-[2px_2px_0px_0px_#000]">
+                <RefreshCw className="w-6 h-6 animate-spin stroke-[2.5]" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-sm font-black text-black">⚡ Sedang Memindai Audio Sidang Secara Otomatis...</h4>
+                <p className="text-xs font-mono font-bold text-zinc-900">{processingStep}</p>
+                <p className="text-[11px] text-zinc-700 font-medium">Pengguna cukup menunggu, naskah risalah, daftar pembicara &amp; ketetapan sedang dirumuskan oleh AI.</p>
+              </div>
+            </div>
+          )}
 
           {/* Audio or MP4 Video Preview if selected from file */}
           {audioUrl && (
