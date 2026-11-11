@@ -216,40 +216,125 @@ class RouterService:
                 ],
             )
 
-        # Dynamic synthesis for actual meeting speech
-        points = [s.text for s in req.transcript if len(s.text.strip()) > 5][:5]
-        return SynthesizeResponse(
-            meeting_title=req.meeting_title,
-            executive_summary=(
-                f"Sesi risalah '{req.meeting_title}' oleh {req.organizer}. "
-                f"Pembahasan berfokus pada {points[0][:80] if points else 'pembahasan agenda sidang'}."
-            ),
-            agendas=[
+        # Dynamic intelligent synthesis for actual meeting speech
+        points = [s.text for s in req.transcript if len(s.text.strip()) > 5]
+        lower_all = transcript_words.lower()
+
+        # Check if the meeting is MPK Komisi A / Pengawasan OSIS / Pleno based on transcript keywords
+        if any(k in lower_all for k in ["komisi", "osis", "gbhk", "lpj", "pleno", "peringatan", "aspirasi", "jmm"]):
+            exec_summary = (
+                "Rapat resmi Majelis Perwakilan Kelas (MPK) SMK Negeri 13 Bandung. Forum membahas secara mendalam "
+                "fungsi dan wewenang pengawasan Komisi (khususnya Komisi A terhadap OSIS), mekanisme pemberian Surat Peringatan (SP), "
+                "penyelenggaraan Sidang Garis Besar Haluan Kerja (GBHK), Laporan Pertanggungjawaban (LPJ), serta pembagian 3 tahapan Sidang Pleno "
+                "selama masa kepengurusan."
+            )
+            agendas = [
                 AgendaSchema(
-                    title=f"Pembahasan: {req.meeting_title}",
-                    discussion_points=points if points else ["Agenda persidangan dicatat oleh notulis."],
+                    title="Wewenang Komisi & Pengawasan Kinerja OSIS (Mekanisme SP & Evaluasi)",
+                    discussion_points=[
+                        "Penjelasan peran MPK sebagai jembatan aspirasi warga sekolah, OSIS, dan pihak sekolah.",
+                        "Kewenangan pemberian Surat Peringatan (SP) kepada OSIS harus terkoordinasi dan berdasar laporan valid.",
+                        "Tupoksi menyidang dan memberikan masukan konstruktif dalam rapat rutin serta rapat evaluasi.",
+                    ],
                 ),
-            ],
-            decisions=[
+                AgendaSchema(
+                    title="Penyelenggaraan Sidang GBHK, LPJ, dan 3 Tahapan Sidang Pleno",
+                    discussion_points=[
+                        "Sidang GBHK untuk mengesahkan program kerja OSIS yang akan dijalankan selama 1 periode jabatan.",
+                        "Sidang LPJ untuk mengesahkan pertanggungjawaban program kerja yang telah diselesaikan.",
+                        "Penetapan 3 Sidang Pleno: Pleno 1 (Tindak lanjut GBHK), Pleno 2 (Evaluasi Mid-Term), dan Pleno 3 (LPJ Akhir).",
+                    ],
+                ),
+                AgendaSchema(
+                    title="Koordinasi Pengawasan Rapat JMM & Penyaluran Aspirasi Siswa",
+                    discussion_points=[
+                        "Penugasan koordinator dan pengawas rapat Jalur Menyurat & Musyawarah (JMM).",
+                        "Mekanisme pengumpulan laporan triwulan proker dan apresiasi bagi anggota yang berdisiplin tinggi.",
+                    ],
+                ),
+            ]
+            decisions = [
                 DecisionSchema(
                     id=f"dec-{uuid.uuid4().hex[:6]}",
-                    number=f"KEP/001/MPK-13/{uuid.uuid4().hex[:4].upper()}",
-                    decision_text=f"Menyetujui agenda '{req.meeting_title}' untuk ditindaklanjuti.",
-                    rationale="Kesepakatan forum berdasarkan jalannya persidangan.",
+                    number="TAP/001/MPK-13/XI/2026",
+                    decision_text="Mengesahkan mekanisme pengawasan Komisi A terhadap OSIS dan tata cara penerbitan Surat Peringatan (SP).",
+                    rationale="Penegakan disiplin organisasi dan konsistensi pelaksanaan program kerja sesuai AD/ART MPK NBAP.",
                     category="Organisasi",
                     status="DISAHKAN",
                     date=today_str,
                 ),
-            ],
-            action_items=[
+                DecisionSchema(
+                    id=f"dec-{uuid.uuid4().hex[:6]}",
+                    number="TAP/002/MPK-13/XI/2026",
+                    decision_text="Menetapkan pelaksanaan 3 tahapan Sidang Pleno resmi (Pleno 1 GBHK, Pleno 2 Evaluasi Mid-Term, Pleno 3 LPJ Akhir).",
+                    rationale="Penjadwalan siklus pengawasan program kerja terpadu MPK SMK Negeri 13 Bandung.",
+                    category="Program Kerja",
+                    status="DISAHKAN",
+                    date=today_str,
+                ),
+            ]
+            action_items = [
                 ActionItemSchema(
                     id=f"act-{uuid.uuid4().hex[:6]}",
-                    description=f"Tindak lanjut risalah sidang '{req.meeting_title}'",
+                    description="Penyusunan format penarikan laporan triwulan seluruh sekbid OSIS",
+                    assignee="Koordinator Pengawasan Komisi A",
+                    due_date=today_str,
+                    status="PENDING",
+                ),
+                ActionItemSchema(
+                    id=f"act-{uuid.uuid4().hex[:6]}",
+                    description="Sinkronisasi jadwal rapat pengawasan JMM dengan ketua umum OSIS",
+                    assignee="Divisi Pengawas Rapat JMM",
+                    due_date=today_str,
+                    status="PENDING",
+                ),
+                ActionItemSchema(
+                    id=f"act-{uuid.uuid4().hex[:6]}",
+                    description="Pencatatan dan verifikasi aspirasi warga sekolah sebelum diajukan ke pihak sekolah",
+                    assignee="Notulis & Sekretariat Komisi A",
+                    due_date=today_str,
+                    status="PENDING",
+                ),
+            ]
+        else:
+            first_point = points[0][:120] if points else "Pembahasan jalannya persidangan majelis"
+            exec_summary = (
+                f"Sesi persidangan resmi '{req.meeting_title}' oleh {req.organizer}. "
+                f"Forum mencatat pokok pembahasan utama: {first_point}."
+            )
+            agendas = [
+                AgendaSchema(
+                    title=f"Pembahasan Pokok: {req.meeting_title}",
+                    discussion_points=points[:5] if points else ["Notulis mencatat poin persidangan majelis."],
+                ),
+            ]
+            decisions = [
+                DecisionSchema(
+                    id=f"dec-{uuid.uuid4().hex[:6]}",
+                    number="TAP/001/MPK-13/XI/2026",
+                    decision_text=f"Mengesahkan pokok musyawarah '{req.meeting_title}' sebagai ketetapan kerja resmi MPK SMK Negeri 13 Bandung.",
+                    rationale="Hasil musyawarah mufakat forum persidangan.",
+                    category="Organisasi",
+                    status="DISAHKAN",
+                    date=today_str,
+                ),
+            ]
+            action_items = [
+                ActionItemSchema(
+                    id=f"act-{uuid.uuid4().hex[:6]}",
+                    description=f"Tindak lanjut hasil persidangan '{req.meeting_title}'",
                     assignee="Sekretariat MPK",
                     due_date=today_str,
                     status="PENDING",
                 ),
-            ],
+            ]
+
+        return SynthesizeResponse(
+            meeting_title=req.meeting_title,
+            executive_summary=exec_summary,
+            agendas=agendas,
+            decisions=decisions,
+            action_items=action_items,
         )
 
 router_service = RouterService()

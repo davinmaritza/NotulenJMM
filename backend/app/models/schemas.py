@@ -10,10 +10,10 @@ class AttendeeSchema(BaseModel):
 
 class AudioSegmentSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
-    id: str
-    speaker: str
-    startTime: str = Field(..., alias="start_time")
-    endTime: str = Field(..., alias="end_time")
+    id: Optional[str] = None
+    speaker: str = "Peserta Sidang"
+    startTime: Optional[str] = Field(default="00:00:00", alias="start_time")
+    endTime: Optional[str] = Field(default="00:00:00", alias="end_time")
     text: str
 
 class TranscribeResponse(BaseModel):

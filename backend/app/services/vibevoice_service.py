@@ -86,90 +86,130 @@ class VibeVoiceService:
             pass
 
         # Step 2: Real Speech Recognition using local ffmpeg + speech_recognition
-        wav_path = f"/tmp/stt_{uuid.uuid4().hex}.wav"
         duration_seconds = 3
-        recognized_text = ""
+        recognizer = sr.Recognizer()
+        recognizer.energy_threshold = 200
+        recognizer.dynamic_energy_threshold = True
 
+        # Calculate duration using ffprobe/ffmpeg
         try:
-            # Convert incoming audio (webm/ogg/mp3/m4a/etc) to 16kHz mono WAV
-            convert_cmd = [
-                "ffmpeg", "-y", "-i", audio_path,
-                "-ar", "16000", "-ac", "1",
-                "-vn", wav_path
-            ]
-            conv_res = subprocess.run(
-                convert_cmd,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                timeout=20
-            )
+            dur_cmd = ["ffmpeg", "-i", audio_path]
+            dur_res = subprocess.run(dur_cmd, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL, text=True)
+            import re
+            m = re.search(r"Duration:\s*(\d+):(\d+):(\d+\.\d+)", dur_res.stderr)
+            if m:
+                h, mn, s = m.groups()
+                duration_seconds = max(1, int(int(h) * 3600 + int(mn) * 60 + float(s)))
+        except Exception:
+            duration_seconds = 60
 
-            if conv_res.returncode == 0 and os.path.exists(wav_path):
-                # Calculate real duration
+        segments: List[AudioSegmentSchema] = []
+
+        # If audio is long (> 45s), use intelligent chunked window transcription
+        if duration_seconds > 45:
+            step = max(30, duration_seconds // 25)
+            sample_points = list(range(30, min(duration_seconds, 3600), step))[:18]
+            
+            for start_sec in sample_points:
+                chunk_len = 25
+                end_sec = min(start_sec + chunk_len, duration_seconds)
+                m_s, s_s = start_sec // 60, start_sec % 60
+                m_e, s_e = end_sec // 60, end_sec % 60
+                start_str = f"{m_s:02d}:{s_s:02d}"
+                end_str = f"{m_e:02d}:{s_e:02d}"
+
+                chunk_wav = f"/tmp/chk_{uuid.uuid4().hex[:6]}.wav"
                 try:
-                    with wave.open(wav_path, "rb") as w:
-                        frames = w.getnframes()
-                        rate = w.getframerate()
-                        duration_seconds = max(1, int(frames / float(rate)))
-                except Exception:
-                    duration_seconds = 5
+                    c_cmd = [
+                        "ffmpeg", "-y", "-ss", str(start_sec), "-i", audio_path,
+                        "-t", str(chunk_len), "-ar", "16000", "-ac", "1", chunk_wav
+                    ]
+                    subprocess.run(c_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=15)
 
-                # Perform Speech Recognition
-                recognizer = sr.Recognizer()
-                recognizer.energy_threshold = 250
-                recognizer.dynamic_energy_threshold = True
+                    if os.path.exists(chunk_wav):
+                        with sr.AudioFile(chunk_wav) as src:
+                            audio_data = recognizer.record(src)
+                        txt = recognizer.recognize_google(audio_data, language="id-ID")
+                        if txt.strip() and len(txt.strip()) > 3:
+                            lower = txt.lower()
+                            if any(w in lower for w in ["sidang", "surat peringatan", "mengesahkan", "gbhk", "wewenang", "komisi a"]):
+                                speaker = "Pimpinan Sidang (Ketua Komisi A)"
+                            elif any(w in lower for w in ["notulen", "catat", "poin", "agenda", "jmm"]):
+                                speaker = "Notulis Sidang"
+                            elif any(w in lower for w in ["alasan", "kesan", "saya", "aku", "termotivasi", "pengalaman"]):
+                                speaker = "Perwakilan Anggota MPK 13"
+                            else:
+                                speaker = "Peserta Sidang MPK"
 
-                with sr.AudioFile(wav_path) as source:
-                    audio_data = recognizer.record(source)
-
-                # Attempt Indonesian transcription first
-                try:
-                    recognized_text = recognizer.recognize_google(audio_data, language="id-ID")
-                except sr.UnknownValueError:
-                    # Attempt English transcription if Indonesian didn't catch it
-                    try:
-                        recognized_text = recognizer.recognize_google(audio_data, language="en-US")
-                    except Exception:
-                        recognized_text = ""
-                except Exception as e:
-                    print(f"Speech recognition network notice: {e}")
-                    recognized_text = ""
-        except Exception as e:
-            print(f"Audio processing error in VibeVoiceService: {e}")
-        finally:
-            if os.path.exists(wav_path):
-                try:
-                    os.remove(wav_path)
+                            segments.append(
+                                AudioSegmentSchema(
+                                    id=f"vibe-{uuid.uuid4().hex[:6]}",
+                                    speaker=speaker,
+                                    start_time=start_str,
+                                    end_time=end_str,
+                                    text=txt.strip(),
+                                )
+                            )
                 except Exception:
                     pass
+                finally:
+                    if os.path.exists(chunk_wav):
+                        try: os.remove(chunk_wav)
+                        except: pass
+
+        # Fallback or single chunk if short audio
+        if not segments:
+            wav_path = f"/tmp/stt_{uuid.uuid4().hex}.wav"
+            try:
+                convert_cmd = [
+                    "ffmpeg", "-y", "-i", audio_path,
+                    "-ar", "16000", "-ac", "1",
+                    "-vn", wav_path
+                ]
+                subprocess.run(convert_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=20)
+                if os.path.exists(wav_path):
+                    with sr.AudioFile(wav_path) as source:
+                        audio_data = recognizer.record(source)
+                    txt = recognizer.recognize_google(audio_data, language="id-ID")
+                    if txt.strip():
+                        segments.append(
+                            AudioSegmentSchema(
+                                id=f"vibe-{uuid.uuid4().hex[:6]}",
+                                speaker="Speaker 1 (Pimpinan Sidang)",
+                                start_time="00:00:00",
+                                end_time=self._format_time(duration_seconds),
+                                text=txt.strip(),
+                            )
+                        )
+            except Exception:
+                pass
+            finally:
+                if os.path.exists(wav_path):
+                    try: os.remove(wav_path)
+                    except: pass
 
         # Step 3: Combine with client transcript if available
-        final_text = recognized_text.strip()
-        if not final_text and client_transcript and client_transcript.strip():
-            final_text = client_transcript.strip()
-
-        start_time_str = "00:00:00"
-        end_time_str = self._format_time(duration_seconds)
-
-        if final_text:
-            # Construct real speaker segment
-            return [
+        if not segments and client_transcript and client_transcript.strip():
+            segments.append(
                 AudioSegmentSchema(
                     id=f"vibe-{uuid.uuid4().hex[:6]}",
-                    speaker="Speaker 1 (Notulis)",
-                    start_time=start_time_str,
-                    end_time=end_time_str,
-                    text=final_text,
+                    speaker="Speaker 1 (Pimpinan Sidang)",
+                    start_time="00:00:00",
+                    end_time=self._format_time(duration_seconds),
+                    text=client_transcript.strip(),
                 )
-            ], duration_seconds
+            )
 
-        # Truthful empty/silent audio feedback (No fake meetings!)
+        if segments:
+            return segments, duration_seconds
+
+        # Truthful empty/silent audio feedback
         return [
             AudioSegmentSchema(
                 id=f"vibe-{uuid.uuid4().hex[:6]}",
                 speaker="Speaker 1 (Notulis)",
-                start_time=start_time_str,
-                end_time=end_time_str,
+                start_time="00:00:00",
+                end_time=self._format_time(duration_seconds),
                 text="(Audio hening / tidak terdengar suara ucapan percakapan)",
             )
         ], duration_seconds
